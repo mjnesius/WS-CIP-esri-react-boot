@@ -1,6 +1,3 @@
-<p align="center">
-  <img src="http://psgd.esri.com/img/esri-react-boot/Esri-React-Boot-Logo.svg#3" width="500" height="auto"/>
-</p>
 
 #Built using Esri ArcGIS JS API + React + Redux
 Detailed documentation can be found on the wiki: https://github.com/Esri/esri-react-boot/wiki
