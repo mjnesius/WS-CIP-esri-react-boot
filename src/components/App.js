@@ -17,6 +17,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as authActions } from '../redux/reducers/auth';
 import { actions as configActions } from '../redux/reducers/config';
+import{StoreContext} from "./StoreContext";
 
 // Components
 import AuthManager from './esri/auth/AuthManager';
@@ -79,4 +80,4 @@ const mapDispatchToProps = function (dispatch) {
   }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default connect(mapStateToProps, mapDispatchToProps, null, {context:StoreContext})(App)

@@ -8,29 +8,29 @@
   "jsapiV4": true,
   "loginWithPopup": false,
 
+  "portalUrl": "https://tlcgis.maps.arcgis.com",
   "appId": "hkdtqXBMmZ8JJ5tD",
 
 
   "mapConfig": {
-    "basemap": "dark-gray-vector",
+    "basemap": "streets",
     "zoom": 4,
-    "center": [15, 65]
+    "center": [40, -80]
   },
 
   "webMapConfig": {
-    "id": "323b555fe8b74f188acf9c4deaea934b",
+    "id": "298570bdb8e946a1b7969bdebc3f4e6e",
     "extent": {
-      "xmin":-9433658,
-      "ymin":3543460,
-      "xmax":-9316216,
-      "ymax":3583237,
+      "xmin":-9393366,
+      "ymin":3550322,
+      "xmax":-9354817,
+      "ymax":3579250,
       "spatialReference": 102100
     }
   },
 
   "sceneConfig": {
-    "basemap": "dark-gray-vector",
-    "ground": "world-elevation"
+    "basemap": "dark-gray-vector"
   },
 
   "featureURLs": [

@@ -18,6 +18,7 @@
 // REDUX IMPORTS //
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import createSagaMiddleware from 'redux-saga';
+//import { composeWithDevTools } from 'redux-devtools-extension';
 import rootSaga from './sagas/index';
 
 import * as reducers from './';
@@ -28,11 +29,13 @@ var logger = createLogger({
 })
 export function initStore() {
   // Setup Redux dev tools
-  // NOTE - Redux Devtool issue - see https://github.com/zalmoxisus/redux-devtools-extension/issues/619
   const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+  //const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ && (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({ trace: true, traceLimit: 25 }) || compose);
 
   // Setup Redux store
-  const rootReducer = combineReducers(reducers);
+  const rootReducer = combineReducers(
+    reducers
+  );
   const sagaMiddleware = createSagaMiddleware();
 
   const store = createStore(

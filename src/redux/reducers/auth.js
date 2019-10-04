@@ -49,7 +49,7 @@ export default (state = initialState, action) => {
   }
 }
 
-// ACTIONS //
+// ACTION CREATORS //
 export const actions = {
   checkAuth: (url) => ({
     type: types.AUTH_CHECK,

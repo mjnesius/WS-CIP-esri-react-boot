@@ -18,6 +18,8 @@ import { connect } from 'react-redux';
 import { actions as mapActions } from '../redux/reducers/map';
 import { actions as authActions } from '../redux/reducers/auth';
 
+import {StoreContext} from './StoreContext';
+
 // Components
 import TopNav from 'calcite-react/TopNav';
 import TopNavBrand from 'calcite-react/TopNav/TopNavBrand';
@@ -29,6 +31,7 @@ import Map from './esri/map/Map';
 import LoadScreen from './LoadScreen';
 import UserAccount from './UserAccount';
 import logo from '../styles/images/favicon.ico';
+import FilterComponent from './Filters';
 
 // Styled Components
 import styled from 'styled-components';
@@ -55,17 +58,18 @@ const Logo = styled(TopNavBrand)`
   justify-content: center;
   & img {
     height: 55px;
-  }
+  },
+  background-color: $light-blue;
 `;
 //background-color: ${props => props.theme.palette.offWhite};
 const Nav = styled(TopNav)`
   
+background-color: $light-blue;
+
   z-index: 5
 `;
 
-const NavList = styled(TopNavList)`
-  text-align: left;
-`;
+
 
 // Class
 class Main extends Component {
@@ -82,14 +86,12 @@ class Main extends Component {
       <Container>
         <LoadScreen isLoading={this.props.mapLoaded} />
 
+
         <Nav>
           <Logo href="#" src={logo} />
           <TopNavTitle href="#">Water Sewer CIP</TopNavTitle>
-          <NavList>
-            <TopNavLink href="https://github.com/Esri/esri-react-boot">Github</TopNavLink>
-            <TopNavLink href="https://github.com/Esri/esri-react-boot/wiki">Docs</TopNavLink>
-            <TopNavLink href="https://calcite-react.netlify.com/">Calcite-React</TopNavLink>
-          </NavList>
+          
+        <FilterComponent />
           <UserAccount
             user={this.props.auth.user}
             portal={this.props.auth.user ? this.props.auth.user.portal : null}
@@ -97,11 +99,12 @@ class Main extends Component {
             signIn={this.signIn}
             signOut={this.signOut}
           />
+          
         </Nav>
-
         <MapWrapper>
-          <Map onMapLoaded={this.props.mapLoaded}
-            mapConfig={this.props.config.sceneConfig}
+
+          <Map onMapLoaded={this.props.mapLoaded} onSetFeatures={this.props.setFeatures} onSetFilters={this.props.setFilter}
+            mapConfig={this.props.config.mapConfig}
             is3DScene={false}
           />
           {/* <SceneViewExample
@@ -109,12 +112,13 @@ class Main extends Component {
             mapConfig={this.props.config.sceneConfig}
             is3DScene={true}
           /> */}
+
         </MapWrapper>
       </Container>
     )
   }
 }
-
+//
 const mapStateToProps = state => ({
   map: state.map,
   auth: state.auth,
@@ -128,4 +132,4 @@ const mapDispatchToProps = function (dispatch) {
   }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Main)
+export default connect(mapStateToProps, mapDispatchToProps, null, {context:StoreContext})(Main)

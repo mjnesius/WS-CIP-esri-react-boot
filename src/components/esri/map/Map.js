@@ -26,16 +26,20 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as mapActions } from '../../../redux/reducers/map';
-
+import {StoreContext} from '../../StoreContext';
+import {store} from '../../../index';
 // ESRI
 import { loadModules } from 'esri-loader';
 import { createView } from '../../../utils/esriHelper';
 
 // Styled Components
 import styled from 'styled-components';
+//import { stat } from 'fs';
+//import yargs from 'yargs';
 //import PencilSquare16 from '@esri/calcite-ui-icons';
 //import { annotateTool24 } from "@esri/calcite-ui-icons";
-import PencilSquareIcon from 'calcite-ui-icons-react/PencilSquareIcon';
+//import PencilSquareIcon from 'calcite-ui-icons-react/PencilSquareIcon';
+import FilterComponent from '../../Filters';
 
 const Container = styled.div`
   height: 100%;
@@ -46,7 +50,22 @@ const Container = styled.div`
 const containerID = "map-view-container";
 
 class Map extends Component {
-
+  constructor (props) {
+    super(props);
+    this.state = {
+      map:{
+        features: [{}],
+        loaded: Boolean,
+        selectedYear: "",
+        selectedStatus: "",
+        selectedManager: "",
+      },
+      featureLayer: {},
+      defExp:""
+    }
+    
+    //this.updateFilter = this.updateFilter.bind(this);
+  }
   componentDidMount() {
     this.startup(
       this.props.mapConfig,
@@ -62,11 +81,7 @@ class Map extends Component {
 
   render() {
     return (
-      
-      <Container ref="mapDiv" id={containerID}>
-        
-      </Container>
-      
+        <Container ref="mapDiv" id={containerID}/>
     );
   }
 
@@ -80,7 +95,7 @@ class Map extends Component {
         this.finishedLoading();
       },
       error => {
-        console.error("maperr", error);
+        console.error("map err in createView/startup", error);
         window.setTimeout( () => {
           this.startup(mapConfig, node);
         }, 1000);
@@ -90,11 +105,9 @@ class Map extends Component {
   finishedLoading = () => {
     // Update app state only after map and widgets are loaded
     this.props.onMapLoaded();
-
-    // const node = document.createElement("div");
-    // this.view.ui.add(node, "top-left");
-    // ReactDOM.render(<PencilSquareIcon filled onClick={() => console.log('clicked')} size={33} color="rgba(255, 255, 255, 0.8)"/>, node);
+    
   }
+  
 
   init = (response) => {
     this.view = response.view
@@ -102,35 +115,32 @@ class Map extends Component {
   }
 
   setupWidgetsAndLayers = () => {
-    loadModules(['esri/layers/FeatureLayer','esri/widgets/BasemapToggle','esri/widgets/Editor', 'esri/views/ui/UI' , 'esri/widgets/Expand',
-    'esri/widgets/BasemapGallery'
+    loadModules(['esri/layers/FeatureLayer','esri/widgets/Editor', 'esri/views/ui/UI' , 'esri/widgets/Expand',
+    'esri/widgets/BasemapGallery','dojo/dom-construct'
     ])
-    .then( ([ FeatureLayer, BasemapToggle, Editor, UI, Expand, BasemapGallery
+    .then( ([ FeatureLayer, Editor, UI, Expand, BasemapGallery,domConstruct
     ], containerNode) => {
       const featureLayer = new FeatureLayer({
         outFields: ["*"],
         portalItem: { // autocasts as new PortalItem()
-          id: "db4277871ee84772a964509f53071eda"
+          id: "10c79e631ce84ca19e5cdb7bb118262b"
         },
-        title: "CIP projects"
+        title: "WaterSewerPM"
       });
       this.map.add(featureLayer);
+
       var basemapGallery  = new BasemapGallery({
         view: this.view
       });
-
-      // var basemapToggle = new BasemapToggle({
-      //   view: this.view,
-      //   nextBasemap: "gray"
-      // });
-      // this.view.ui.add(basemapToggle, {position :"bottom-right"});
 
       var expandBasemap = new Expand({
         expandIconClass: "esri-icon-basemap",
         view: this.view,
         content: basemapGallery
       });
+
       this.view.ui.add(expandBasemap, {position :"top-right"});
+
       const editor = new Editor({
         view: this.view,
         container: containerNode,
@@ -143,18 +153,31 @@ class Map extends Component {
         content: editor
       });
       
-      this.view.ui.add(expandEditor, "top-right");
+      this.view.ui.add(expandEditor, "top-right"); 
+
+      //this.view.ui.add(FilterComponent, "center-right");
 
       featureLayer.when(function() {
-        featureLayer.definitionExpression = createDefinitionExpression(
-          "");
+        featureLayer.definitionExpression = createDefinitionExpression(this.defExp);
         zoomToLayer(featureLayer);
+        getFeatures(featureLayer);
+        this.featureLayer = featureLayer;
       });
 
       function createDefinitionExpression(subExpression) {
-        const baseExpression =
-          "( 1=1 )";
-
+        console.log("SUB expression ", subExpression);
+        //console.log("selectedStatus ", typeof this.props.selectedStatus);
+         const baseExpression =
+           "( 1=1 )";
+         var _stat = typeof store.statuses !== 'undefined' ? store.selectedStatus : "";
+         console.log("_stat ", _stat);
+         var _yr =  store.selectedYear ? store.selectedYear : "";
+         var _man = store.selectedManager ? store.selectedManager : "";
+         subExpression = "Status Like '%" + _stat
+             + "%' AND Project_Manager Like '%" +_man
+             + "%' AND Proposed_Year Like '%" + _yr +"%'";
+        
+        console.log("def expression ", baseExpression + " AND (" + subExpression +")")
         return subExpression ? baseExpression + " AND (" + subExpression +
           ")" : baseExpression;
       }
@@ -165,6 +188,44 @@ class Map extends Component {
             this.view.goTo(response.extent);
           });
       }
+      
+      //this.view.ui.add(node, "top-trailing");
+    //ReactDOM.render(<PencilSquareIcon filled onClick={() => console.log('clicked')} size={33} color="rgba(255, 255, 255, 0.8)"/>, node);
+    
+    
+      const getFeatures = (layer) => {
+        var query = layer.createQuery();
+        query.returnGeometry = false;
+        return layer.queryFeatures(query)
+          .then((response) => {
+            var repObj = response.toJSON();
+            this.props.onSetFeatures(repObj.features);
+            //this.props.onSetFeatures(response.features.toJSON());
+           // var myJSON = repObj.features;
+            //console.log("getFeatures " + myJSON);
+          }).then((res) => {
+            //const node = document.createElement("div");
+            //  var node = domConstruct.create("div", {
+            //   id: "divFilters", innerHTML: "<p>hi</p>", style:{width: "100%"}
+            // });
+
+            // //node.setAttribute("id", "divFilters");
+
+            //  var expandFilters = new Expand({
+            //   expandIconClass: "esri-icon-search",
+            //   view: this.view,
+            //   content: node
+            // }); 
+            // this.view.ui.add(expandFilters, "top-right");
+            //  ReactDOM.render(<FilterComponent/>, node
+            //  ); 
+          //    ReactDOM.render(<FilterComponent years={this.props.map.years} 
+          //     statuses={this.props.map.statuses} managers={this.props.map.managers}/>, node
+          //  );  
+            
+          });
+      }
+      
       //
       // JSAPI Map Widgets and Layers get loaded here!
       //
@@ -189,7 +250,11 @@ class Map extends Component {
 
 const mapStateToProps = state => ({
   config: state.config,
-  map: state.map
+  map: state.map,
+  featureLayer: state.featureLayer,
+  selectedYear: state.map.selectedYear,
+  selectedStatus: state.map.selectedStatus,
+  selectedManager: state.map.selectedManager,
 });
 
 const mapDispatchToProps = function (dispatch) {
@@ -198,4 +263,4 @@ const mapDispatchToProps = function (dispatch) {
   }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps) (Map);
+export default connect(mapStateToProps, mapDispatchToProps, null, {context:StoreContext}) (Map);

@@ -32,3 +32,21 @@ export function logout(portalUrl) {
     }).then(resp => resolve(resp), error => reject(error));
   });
 }
+
+export function getFeatures(FeatureUrl) {
+  return new Promise((resolve, reject) => {
+    makeRequest({
+      url: `${FeatureUrl}/0/query?`,
+      handleAs: "text"
+    }).then(resp => resolve(resp), error => reject(error));
+  });
+}
+
+export function setFilter(FeatureUrl) {
+  return new Promise((resolve, reject) => {
+    makeRequest({
+      url: `${FeatureUrl}/0/query?`,
+      handleAs: "text"
+    }).then(resp => resolve(resp), error => reject(error));
+  });
+}

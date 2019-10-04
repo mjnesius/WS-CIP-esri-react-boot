@@ -12,13 +12,20 @@
 // ACTION TYPES //
 export const types = {
   MAP_LOADED: "MAP_LOADED",
-  SET_FEATURES: "SET_FEATURES"
+  SET_FEATURES: "SET_FEATURES",
+  SET_FILTER: "SET_FILTER",
+  APPLY_FILTER: "APPLY_FILTER"
 };
 
 // REDUCERS //
 export const initialState = {
   loaded: false,
-  features: []
+  features: [],
+  managers: [],
+  statuses: [],
+  years:[],
+  featureLayer:{},
+  defExp: ""
 };
 
 export default (state = initialState, action) => {
@@ -29,16 +36,27 @@ export default (state = initialState, action) => {
         loaded: true
       };
     case types.SET_FEATURES:
+      //console.log("set features: " + JSON.stringify(action.payload));
       return {
         ...state,
-        features: action.payload.features
+        features: action.payload.features,
+        statuses: [...new Set(action.payload.features.map(feature => feature.attributes.Status ||"null"))],
+        years: [...new Set(action.payload.features.map(feature => feature.attributes.Proposed_Year || "null"))],
+        managers: [...new Set(action.payload.features.map(feature => feature.attributes.Project_Manager || "null"))]
       };
+    case types.APPLY_FILTER:
+      console.log("apply filter: " + JSON.stringify(action.payload));
+      return {
+        ...state,
+        //filter: "OBJECTID > 0 & " + action.payload
+      };
+
     default:
       return state;
   }
 };
 
-// ACTIONS //
+// ACTION CREATORS //
 export const actions = {
   mapLoaded: () => ({
     type: types.MAP_LOADED,
@@ -48,6 +66,18 @@ export const actions = {
     type: types.SET_FEATURES,
     payload: {
       features
+    }
+  }),
+  setFilter: filter => ({
+    type: types.SET_FILTER,
+    payload: {
+      filter
+    }
+  }),
+  applyFilter: filter => ({
+    type: types.APPLY_FILTER,
+    payload: {
+      filter
     }
   })
 };

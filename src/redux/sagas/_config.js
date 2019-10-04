@@ -13,7 +13,7 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import { getAppConfig } from '../../services/api';
 import { types as configTypes } from '../reducers/config';
 
-// WORKER //
+// Worker Saga: gets fired with SET_CONFIG // note: uses generator functions (special iterator functions, execute until they reach 'yield'
 function* fetchConfig (action) {
     try {
         // call API to fetch config
@@ -30,7 +30,7 @@ function* fetchConfig (action) {
     }
 }
 
-// WATCHER //
+// WATCHER: gets tied into Redux via createStore() using applyMiddleware() //
 export function* watchFetchConfig() {
     yield takeLatest(configTypes.CONFIG_FETCH, fetchConfig);
 }
