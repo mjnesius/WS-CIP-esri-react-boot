@@ -21,7 +21,9 @@ import { actions as authActions } from '../redux/reducers/auth';
 import {StoreContext} from './StoreContext';
 
 // Components
-import Navbar from 'react-bootstrap/Navbar'
+import Navbar from 'react-bootstrap/Navbar';
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 import TopNav from 'calcite-react/TopNav';
 import TopNavBrand from 'calcite-react/TopNav/TopNavBrand';
 import TopNavTitle from 'calcite-react/TopNav/TopNavTitle';
@@ -88,12 +90,20 @@ class Main extends Component {
     return (
       <Container>
         <LoadScreen isLoading={this.props.mapLoaded} />
-        <Navbar expand="lg" bg="light" variant="dark" className="bg-light justify-content-between">
+        <Row className="bg-light">
+          <Col lg={3}>
+          <Navbar bg="light" variant="dark" className="bg-light">
           <Logo href="#" src={logo} />
+          <TopNavTitle href="#">Water Sewer CIP</TopNavTitle>
+          </Navbar>
+          </Col>
+
+          <Col className="text-align-between" >
+          <FilterComponent/>
+          </Col>
+          <Col lg={2}>
+            
           
-            <TopNavTitle href="#">Water Sewer CIP</TopNavTitle>
-          
-          <FilterComponent></FilterComponent>
           <UserAccount
             user={this.props.auth.user}
             portal={this.props.auth.user ? this.props.auth.user.portal : null}
@@ -101,7 +111,12 @@ class Main extends Component {
             signIn={this.signIn}
             signOut={this.signOut}
           />
-        </Navbar>
+          
+        
+          </Col>
+          
+        </Row>
+        
         <MapWrapper>
           <Map onMapLoaded={this.props.mapLoaded} onSetFeatures={this.props.setFeatures} onSetFilters={this.props.setFilter}
             mapConfig={this.props.config.mapConfig}

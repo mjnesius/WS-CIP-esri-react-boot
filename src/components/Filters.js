@@ -66,173 +66,41 @@ class FilterComponent extends Component {
       return true
     } 
   }
-  // componentDidUpdate(){
-  //   console.log("filter component did update")
-  //   if (typeof this.props.optionsStatus !== 'undefined') {
-  //     var _statuses = [];
-  //     this.props.optionsStatus.sort();
-  //     //console.log("optionsStatus ", JSON.stringify(this.props.optionsStatus))
-  //     //this.props.statuses.length
-  //     for (var i = 0; i < this.props.optionsStatus.length; i++) {
-  //       _statuses.push({
-  //         label: this.props.optionsStatus[i],
-  //         value: this.props.optionsStatus[i]
-  //       });
-  //     }
-
-  //     this.props.optionsYears.sort();
-  //     var _years = [];
-  //     for (i = 0; i < this.props.optionsYears.length; i++) {
-  //       _years.push({
-  //         label: this.props.optionsYears[i],
-  //         value: this.props.optionsYears[i]
-  //       });
-  //     }
-
-  //     this.props.optionsManagers.sort();
-  //     var _man = [];
-  //     for (i = 0; i < this.props.optionsManagers.length; i++) {
-  //       _man.push({
-  //         label: this.props.optionsManagers[i],
-  //         value: this.props.optionsManagers[i]
-  //       });
-  //     }
-  //   }
-  //   if(typeof this.props.optionsStatus !== 'undefined'){
-  //     console.log("returning  updated filter component")
-  //     return (
-  //       <Container>
-  //         <Row className="justify-content-md-center">
-  //           <Col>
-  //             <Form >
-  //               <Form.Label>Filter</Form.Label>
-
-  //               <Form.Control placeholder="Filter by Status" as="select" onChange={this._onSelect}>
-  //                 {this.props.optionsStatus.map((e, key) => {
-  //                   return <option key={key} value={e}>{e}</option>;
-  //                 })}
-  //               </Form.Control>
-  //               <Form.Control as="select" onChange={this._onSelect}>>
-  //               {this.props.optionsYears.map((e, key) => {
-  //                 return <option key={key} value={e}>{e}</option>;
-  //               })}
-  //               </Form.Control>
-  //               <Form.Control as="select" onChange={this._onSelect}>>
-  //               {this.props.optionsManagers.map((e, key) => {
-  //                 return <option key={key} value={e}>{e}</option>;
-  //               })}
-  //               </Form.Control>
-  //             </Form>
-  //           </Col>
-  //         </Row>
-  //       </Container>
-  //     );
-  //           }
-  //}
   render() {
-    //const mapContext = useContext(MapContext);
-    if (typeof this.props.statuses !== 'undefined') {
-      var _statuses = [];
-      this.props.statuses.sort();
-      //this.props.statuses.length
-      for (var i = 0; i < this.props.statuses.length; i++) {
-        _statuses.push({
-          label: this.props.statuses[i],
-          value: this.props.statuses[i]
-        });
-      }
-
-      this.props.years.sort();
-      var _years = [];
-      for (i = 0; i < this.props.years.length; i++) {
-        _years.push({
-          label: this.props.years[i],
-          value: this.props.years[i]
-        });
-      }
-
-      this.props.managers.sort();
-      var _man = [];
-      for (i = 0; i < this.props.managers.length; i++) {
-        _man.push({
-          label: this.props.managers[i],
-          value: this.props.managers[i]
-        });
-      }
-    }
     if (typeof this.props.optionsStatus !== 'undefined') {
       console.log("filter component with drop downs")
       return (
         <Container>
-          <Row className="justify-content-md-center">
-            <Col>
-              <Form >
-                <Form.Label>Filter</Form.Label>
+          <Row  className="text-align-center" lg="auto">
+            <Col >
+              <Form inline>
+                <Form.Label column xs="5" md="1">Filter</Form.Label>
 
                 <Form.Control placeholder="Filter by Status" as="select" onChange={this._onSelect}>
+                  <option key={"All Statuses"} value={"%_Statuses"}>All Statuses</option>
                   {this.props.optionsStatus.map((e, key) => {
                     return <option key={key} value={e}>{e}</option>;
                   })}
                 </Form.Control>
                 <Form.Control as="select" onChange={this._onSelect}>>
-                {this.props.optionsYears.map((e, key) => {
-                  return <option key={key} value={e}>{e}</option>;
-                })}
+                  <option key={"All Years"} value={"%_Years"}>All Years</option>
+                  {this.props.optionsYears.map((e, key) => {
+                    return <option key={key} value={e}>{e}</option>;
+                  })}
                 </Form.Control>
                 <Form.Control as="select" onChange={this._onSelect}>>
-                {this.props.optionsManagers.map((e, key) => {
-                  return <option key={key} value={e}>{e}</option>;
-                })}
+                  <option key={"All Managers"} value={"%_Managers"}>All Mangers</option>
+                  {this.props.optionsManagers.map((e, key) => {
+                    return <option key={key} value={e}>{e}</option>;
+                  })}
                 </Form.Control>
               </Form>
             </Col>
           </Row>
         </Container>
         
-
-        // <Container>
-        //   <Form inline>
-        //     <Form.Group controlId="form.Filter">
-        //       <Form.Label>Filter</Form.Label>
-        //       <Form.Control placeholder="Filter by Status" as="select" onChange={this._onSelect}>
-        //       <option key={"All Statuses"} value={"%_Statuses"}>All Statuses</option>
-        //         {this.props.optionsStatus.map((e, key) => {
-        //           return <option key={key} value={e}>{e}</option>;
-        //         })}
-        //       </Form.Control>
-        //       <Form.Control as="select" onChange={this._onSelect}>>
-        //       <option key={"All Years"} value={"%_Years"}>All Years</option>
-        //         {this.props.optionsYears.map((e, key) => {
-        //         return <option key={key} value={e}>{e}</option>;
-        //       })}
-        //       </Form.Control>
-        //       <Form.Control as="select" onChange={this._onSelect}>>
-        //       <option key={"All Managers"} value={"%_Managers"}>All Mangers</option>
-        //         {this.props.optionsManagers.map((e, key) => {
-        //         return <option key={key} value={e}>{e}</option>;
-        //       })}
-        //       </Form.Control>
-        //     </Form.Group>
-        //   </Form>
-        // </Container>
       );
     }
-    // else{
-    //      return <Container>
-    //        <Form>
-    //        <Form.Control placeholder="Filter by Status" as="select">
-    //        <option key={"All Statuses"} value={"%_Statuses"}>All Statuses</option>
-    //        </Form.Control>
-    //        <Form.Control placeholder="Filter by Status" as="select">
-    //        <option key={"All Years"} value={"%_Years"}>All Years</option>
-    //        </Form.Control>
-    //        <Form.Control placeholder="Filter by Status" as="select">
-    //        <option key={"All Managers"} value={"%_Managers"}>All Mangers</option>
-    //        </Form.Control>
-    //        </Form>
-    //      </Container> 
-    // }
-
   }
 }
 
