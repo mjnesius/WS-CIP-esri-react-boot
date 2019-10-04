@@ -3,14 +3,15 @@ export const types = {
     SET_FILTER_YEARS: "SET_FILTER_YEARS",
     SET_FILTER_STATUS: "SET_FILTER_STATUS",
     SET_FILTER_MANAGER: "SET_FILTER_MANAGER",
+    SET_DEF_EXPRESSION: "SET_DEF_EXPRESSION"
   };
   
 
 export const initialState = {
-    selectedYear: "",
-    selectedStatus: "",
-    selectedManager: "",
-    filter:""
+    selectedYear: "%",
+    selectedStatus: "%",
+    selectedManager: "%",
+    defExp:"(1=1)"
 }
 
 // REDUCERS //
@@ -29,12 +30,18 @@ export default (state = initialState, action) => {
         selectedStatus: action.payload.filter
       };
     case types.SET_FILTER_MANAGER:
-        console.log("reducer: ", JSON.stringify(action.payload));
         return {
           ...state,
           selectedManager: action.payload.filter
         };
-
+    case types.SET_DEF_EXPRESSION:
+      var defExp = "Status Like '%" + state.selectedStatus
+      + "%' AND Project_Manager Like '%" + state.selectedManager
+      + "%' AND Proposed_Year Like '%" + state.selectedYear +"%'";
+      return {
+        ...state,
+        defExp: defExp
+      };    
     default:
       return state;
   }
@@ -59,5 +66,8 @@ export const actions = {
     payload: {
       filter
     }
+  }),
+  setDefExp: filter => ({
+    type: types.SET_DEF_EXPRESSION,
   })
 };

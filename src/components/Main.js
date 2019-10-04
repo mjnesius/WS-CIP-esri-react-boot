@@ -21,6 +21,7 @@ import { actions as authActions } from '../redux/reducers/auth';
 import {StoreContext} from './StoreContext';
 
 // Components
+import Navbar from 'react-bootstrap/Navbar'
 import TopNav from 'calcite-react/TopNav';
 import TopNavBrand from 'calcite-react/TopNav/TopNavBrand';
 import TopNavTitle from 'calcite-react/TopNav/TopNavTitle';
@@ -30,16 +31,16 @@ import TopNavLink from 'calcite-react/TopNav/TopNavLink';
 import Map from './esri/map/Map';
 import LoadScreen from './LoadScreen';
 import UserAccount from './UserAccount';
-import logo from '../styles/images/favicon.ico';
+import logo from '../styles/images/Logo.svg';
 import FilterComponent from './Filters';
 
 // Styled Components
 import styled from 'styled-components';
-
+import {Container as ContainerBS} from 'react-bootstrap/Container'
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100%;
   text-align: center;
@@ -57,7 +58,9 @@ const MapWrapper = styled.div`
 const Logo = styled(TopNavBrand)`
   justify-content: center;
   & img {
-    height: 55px;
+    width="30"
+    height="50"
+        className="align-top"
   },
   background-color: $light-blue;
 `;
@@ -85,13 +88,12 @@ class Main extends Component {
     return (
       <Container>
         <LoadScreen isLoading={this.props.mapLoaded} />
-
-
-        <Nav>
+        <Navbar expand="lg" bg="light" variant="dark" className="bg-light justify-content-between">
           <Logo href="#" src={logo} />
-          <TopNavTitle href="#">Water Sewer CIP</TopNavTitle>
           
-        <FilterComponent />
+            <TopNavTitle href="#">Water Sewer CIP</TopNavTitle>
+          
+          <FilterComponent></FilterComponent>
           <UserAccount
             user={this.props.auth.user}
             portal={this.props.auth.user ? this.props.auth.user.portal : null}
@@ -99,20 +101,12 @@ class Main extends Component {
             signIn={this.signIn}
             signOut={this.signOut}
           />
-          
-        </Nav>
+        </Navbar>
         <MapWrapper>
-
           <Map onMapLoaded={this.props.mapLoaded} onSetFeatures={this.props.setFeatures} onSetFilters={this.props.setFilter}
             mapConfig={this.props.config.mapConfig}
             is3DScene={false}
           />
-          {/* <SceneViewExample
-            onMapLoaded={this.props.mapLoaded}
-            mapConfig={this.props.config.sceneConfig}
-            is3DScene={true}
-          /> */}
-
         </MapWrapper>
       </Container>
     )

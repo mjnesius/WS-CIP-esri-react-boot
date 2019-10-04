@@ -26,6 +26,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as mapActions } from '../../../redux/reducers/map';
+import { actions as filterActions } from '../../../redux/reducers/filters';
 import {StoreContext} from '../../StoreContext';
 import {store} from '../../../index';
 // ESRI
@@ -50,22 +51,22 @@ const Container = styled.div`
 const containerID = "map-view-container";
 
 class Map extends Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      map:{
-        features: [{}],
-        loaded: Boolean,
-        selectedYear: "",
-        selectedStatus: "",
-        selectedManager: "",
-      },
-      featureLayer: {},
-      defExp:""
-    }
+  // constructor (props) {
+  //   super(props);
+  //   this.state = {
+  //     map:{
+  //       features: [{}],
+  //       loaded: Boolean,
+  //       selectedYear: "",
+  //       selectedStatus: "",
+  //       selectedManager: "",
+  //     },
+  //     featureLayer: {},
+  //     defExp:" "
+  //   }
     
     //this.updateFilter = this.updateFilter.bind(this);
-  }
+  //}
   componentDidMount() {
     this.startup(
       this.props.mapConfig,
@@ -76,7 +77,42 @@ class Map extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     // Tell React to never update this component, that's up to us
-    return false;
+    return true;
+  }
+  componentDidUpdate(featureLayer){
+    console.log(" this.props.defExp:   ", this.props.defExp);
+    this.view.whenLayerView(this.map.layers.getItemAt(0)).then(function(featureLayerView) {
+      featureLayerView.filter = {
+        where: this.props.defExp
+      };
+    });
+    // console.log(this.map.findLayerById("projects").then(function(lyr){
+    //   console.log(lyr.title);
+    //   console.log(lyr.id);
+    // }));
+    //console.log(this.map.findLayerById("projects").title);
+    console.log("# of layers: ", this.map.layers.length);
+    if(this.map.layers.length>0){
+      console.log("title of layer 1: ", this.map.layers.getItemAt(0).title);
+      
+    this.map.layers.getItemAt(0).definitionExpression = this.props.defExp;
+    }
+
+    //  var propValue;
+    //  for (var propName in this.map.layers) {
+    //    propValue = this.map.layers[propName]
+
+    //    console.log(propName, propValue);
+    //  }
+    // if(this.map.layers[0]){
+    //   this.map.layers[0].definitionExpression(this.props.defExp);
+    // }
+    // if(this.props.map.layers){
+    //   console.error("this.props.map.layers ");
+    // }else{
+    //   console.log("    skipped   ");
+    // }
+    
   }
 
   render() {
@@ -125,7 +161,8 @@ class Map extends Component {
         portalItem: { // autocasts as new PortalItem()
           id: "10c79e631ce84ca19e5cdb7bb118262b"
         },
-        title: "WaterSewerPM"
+        title: "WaterSewerPM",
+        id: "projects"
       });
       this.map.add(featureLayer);
 
@@ -156,28 +193,30 @@ class Map extends Component {
       this.view.ui.add(expandEditor, "top-right"); 
 
       //this.view.ui.add(FilterComponent, "center-right");
+      //console.log("this.defExp ? ", this.state.defExp ? this.state.defExp: "...");
 
       featureLayer.when(function() {
-        featureLayer.definitionExpression = createDefinitionExpression(this.defExp);
+        featureLayer.definitionExpression = createDefinitionExpression("");
         zoomToLayer(featureLayer);
         getFeatures(featureLayer);
         this.featureLayer = featureLayer;
+        //this.setState({ featureLayer: featureLayer});
       });
 
       function createDefinitionExpression(subExpression) {
-        console.log("SUB expression ", subExpression);
+        //console.log("SUB expression ", subExpression ? subExpression: "... ");
         //console.log("selectedStatus ", typeof this.props.selectedStatus);
          const baseExpression =
            "( 1=1 )";
          var _stat = typeof store.statuses !== 'undefined' ? store.selectedStatus : "";
-         console.log("_stat ", _stat);
+         //console.log("_stat ", _stat);
          var _yr =  store.selectedYear ? store.selectedYear : "";
          var _man = store.selectedManager ? store.selectedManager : "";
          subExpression = "Status Like '%" + _stat
              + "%' AND Project_Manager Like '%" +_man
              + "%' AND Proposed_Year Like '%" + _yr +"%'";
         
-        console.log("def expression ", baseExpression + " AND (" + subExpression +")")
+        //console.log("def expression ", baseExpression + " AND (" + subExpression +")")
         return subExpression ? baseExpression + " AND (" + subExpression +
           ")" : baseExpression;
       }
@@ -248,19 +287,22 @@ class Map extends Component {
   }
 }
 
+//this function defines which data from the redux store this connected component needs
 const mapStateToProps = state => ({
   config: state.config,
   map: state.map,
-  featureLayer: state.featureLayer,
-  selectedYear: state.map.selectedYear,
-  selectedStatus: state.map.selectedStatus,
-  selectedManager: state.map.selectedManager,
+  featureLayer: state.map.featureLayer,
+  defExp: state.filter.defExp,
+  selectedYear: state.filter.selectedYear,
+  selectedStatus: state.filter.selectedStatus,
+  selectedManager: state.filter.selectedManager,
 });
 
 const mapDispatchToProps = function (dispatch) {
   return bindActionCreators({
-    ...mapActions
+    ...mapActions, ...filterActions
   }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps, null, {context:StoreContext}) (Map);
+//export default connect(mapStateToProps, mapDispatchToProps) (Map);

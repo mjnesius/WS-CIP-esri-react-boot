@@ -37,12 +37,15 @@ export default (state = initialState, action) => {
       };
     case types.SET_FEATURES:
       //console.log("set features: " + JSON.stringify(action.payload));
+      var _stat = [...new Set(action.payload.features.map(feature => feature.attributes.Status ||"null"))];
+      var _years= [...new Set(action.payload.features.map(feature => feature.attributes.Proposed_Year || "null"))];
+      var _managers= [...new Set(action.payload.features.map(feature => feature.attributes.Project_Manager || "null"))];
       return {
         ...state,
         features: action.payload.features,
-        statuses: [...new Set(action.payload.features.map(feature => feature.attributes.Status ||"null"))],
-        years: [...new Set(action.payload.features.map(feature => feature.attributes.Proposed_Year || "null"))],
-        managers: [...new Set(action.payload.features.map(feature => feature.attributes.Project_Manager || "null"))]
+        statuses: _stat.sort(),
+        years: _years.sort(),
+        managers: _managers.sort()
       };
     case types.APPLY_FILTER:
       console.log("apply filter: " + JSON.stringify(action.payload));
