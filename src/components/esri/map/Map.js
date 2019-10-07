@@ -20,7 +20,7 @@
 
 // React
 import React, { Component } from 'react';
-//import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom';
 
 // Redux
 import { connect } from 'react-redux';
@@ -35,6 +35,7 @@ import { createView } from '../../../utils/esriHelper';
 
 // Styled Components
 import styled from 'styled-components';
+import Button from 'react-bootstrap/Button'
 //import { stat } from 'fs';
 //import yargs from 'yargs';
 //import PencilSquare16 from '@esri/calcite-ui-icons';
@@ -46,6 +47,16 @@ const Container = styled.div`
   height: 100%;
   width: 100%;
 `;
+
+const SVG =({
+  style = {},
+  fill = '#fff',
+  width = '100%',
+  className = 'svg-icon-light-blue',
+  height = '100%',
+  viewBox = '0 0 16 16',
+}) =><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" className="svg-icon-light-blue"><path d="M2 2v26h30V2H2zm14 7.999h6V14h-6V9.999zM16 16h6v4h-6v-4zm-2 10H4v-4h10v4zm0-6H4v-4h10v4zm0-6H4V9.999h10V14zm2 12v-4h6v4h-6zm14 0h-6v-4h6v4zm0-6h-6v-4h6v4zm0-6h-6V9.999h6V14z"/></svg>
+
 
 // Variables
 const containerID = "map-view-container";
@@ -191,6 +202,12 @@ class Map extends Component {
       });
       
       this.view.ui.add(expandEditor, "top-right"); 
+      const butt = <Button as="div" size="sm" variant="outline-info" onClick={() => this.props.toggleAttributes()}><SVG className="svg-icon-light-blue" /> </Button>;
+
+      var btn = document.createElement("div");
+      btn.setAttribute("id", "projectAttributes");
+      this.view.ui.add(btn, "top-right");
+      ReactDOM.render(butt, document.getElementById("projectAttributes"));
 
       //this.view.ui.add(FilterComponent, "center-right");
       //console.log("this.defExp ? ", this.state.defExp ? this.state.defExp: "...");

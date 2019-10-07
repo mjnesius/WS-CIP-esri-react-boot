@@ -14,7 +14,8 @@ export const types = {
   MAP_LOADED: "MAP_LOADED",
   SET_FEATURES: "SET_FEATURES",
   SET_FILTER: "SET_FILTER",
-  APPLY_FILTER: "APPLY_FILTER"
+  APPLY_FILTER: "APPLY_FILTER",
+  TOGGLE_ATTRIBUTES:"TOGGLE_ATTRIBUTES"
 };
 
 // REDUCERS //
@@ -53,6 +54,12 @@ export default (state = initialState, action) => {
         ...state,
         //filter: "OBJECTID > 0 & " + action.payload
       };
+    case types.TOGGLE_ATTRIBUTES:
+      console.log("TOGGLE_ATTRIBUTES: " + JSON.stringify(action.payload));
+      return {
+        ...state,
+        attributesComponent: !state.attributesComponent
+      };
 
     default:
       return state;
@@ -82,5 +89,9 @@ export const actions = {
     payload: {
       filter
     }
+  }),
+  toggleAttributes: () => ({
+    type: types.TOGGLE_ATTRIBUTES,
+    payload: {}
   })
 };
