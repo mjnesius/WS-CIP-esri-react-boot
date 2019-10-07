@@ -11,11 +11,14 @@
 
 // React
 import React, { Component } from 'react';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 // Components
 import Loader from 'calcite-react/Loader';
 import background from '../styles/images/Topo-Abs-BG.svg';
-import logo from '../styles/images/Esri-React-Logo.svg';
+//import logo from '../styles/images/Esri-React-Logo.svg';
+import logo from '../styles/images/Logo.svg';
 
 // Styled Components
 import styled, { keyframes } from 'styled-components';
@@ -47,30 +50,44 @@ const Wrapper = styled.div`
   left: 50%;
   transform: translate(-50%);
 `;
+// position: absolute;
+//   right: 0;
+//   bottom: 0;
 
+//   display: flex;
+//   align-items: center;
+//   justify-content: flex-end;
 const Title = styled.div `
-  position: absolute;
-  right: 0;
-  bottom: 0;
   z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
   width: 100%;
   padding: 2em;
   text-align: right;
   color: white;
+  float: none;
+  margin: 0 auto;
 `;
-
+// display: 'flex';
+//   justifyContent: 'center'
 const Label = styled.h1 `
   font-size: 3em;
   text-shadow: -2px 2px 8px rgba(0,0,0,0.25);
+  float: none;
+  margin: 0 auto;
+  align-items:center;
+  align-content: center
 `;
 
+
+// margin-right: 1em;
+// display: 'flex';
+// justifyContent: 'center'
 const Logo = styled.img `
-  width: 5em;
+  width: 15em;
   height: 100%;
-  margin-right: 1em;
+  float: none;
+  margin: 0 auto;
+  align-items:center;
+  align-content: flex-end
 `;
 
 // Animation durations in millisecondss -- Change these to adjust animation
@@ -101,12 +118,18 @@ class LoadScreen extends Component {
       return (
         <Container>
           <Wrapper>
-            <Loader/>
+            <Loader />
           </Wrapper>
-          <Title>
-            <Logo src={logo}></Logo>
-            <Label>Esri-React-Boot</Label>
-          </Title>
+          <Row></Row>
+          <Row className="show-grid">
+            <Col xs={7}>
+              <Title>
+              <Logo src={logo} ></Logo>
+              <Label>Water-Sewer CIP</Label>
+            </Title>
+            </Col>
+            
+          </Row>
         </Container>
       )
     } else if (this.props.isLoading && this.state.isAnimating) {

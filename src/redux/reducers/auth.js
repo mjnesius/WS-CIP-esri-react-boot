@@ -8,6 +8,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.​
+import myConfig from '../../config';
 
 // ACTION TYPES //
 export const types = {
@@ -49,19 +50,19 @@ export default (state = initialState, action) => {
   }
 }
 
-// ACTIONS //
+// ACTION CREATORS //
 export const actions = {
   checkAuth: (url) => ({
     type: types.AUTH_CHECK,
     payload: {
-      portalUrl: url,
+      portalUrl: myConfig.portalUrl //url,
     }
   }),
 
   logout: (url) => ({
     type: types.LOGOUT,
     payload: {
-      portalUrl: url,
+      portalUrl: myConfig.portalUrl //url,
     }
   }),
 }

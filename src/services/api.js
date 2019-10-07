@@ -18,7 +18,7 @@ import { makeRequest } from "./request";
 export function getAppConfig() {
   return new Promise((resolve, reject) => {
     makeRequest({
-      url: `/config.json`,
+      url: `http://tipdbt2/WaterSewerProjects/static/config.json`,
       method: "get"
     }).then(resp => resolve(resp));
   });
@@ -28,6 +28,24 @@ export function logout(portalUrl) {
   return new Promise((resolve, reject) => {
     makeRequest({
       url: `${portalUrl}/sharing/rest/oauth2/signout`,
+      handleAs: "text"
+    }).then(resp => resolve(resp), error => reject(error));
+  });
+}
+
+export function getFeatures(FeatureUrl) {
+  return new Promise((resolve, reject) => {
+    makeRequest({
+      url: `${FeatureUrl}/0/query?`,
+      handleAs: "text"
+    }).then(resp => resolve(resp), error => reject(error));
+  });
+}
+
+export function setFilter(FeatureUrl) {
+  return new Promise((resolve, reject) => {
+    makeRequest({
+      url: `${FeatureUrl}/0/query?`,
       handleAs: "text"
     }).then(resp => resolve(resp), error => reject(error));
   });

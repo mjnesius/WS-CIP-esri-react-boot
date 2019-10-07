@@ -33,7 +33,7 @@ export default (state = initialState, action) => {
   }
 };
 
-// ACTIONS //
+// ACTION CREATOR //
 export const actions = {
   fetchConfig: () => ({ type: types.CONFIG_FETCH })
 };

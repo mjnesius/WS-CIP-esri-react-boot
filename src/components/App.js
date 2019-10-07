@@ -17,6 +17,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as authActions } from '../redux/reducers/auth';
 import { actions as configActions } from '../redux/reducers/config';
+import{StoreContext} from "./StoreContext";
 
 // Components
 import AuthManager from './esri/auth/AuthManager';
@@ -36,6 +37,7 @@ class App extends Component {
       this.props.config.loaded !== prevProps.config.loaded)
     {
       // Attach the AuthManager to the window, it doesn't need to be rendered
+      console.log(this.props.config.portalUrl);
       window.authManager = new AuthManager(
         this.props.config.appId,
         this.props.config.portalUrl,
@@ -79,4 +81,4 @@ const mapDispatchToProps = function (dispatch) {
   }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default connect(mapStateToProps, mapDispatchToProps, null, {context:StoreContext})(App)

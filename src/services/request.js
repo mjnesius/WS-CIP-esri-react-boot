@@ -13,7 +13,11 @@ function status(response) {
   if (response.status >= 200 && response.status < 300) {
     return Promise.resolve(response);
   } else {
-    return Promise.reject(new Error(response.statusText));
+    console.log(JSON.stringify(response));
+    console.log(response.statusText);
+    return Promise.reject(
+      new Error(response.statusText)
+    );
   }
 }
 
@@ -88,7 +92,7 @@ export function makeRequest(params) {
     } else {
       options.body = body;
     }
-
+    console.log(url, options);
     fetch(url, options)
       .then(status)
       .then(handleResponse.bind(null, params.handleAs))
@@ -101,6 +105,7 @@ export function makeRequest(params) {
         resolve(data);
       })
       .catch(function(error) {
+        console.log(JSON.stringify(error));
         reject(error);
       });
   });
