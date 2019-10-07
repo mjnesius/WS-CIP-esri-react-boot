@@ -18,7 +18,7 @@ import { makeRequest } from "./request";
 export function getAppConfig() {
   return new Promise((resolve, reject) => {
     makeRequest({
-      url: `/config.json`,
+      url: `http://tipdbt2/WaterSewerProjects/static/config.json`,
       method: "get"
     }).then(resp => resolve(resp));
   });

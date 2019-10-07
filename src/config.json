@@ -1,0 +1,39 @@
+{
+  "appVersion": "0.0.1",
+
+  "apiUrl": "api",
+  "loginUrl": "api/auth/arcgis",
+  "logoutUrl": "api/logout",
+  "jsapiUrl": "https://js.arcgis.com/4.12/",
+  "jsapiV4": true,
+  "loginWithPopup": false,
+
+  "portalUrl": "https://tlcgis.maps.arcgis.com",
+  "appId": "hkdtqXBMmZ8JJ5tD",
+
+
+  "mapConfig": {
+    "basemap": "streets",
+    "zoom": 4,
+    "center": [40, -80]
+  },
+
+  "webMapConfig": {
+    "id": "298570bdb8e946a1b7969bdebc3f4e6e",
+    "extent": {
+      "xmin":-9393366,
+      "ymin":3550322,
+      "xmax":-9354817,
+      "ymax":3579250,
+      "spatialReference": 102100
+    }
+  },
+
+  "sceneConfig": {
+    "basemap": "dark-gray-vector"
+  },
+
+  "featureURLs": [
+    "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/arcgis/rest/services/WaterSewerPM/FeatureServer"
+  ]
+}

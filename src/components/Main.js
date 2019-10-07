@@ -27,8 +27,8 @@ import Row from 'react-bootstrap/Row';
 import TopNav from 'calcite-react/TopNav';
 import TopNavBrand from 'calcite-react/TopNav/TopNavBrand';
 import TopNavTitle from 'calcite-react/TopNav/TopNavTitle';
-import TopNavList from 'calcite-react/TopNav/TopNavList';
-import TopNavLink from 'calcite-react/TopNav/TopNavLink';
+//import TopNavList from 'calcite-react/TopNav/TopNavList';
+//import TopNavLink from 'calcite-react/TopNav/TopNavLink';
 //import SceneViewExample from './esri/map/SceneViewExample';
 import Map from './esri/map/Map';
 import LoadScreen from './LoadScreen';
@@ -38,7 +38,7 @@ import FilterComponent from './Filters';
 
 // Styled Components
 import styled from 'styled-components';
-import {Container as ContainerBS} from 'react-bootstrap/Container'
+//import {Container as ContainerBS} from 'react-bootstrap/Container'
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -67,12 +67,12 @@ const Logo = styled(TopNavBrand)`
   background-color: $light-blue;
 `;
 //background-color: ${props => props.theme.palette.offWhite};
-const Nav = styled(TopNav)`
+// const Nav = styled(TopNav)`
   
-background-color: $light-blue;
+// background-color: $light-blue;
 
-  z-index: 5
-`;
+//   z-index: 5
+// `;
 
 
 
@@ -98,7 +98,7 @@ class Main extends Component {
           </Navbar>
           </Col>
 
-          <Col className="text-align-between" >
+          <Col lg={true} className="text-align-between" >
           <FilterComponent/>
           </Col>
           <Col lg={2}>

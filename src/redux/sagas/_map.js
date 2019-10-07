@@ -1,24 +1,24 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { getFeatures, setFilter } from '../../services/api';
+import { setFilter } from '../../services/api'; //getFeatures,
 import { types as mapActions } from '../reducers/map';
 
 // Worker Saga: gets fired with SET_FEATURES // note: uses generator functions (special iterator functions, execute until they reach 'yield'
-function* fetchFeatures (action) {
-    try {
-        console.log("-map.js fetchFeatures(): "+ JSON.stringify(action))
-        // call API to fetch config
-        const features = yield call(getFeatures);
+// function* fetchFeatures (action) {
+//     try {
+//         console.log("-map.js fetchFeatures(): "+ JSON.stringify(action))
+//         // call API to fetch config
+//         const features = yield call(getFeatures);
 
-        // Put config in store
-        yield put({
-            type: mapActions.SET_FEATURES,
-            payload: features
-        });
+//         // Put config in store
+//         yield put({
+//             type: mapActions.SET_FEATURES,
+//             payload: features
+//         });
 
-    } catch (e) {
-        console.log('SAGA ERROR: map/fetchFeatures, ', e);
-    }
-}
+//     } catch (e) {
+//         console.log('SAGA ERROR: map/fetchFeatures, ', e);
+//     }
+// }
 
 function* setFilters (action) {
     try {

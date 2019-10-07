@@ -37,6 +37,7 @@ class App extends Component {
       this.props.config.loaded !== prevProps.config.loaded)
     {
       // Attach the AuthManager to the window, it doesn't need to be rendered
+      console.log(this.props.config.portalUrl);
       window.authManager = new AuthManager(
         this.props.config.appId,
         this.props.config.portalUrl,

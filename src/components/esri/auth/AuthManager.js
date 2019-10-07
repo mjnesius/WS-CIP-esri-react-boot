@@ -13,7 +13,7 @@
 import { loadModules } from 'esri-loader';
 // Esri Helper Functions
 import { bootstrapJSAPI } from '../../../utils/esriHelper';
-
+import myConfig from '../../../config';
 /**
  * Class to help with Authentication
  * This is a non-rendered class that is usually attached to the window
@@ -22,10 +22,10 @@ import { bootstrapJSAPI } from '../../../utils/esriHelper';
 export default class AuthManager {
   constructor(appId, portalUrl, jsapiUrl, jsapiV4, loginWithPopup) {
     this.appId = appId;
-    this.portalUrl = portalUrl;
-    this.jsapiUrl = jsapiUrl;
-    this.jsapiV4 = jsapiV4;
-    this.loginWithPopup = loginWithPopup;
+    this.portalUrl = myConfig.portalUrl; //portalUrl;
+    this.jsapiUrl = myConfig.jsapiUrl; //jsapiUrl;
+    this.jsapiV4 = myConfig.jsapiV4; //jsapiV4;
+    this.loginWithPopup = myConfig.loginWithPopup; //loginWithPopup;
   }
 
   /**
@@ -42,6 +42,7 @@ export default class AuthManager {
             return resolve();
           }
           // If we need authentication then set up IDManager
+          console.log("startup() ==> createIDManager()")
           this.createIDManager().then(resolve());
         })
         .catch(err => {
@@ -68,12 +69,14 @@ export default class AuthManager {
           // if auth was persisted, just use that
           this.idManager.initialize(esriAuthID);
         } else {
-          this.idManager.useSignInPage = !this.loginWithPopup;
+          console.log("in createID Manager")
+          this.idManager.useSignInPage = false;//true;//!this.loginWithPopup;
           this.oAuthInfo = new OAuthInfo({
             appId: this.appId,
-            portalUrl: this.portalUrl,
-            popup: this.loginWithPopup
+            portalUrl: myConfig.portalUrl, //this.portalUrl,
+            popup: false//this.loginWithPopup
           });
+          console.log(JSON.stringify(this.oAuthInfo));
           this.idManager.registerOAuthInfos([this.oAuthInfo]);
         }
 
@@ -114,6 +117,7 @@ export default class AuthManager {
           }
 
           // use the aquired portal url to setup a new ID Manager and login
+          console.log("create ID Manager");
           this.createIDManager().then(() => {
             this.doLogin().then(user => resolve(user), error => reject(error));
           });
@@ -134,7 +138,7 @@ export default class AuthManager {
       }
 
       const sharingUrl = this.portalUrl + '/sharing';
-
+      console.log("sharing url: ", sharingUrl);
       this.idManager
         .checkSignInStatus(sharingUrl)
         .then(credential => {
@@ -154,7 +158,7 @@ export default class AuthManager {
   doLogin = () => {
     // we can store the portal url here so the browser rememebers us on refresh
     this.persistAuth();
-
+    console.log("doLogin()");
     return new Promise((resolve, reject) => {
       const sharingUrl = this.portalUrl + '/sharing';
 

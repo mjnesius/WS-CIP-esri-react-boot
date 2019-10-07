@@ -24,7 +24,7 @@ import { BrowserRouter, Route } from 'react-router-dom';
 // Components //
 import { homepage } from '../package.json';
 import App from './components/App';
-import FilterComponent from './components/Filters';
+//import FilterComponent from './components/Filters';
 // Styles //
 import CalciteThemeProvider from 'calcite-react/CalciteThemeProvider';
 import { GlobalStyle } from './styles/global';

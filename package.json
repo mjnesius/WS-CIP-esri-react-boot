@@ -2,7 +2,7 @@
   "name": "react-jsapi-app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/react-boot",
+  "homepage": "http://tipdbt2/WaterSewerProjects/",
   "dependencies": {
     "@esri/calcite-ui-icons": "^2.5.1",
     "bootstrap": "^4.3.1",
@@ -10,6 +10,7 @@
     "calcite-ui-icons-react": "^0.7.2",
     "classnames": "^2.2.6",
     "esri-loader": "^2.10.0",
+    "json": "^9.0.6",
     "react": "^16.9.0",
     "react-bootstrap": "^1.0.0-beta.12",
     "react-dom": "^16.9.0",

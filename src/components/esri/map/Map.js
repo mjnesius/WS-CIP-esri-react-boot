@@ -20,7 +20,7 @@
 
 // React
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+//import ReactDOM from 'react-dom';
 
 // Redux
 import { connect } from 'react-redux';
@@ -40,7 +40,7 @@ import styled from 'styled-components';
 //import PencilSquare16 from '@esri/calcite-ui-icons';
 //import { annotateTool24 } from "@esri/calcite-ui-icons";
 //import PencilSquareIcon from 'calcite-ui-icons-react/PencilSquareIcon';
-import FilterComponent from '../../Filters';
+//import FilterComponent from '../../Filters';
 
 const Container = styled.div`
   height: 100%;
