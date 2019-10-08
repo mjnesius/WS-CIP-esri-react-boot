@@ -47,8 +47,8 @@ class ProjectsTable extends React.Component {
     //     return <option key={key} value={e}>{e}</option>;
     // })}
     return (
-      <div>
-          <ReactTable columns={columns} data={this.props.projects}/>
+      <div className="overflow-y">
+          <ReactTable defaultPageSize={10} className="-striped -highlight" columns={columns} data={this.props.projects}/>
         {/* <ReactTable
           data={data}
           columns={[

@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 //import { Container, Row, Col} from 'react-bootstrap';
 //import { actions } from '../redux/reducers/map';
 // import Dropdown from 'react-bootstrap/Dropdown'
-import Button from 'react-bootstrap/Button'
+//import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import Nav from 'react-bootstrap/Nav'
 
@@ -28,6 +28,15 @@ const Container = styled.div`
   text-align: center;
   flex-grow: 2;
   justify-content: center;
+  overflow-y: auto;
+`;
+const Button = styled.button`
+  position: absolute; right: 0;
+  float: right;
+  text-align: right;
+  flex-grow: 2;
+  justify-content: right;
+  overflow-y: auto;
 `;
 
 
@@ -65,8 +74,12 @@ class AttributesPanel extends Component {
     if (this.props.isVisible) {
       console.log("project attributes component")
       return (
-        <Card>
-          <Card.Header> <Button bsStyle="danger" onClick={() => this.props.toggleAttributes()}>X</Button> 
+        <Container>
+          
+          <Nav.Item> </Nav.Item>
+           <Card>
+          <Card.Header> 
+          <Button variant="danger" onClick={() => this.props.toggleAttributes()}>X</Button> 
             <Nav variant="tabs" defaultActiveKey="projects_overview">
               <Nav.Item>
                 <Nav.Link href="#projects_overview" onClick={() => this._onSelect("projects_overview")}>Projects Overview</Nav.Link>
@@ -82,10 +95,15 @@ class AttributesPanel extends Component {
               </Nav.Item>
             </Nav>
           </Card.Header>
-          <Card.Body>
-            {this.state.card ==="projects_overview" && <ProjectsTable/>}
+          <Card.Body className="overflow-y">
+            <div className="overflow-y">
+              {this.state.card ==="projects_overview" && <ProjectsTable/>}
+            </div>
+            
           </Card.Body>
         </Card>
+        </Container>
+       
         // <Card Header={<Button>X</Button>}  bsStyle="danger">
         //   <Tabs defaultActiveKey="projects_overview" id="attribute-tabs" >
         //     <Tab eventKey="projects_overview" title="Projects Overview">
