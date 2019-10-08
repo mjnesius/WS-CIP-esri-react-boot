@@ -35,6 +35,7 @@ import LoadScreen from './LoadScreen';
 import UserAccount from './UserAccount';
 import logo from '../styles/images/Logo.svg';
 import FilterComponent from './Filters';
+import AttributesPanel from './AttributesPanel';
 
 // Styled Components
 import styled from 'styled-components';
@@ -116,7 +117,7 @@ class Main extends Component {
           </Col>
           
         </Row>
-        
+        <AttributesPanel/>
         <MapWrapper>
           <Map onMapLoaded={this.props.mapLoaded} onSetFeatures={this.props.setFeatures} onSetFilters={this.props.setFilter}
             mapConfig={this.props.config.mapConfig}

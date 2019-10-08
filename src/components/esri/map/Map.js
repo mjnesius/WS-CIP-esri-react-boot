@@ -102,11 +102,11 @@ class Map extends Component {
     //   console.log(lyr.id);
     // }));
     //console.log(this.map.findLayerById("projects").title);
-    console.log("# of layers: ", this.map.layers.length);
+    //console.log("# of layers: ", this.map.layers.length);
     if(this.map.layers.length>0){
-      console.log("title of layer 1: ", this.map.layers.getItemAt(0).title);
+      //console.log("title of layer 1: ", this.map.layers.getItemAt(0).title);
       
-    this.map.layers.getItemAt(0).definitionExpression = this.props.defExp;
+      this.map.layers.getItemAt(0).definitionExpression = this.props.defExp;
     }
 
     //  var propValue;
@@ -256,6 +256,9 @@ class Map extends Component {
           .then((response) => {
             var repObj = response.toJSON();
             this.props.onSetFeatures(repObj.features);
+            //console.log("fields");
+            //console.log(JSON.stringify(layer.fields));
+            this.props.setFields(layer.fields);
             //this.props.onSetFeatures(response.features.toJSON());
            // var myJSON = repObj.features;
             //console.log("getFeatures " + myJSON);
@@ -313,6 +316,7 @@ const mapStateToProps = state => ({
   selectedYear: state.filter.selectedYear,
   selectedStatus: state.filter.selectedStatus,
   selectedManager: state.filter.selectedManager,
+  fields: state.map.fields
 });
 
 const mapDispatchToProps = function (dispatch) {

@@ -20,24 +20,24 @@ import { types as mapActions } from '../reducers/map';
 //     }
 // }
 
-function* setFilters (action) {
-    try {
-        // call API apply filter
-        const features = yield call(setFilter);
+// function* setFilters (action) {
+//     try {
+//         // call API apply filter
+//         const features = yield call(setFilter);
 
-        // Put filtered features in store
-        yield put({
-            type: mapActions.SET_FEATURES,
-            payload: features
-        });
+//         // Put filtered features in store
+//         yield put({
+//             type: mapActions.SET_FEATURES,
+//             payload: features
+//         });
 
-    } catch (e) {
-        console.log('SAGA ERROR: map/setFilters, ', e);
-    }
-}
+//     } catch (e) {
+//         console.log('SAGA ERROR: map/setFilters, ', e);
+//     }
+// }
 
-// WATCHER: gets tied into Redux via createStore() using applyMiddleware() //
-export function* watchFetchFeatures() {
-    //yield takeLatest(mapActions.SET_FEATURES, fetchFeatures);
-    yield takeLatest(mapActions.APPLY_FILTER, setFilters);
-}
+// // WATCHER: gets tied into Redux via createStore() using applyMiddleware() //
+// export function* watchFetchFeatures() {
+//     //yield takeLatest(mapActions.SET_FEATURES, fetchFeatures);
+//     yield takeLatest(mapActions.APPLY_FILTER, setFilters);
+// }
