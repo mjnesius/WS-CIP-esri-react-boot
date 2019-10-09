@@ -28,7 +28,8 @@ export const initialState = {
   years:[],
   featureLayer:{},
   defExp: "",
-  fields:[{}]
+  fields:[{}],
+  domains: [{}]
 };
 
 export default (state = initialState, action) => {

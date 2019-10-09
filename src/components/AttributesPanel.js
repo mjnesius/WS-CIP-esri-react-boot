@@ -13,7 +13,7 @@ import Nav from 'react-bootstrap/Nav'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as filterActions } from '../redux/reducers/filters';
-
+import { actions as attributeActions } from '../redux/reducers/attributes';
 import { actions as mapActions } from '../redux/reducers/map';
 import{StoreContext} from "./StoreContext";
 
@@ -41,20 +41,20 @@ const Button = styled.button`
 
 
 class AttributesPanel extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      card: "projects_overview",
-  };
-    this._onSelect = this._onSelect.bind(this)
-  }
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     card: "projects_overview",
+  // };
+  //   this._onSelect = this._onSelect.bind(this)
+  // }
   
-  _onSelect(link) {
-    if(!(this.state.card === link)){
-      console.log(this.state.card, "   ", link)
-      this.setState( {card: link});
-    } 
-  }
+  // _onSelect(link) {
+  //   if(!(this.state.card === link)){
+  //     console.log(this.state.card, "   ", link)
+  //     this.props.setPanel(link);
+  //   } 
+  // }
   
   
   render() {
@@ -82,22 +82,22 @@ class AttributesPanel extends Component {
           <Button variant="danger" onClick={() => this.props.toggleAttributes()}>X</Button> 
             <Nav variant="tabs" defaultActiveKey="projects_overview">
               <Nav.Item>
-                <Nav.Link href="#projects_overview" onClick={() => this._onSelect("projects_overview")}>Projects Overview</Nav.Link>
+                <Nav.Link href="#projects_overview" onClick={() => this.props.setPanel("projects_overview")}>Projects Overview</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link href="#project_details" onClick={ () => this._onSelect("project_details")}>Project Details</Nav.Link>
+                <Nav.Link href="#project_details" onClick={ () => this.props.setPanel("project_details")}>Project Details</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link href="#contractors" onClick={ () => this._onSelect("contractors")}>Contractors</Nav.Link>
+                <Nav.Link href="#contractors" onClick={ () => this.props.setPanel("contractors")}>Contractors</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link href="#inspectors" onClick={() => this._onSelect("inspectors")}>Inspectors</Nav.Link>
+                <Nav.Link href="#inspectors" onClick={() => this.props.setPanel("inspectors")}>Inspectors</Nav.Link>
               </Nav.Item>
             </Nav>
           </Card.Header>
           <Card.Body className="overflow-y">
             <div className="overflow-y">
-              {this.state.card ==="projects_overview" && <ProjectsTable/>}
+              {this.props.card ==="projects_overview" && <ProjectsTable/>}
             </div>
             
           </Card.Body>
@@ -134,12 +134,13 @@ class AttributesPanel extends Component {
 
 const mapStateToProps = state => ({
   projects: state.map.features,
-  isVisible: state.map.attributesComponent
+  isVisible: state.map.attributesComponent,
+  card: state.attributes.card
 });
   
   const mapDispatchToProps = dispatch => {
     return bindActionCreators({
-      ...filterActions, ...mapActions
+      ...filterActions, ...mapActions, ...attributeActions
     }, dispatch);
   } 
 

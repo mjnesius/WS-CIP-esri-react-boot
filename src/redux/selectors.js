@@ -2,11 +2,12 @@
 import { createSelector } from 'reselect';
 
 
+//reshape state for the table components
 const parseFields = (state) => {
     var _fields =[];
     //console.log("parseFields\n",JSON.stringify(state.map.fields))
     var fldList = state.map.fields["fields"];
-    //console.log("fldList\n",JSON.stringify(fldList))
+    console.log("fldList\n",JSON.stringify(fldList))
     fldList.forEach((fld) => {
         var _fld = {};
         //console.log(typeof fld);
@@ -19,15 +20,19 @@ const parseFields = (state) => {
         _fields.push(_fld);
     })
     console.log(JSON.stringify(_fields));
-    return _fields
+    var visibleFields = ["Project_Name", "Project_Type", "Project_Location", "Project_Originator", "Project_Year", "WRE_ProjectNo", "Project_Manager",
+        "Const_Start_Date_NTP", "Const_End_Date", "Total_Cost"]
+    const _fieldsFiltered = _fields.filter(fld => visibleFields.indexOf(fld.name) > -1);
+    console.log(JSON.stringify(_fieldsFiltered));
+    return _fieldsFiltered
 }
 
-const parseProjects = (projects) => {
+const parseProjects = (state) => {
     var _data = [];
     //console.log("parseAttributes\n",JSON.stringify(this.props.projects))
     //var fldList = this.props.features["fields"];
     //console.log("fldList\n",JSON.stringify(fldList))
-    projects.forEach((prj) => {
+    state.map.features.forEach((prj) => {
         //console.log(typeof fld);
         //console.log( fld);
         //console.log( JSON.stringify(prj));
@@ -37,6 +42,31 @@ const parseProjects = (projects) => {
     return _data
 }
 
+const parseDomains = (state) => {
+    var _fieldsWithDomains =[];
+    state.map.fields['fields'].forEach((fld) => {
+        if (!(fld['domain'] === undefined || fld['domain'] === null)){
+          _fieldsWithDomains.push(fld['domain']);  
+        }
+        
+    })
+    console.log("_fieldsWithDomains\n\t",JSON.stringify(_fieldsWithDomains));
+    var _domains =[];
+    _fieldsWithDomains.forEach((d) =>{
+        var key = d.name.slice(0,-7);
+        const val = d.codedValues.map(function(cv) {
+            var _obj ={};
+            _obj[cv.name]= cv.code
+            return  _obj;
+        });
+        var obj = { };
+        obj[key]=val;
+        _domains.push(obj);
+    })
+    // [{"domain name": ["values"]}]
+    console.log(JSON.stringify(_domains));
+    return _domains
+}
 // fields array of obj
 /* [{"alias":"OBJECTID","defaultValue":null,"editable":false,"length":-1,"name":"OBJECTID","nullable":false,"type":"esriFieldTypeOID"},
     {"alias":"MapID","defaultValue":null,"editable":true,"length":50,"name":"MapID","nullable":true,"type":"esriFieldTypeString"},
@@ -66,4 +96,9 @@ export const getColumnsFromFields = (state) => createSelector(
 export const parseProjectData = (state) => createSelector(
     [parseProjects], (projects) =>
     projects || []
+)(state)
+
+export const parseDomainValues = (state) => createSelector(
+    [parseDomains], (fields) =>
+    fields || []
 )(state)

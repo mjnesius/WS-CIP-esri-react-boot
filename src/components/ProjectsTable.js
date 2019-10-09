@@ -2,10 +2,10 @@ import React from "react";
 import { render } from "react-dom";
 
 import { bindActionCreators } from 'redux';
-import { actions as filterActions } from '../redux/reducers/filters';
+import { actions as attributeActions } from '../redux/reducers/attributes';
 import{StoreContext} from "./StoreContext";
 import { connect } from 'react-redux';
-import {getColumnsFromFields, parseProjectData} from '../redux/selectors';
+import {getColumnsFromFields, parseProjectData, parseDomainValues} from '../redux/selectors';
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
@@ -39,16 +39,43 @@ class ProjectsTable extends React.Component {
   render() {
     //const { data } = this.state;
     const columns = this.props.fields.map((fld) => {
-        return {Header: fld.name, Cell: this.renderEditable, id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: true}
+      console.log(fld.name.length);
+        
+      return {Header: fld.name,  Cell: this.renderEditable, id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: true}
     })
     
-    //console.log( "data\n\t", JSON.stringify(data));
+    console.log( "columns\n\t", JSON.stringify(columns));
     //{this.props.optionsStatus.map((e, key) => {
     //     return <option key={key} value={e}>{e}</option>;
     // })}
     return (
       <div className="overflow-y">
-          <ReactTable defaultPageSize={10} className="-striped -highlight" columns={columns} data={this.props.projects}/>
+          <ReactTable defaultPageSize={15} className="-striped -highlight" columns={columns} data={this.props.projects}
+          defaultFilterMethod = {(filter, row, column) => {
+            const id = filter.pivotId || filter.id
+            return row[id] !== undefined ? String(row[id]).toUpperCase().indexOf(String(filter.value).toUpperCase()) > -1: true}
+          }
+          getTdProps={(state, rowInfo, column, instance) => {
+            return {
+              onDoubleClick: (e, handleOriginal) => {
+                console.log('A Td Element was double clicked!')
+                console.log('it produced this event:', e)
+                console.log('It was in this column:', column)
+                console.log('It was in this row:', rowInfo)
+                console.log('It was in this table instance:', instance)
+                this.props.setPanel("project_details")
+                // IMPORTANT! React-Table uses onClick internally to trigger
+                // events like expanding SubComponents and pivots.
+                // By default a custom 'onClick' handler will override this functionality.
+                // If you want to fire the original onClick handler, call the
+                // 'handleOriginal' function.
+                if (handleOriginal) {
+                  handleOriginal()
+                }
+              }
+            }
+          }}
+          />
         {/* <ReactTable
           data={data}
           columns={[
@@ -85,13 +112,14 @@ class ProjectsTable extends React.Component {
 // selector functions to reshape the state
 const mapStateToProps = state => ({
     fields: getColumnsFromFields(state),
-    projects: parseProjectData(state.map.features),
-    isVisible: state.map.attributesComponent
+    projects: parseProjectData(state),
+    isVisible: state.map.attributesComponent,
+    domains: parseDomainValues(state)
   });
     
     const mapDispatchToProps = dispatch => {
       return bindActionCreators({
-        ...filterActions
+        ...attributeActions
       }, dispatch);
     } 
   
