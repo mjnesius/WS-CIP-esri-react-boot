@@ -1,11 +1,13 @@
 import React from "react";
-import { render } from "react-dom";
 
+//redux
 import { bindActionCreators } from 'redux';
 import { actions as attributeActions } from '../redux/reducers/attributes';
+import { actions as mapActions } from '../redux/reducers/map';
 import{StoreContext} from "./StoreContext";
 import { connect } from 'react-redux';
 import {getColumnsFromFields, parseProjectData, parseDomainValues} from '../redux/selectors';
+
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
@@ -50,7 +52,7 @@ class ProjectsTable extends React.Component {
     // })}
     return (
       <div className="overflow-y">
-          <ReactTable defaultPageSize={15} className="-striped -highlight" columns={columns} data={this.props.projects}
+          <ReactTable defaultPageSize={10} className="-striped -highlight" columns={columns} data={this.props.projects}
           defaultFilterMethod = {(filter, row, column) => {
             const id = filter.pivotId || filter.id
             return row[id] !== undefined ? String(row[id]).toUpperCase().indexOf(String(filter.value).toUpperCase()) > -1: true}
@@ -59,10 +61,11 @@ class ProjectsTable extends React.Component {
             return {
               onDoubleClick: (e, handleOriginal) => {
                 console.log('A Td Element was double clicked!')
-                console.log('it produced this event:', e)
-                console.log('It was in this column:', column)
+                //console.log('it produced this event:', e)
+                //console.log('It was in this column:', column)
                 console.log('It was in this row:', rowInfo)
-                console.log('It was in this table instance:', instance)
+                //console.log('It was in this table instance:', instance)
+                this.props.selectFeature(rowInfo.original);
                 this.props.setPanel("project_details")
                 // IMPORTANT! React-Table uses onClick internally to trigger
                 // events like expanding SubComponents and pivots.
@@ -119,7 +122,7 @@ const mapStateToProps = state => ({
     
     const mapDispatchToProps = dispatch => {
       return bindActionCreators({
-        ...attributeActions
+        ...attributeActions, ...mapActions
       }, dispatch);
     } 
   

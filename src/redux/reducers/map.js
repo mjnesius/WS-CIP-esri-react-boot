@@ -16,7 +16,8 @@ export const types = {
   SET_FILTER: "SET_FILTER",
   APPLY_FILTER: "APPLY_FILTER",
   TOGGLE_ATTRIBUTES: "TOGGLE_ATTRIBUTES",
-  SET_FIELDS: "SET_FIELDS"
+  SET_FIELDS: "SET_FIELDS",
+  SELECT_FEATURE: "SELECT_FEATURE"
 };
 
 // REDUCERS //
@@ -29,7 +30,8 @@ export const initialState = {
   featureLayer:{},
   defExp: "",
   fields:[{}],
-  domains: [{}]
+  domains: [{}],
+  selectedFeature:{}
 };
 
 export default (state = initialState, action) => {
@@ -69,7 +71,21 @@ export default (state = initialState, action) => {
         ...state,
         attributesComponent: !state.attributesComponent
       };
-
+    case types.SELECT_FEATURE:
+      console.log("SELECT_FEATURE: " + JSON.stringify(action.payload));
+      if (action.payload['feature'] !== undefined && action.payload['feature'] !== null){
+        return {
+          ...state,
+          selectedFeature: action.payload['feature']
+        };
+      }
+      else {
+        return {
+          ...state,
+          selectedFeature: action.payload
+        };
+      }
+        
     default:
       return state;
   }
@@ -85,6 +101,12 @@ export const actions = {
     type: types.SET_FEATURES,
     payload: {
       features
+    }
+  }),
+  selectFeature: feature => ({
+    type: types.SELECT_FEATURE,
+    payload: {
+      feature
     }
   }),
   setFields: fields => ({

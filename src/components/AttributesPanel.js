@@ -8,6 +8,8 @@ import React, { Component } from 'react';
 //import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 import Nav from 'react-bootstrap/Nav'
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
 // Redux
 import { connect } from 'react-redux';
@@ -18,7 +20,8 @@ import { actions as mapActions } from '../redux/reducers/map';
 import{StoreContext} from "./StoreContext";
 
 //  Components
-import ProjectsTable from './ProjectsTable'
+import ProjectsTable from './ProjectsTable';
+import ProjectDetails from './ProjectDetails'
 import styled from 'styled-components';
 const Container = styled.div`
   display: inline-flex;
@@ -75,54 +78,38 @@ class AttributesPanel extends Component {
       console.log("project attributes component")
       return (
         <Container>
-          
-          <Nav.Item> </Nav.Item>
-           <Card>
-          <Card.Header> 
+        <Row style={{flex: 3}}>
+          <Col style={{flex: 3}}>
+          <Card > 
+          <Card.Header className="bg-light m-1 p-1 mx-auto" > 
           <Button variant="danger" onClick={() => this.props.toggleAttributes()}>X</Button> 
             <Nav variant="tabs" defaultActiveKey="projects_overview">
               <Nav.Item>
-                <Nav.Link href="#projects_overview" onClick={() => this.props.setPanel("projects_overview")}>Projects Overview</Nav.Link>
+                <Nav.Link onClick={() => this.props.setPanel("projects_overview")}>Projects Overview</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link href="#project_details" onClick={ () => this.props.setPanel("project_details")}>Project Details</Nav.Link>
+                <Nav.Link onClick={ () => this.props.setPanel("project_details")}>Project Details</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link href="#contractors" onClick={ () => this.props.setPanel("contractors")}>Contractors</Nav.Link>
+                <Nav.Link onClick={ () => this.props.setPanel("contractors")}>Contractors</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link href="#inspectors" onClick={() => this.props.setPanel("inspectors")}>Inspectors</Nav.Link>
+                <Nav.Link onClick={() => this.props.setPanel("inspectors")}>Inspectors</Nav.Link>
               </Nav.Item>
             </Nav>
           </Card.Header>
-          <Card.Body className="overflow-y">
-            <div className="overflow-y">
+          <Card.Body className="overflow-y" style={{flex: 4}}>
+            <div className="overflow-y" style={{flex: 5}}>
               {this.props.card ==="projects_overview" && <ProjectsTable/>}
+              {this.props.card ==="project_details" && <ProjectDetails/>}
             </div>
             
           </Card.Body>
         </Card>
-        </Container>
-       
-        // <Card Header={<Button>X</Button>}  bsStyle="danger">
-        //   <Tabs defaultActiveKey="projects_overview" id="attribute-tabs" >
-        //     <Tab eventKey="projects_overview" title="Projects Overview">
-        //       <ProjectsTable/>
-        //     </Tab>
-        //     <Tab eventKey="project_details" title="Project Details">
-              
-        //     </Tab>
-        //     <Tab eventKey="contractors" title="Contractors">
-
-        //     </Tab>
-        //     <Tab eventKey="inspectors" title="Inspectors">
-
-        //     </Tab>
-        //   </Tabs>
-        // </Card>
+          </Col>
           
-             
-        
+        </Row>
+        </Container>
       );
     }
     else{
