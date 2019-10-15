@@ -76,28 +76,41 @@ export function makeRequest(params) {
     let url = params.url;
     const data = params.data || {};
     const headers = getHeaders(params.isFormData);
+    console.log("headers\t", JSON.stringify(headers));
+    headers['Authorization'] =`token ${params.token}`;
+    console.log("\t2. headers\t", JSON.stringify(headers));
     const options = {
       method: params.method || "get",
       headers
     };
 
+    
     if (!params.hideCredentials) {
       options.credentials = "include";
     }
-
-    let body = getRequestBody(data, params.isFormData);
-
-    if (options.method === "get") {
-      url = `${url}?${body}`;
-    } else {
-      options.body = body;
+    var body ={};
+    //body['token']=params.token;
+    if (params.features) {
+      body['features']=params.features
+      options.body = JSON.stringify(body);
+    } else{
+      body = getRequestBody(data, params.isFormData);
+      if (options.method === "get") {
+        url = `${url}?${body}`;
+      } else {
+        options.body = body;
+      }
     }
-    console.log(url, options);
+    options['token']=params.token;
+    options['authMode']="immediate";
+    console.log("url \t", url,"\n\t options", options);
+    //fetch(url, options)
     fetch(url, options)
       .then(status)
       .then(handleResponse.bind(null, params.handleAs))
       .then(function(data) {
         // Handle successful requests that are actually errors...
+        console.log("fetch() handle response\n\t", JSON.stringify(data));
         if (data.error) {
           reject(data.error);
           return;
@@ -105,7 +118,7 @@ export function makeRequest(params) {
         resolve(data);
       })
       .catch(function(error) {
-        console.log(JSON.stringify(error));
+        console.log("makeRequest error\n\t", JSON.stringify(error));
         reject(error);
       });
   });

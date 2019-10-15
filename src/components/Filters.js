@@ -20,12 +20,8 @@ import{StoreContext} from "./StoreContext";
 // Styled Components
 import styled from 'styled-components';
 const Container = styled.div`
-  display: inline-flex;
-  flex-direction: rtl;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  flex-grow: 2;
+  display: flex;
+  align-items: center;
   justify-content: center;
 `;
 
@@ -71,7 +67,7 @@ class FilterComponent extends Component {
       console.log("filter component with drop downs")
       return (
         <Container>
-          <Row  className="text-align-center" lg="auto">
+          <Row lg="auto" >
             <Col >
               <Form inline>
                 <Form.Label column xs="5" md="1">Filter</Form.Label>

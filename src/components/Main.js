@@ -35,6 +35,7 @@ import LoadScreen from './LoadScreen';
 import UserAccount from './UserAccount';
 import logo from '../styles/images/Logo.svg';
 import FilterComponent from './Filters';
+import AttributesPanel from './AttributesPanel';
 
 // Styled Components
 import styled from 'styled-components';
@@ -88,35 +89,39 @@ class Main extends Component {
 
   render() {
     return (
-      <Container>
+      <Container className="bg-light m-0 p-0">
         <LoadScreen isLoading={this.props.mapLoaded} />
-        <Row className="bg-light">
-          <Col lg={3}>
-          <Navbar bg="light" variant="dark" className="bg-light">
-          <Logo href="#" src={logo} />
-          <TopNavTitle href="#">Water Sewer CIP</TopNavTitle>
+        <Row className="bg-light m-0 mb-n1 p-0">
+          <Col lg={3} className="bg-light m-0 mt-1 p-0 mx-auto">
+          <Navbar expand="lg" bg="light" variant="dark" className="bg-light m-0 mt-2 p-0">
+          <Logo  className="bg-light m-0 p-0 mx-auto" href="#" src={logo} />
+          <TopNavTitle  className="bg-light m-0 p-0 mx-auto" href="#">Water Sewer CIP</TopNavTitle>
           </Navbar>
           </Col>
 
-          <Col lg={true} className="text-align-between" >
+          <Col lg={true} className="bg-light m-0 mt-2 p-0 mx-auto" >
           <FilterComponent/>
           </Col>
-          <Col lg={2}>
+          <Col lg={2} className="bg-light m-0 p-0 mx-auto">
             
+            <Navbar expand="lg" className="bg-light m-0 mt-0 p-0">
+              <Navbar.Collapse id="basic-navbar-nav">
+                <UserAccount  
+                  user={this.props.auth.user}
+                  portal={this.props.auth.user ? this.props.auth.user.portal : null}
+                  loggedIn={this.props.auth.loggedIn}
+                  signIn={this.signIn}
+                  signOut={this.signOut}>
+                </UserAccount>
+              </Navbar.Collapse>
+            </Navbar>
           
-          <UserAccount
-            user={this.props.auth.user}
-            portal={this.props.auth.user ? this.props.auth.user.portal : null}
-            loggedIn={this.props.auth.loggedIn}
-            signIn={this.signIn}
-            signOut={this.signOut}
-          />
           
         
           </Col>
           
         </Row>
-        
+        <AttributesPanel/>
         <MapWrapper>
           <Map onMapLoaded={this.props.mapLoaded} onSetFeatures={this.props.setFeatures} onSetFilters={this.props.setFilter}
             mapConfig={this.props.config.mapConfig}

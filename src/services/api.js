@@ -14,6 +14,7 @@
  */
 
 import { makeRequest } from "./request";
+import { updateFeatures as updateFeatureLayer} from "@esri/arcgis-rest-feature-layer";
 
 export function getAppConfig() {
   return new Promise((resolve, reject) => {
@@ -33,20 +34,36 @@ export function logout(portalUrl) {
   });
 }
 
-export function getFeatures(FeatureUrl) {
-  return new Promise((resolve, reject) => {
-    makeRequest({
-      url: `${FeatureUrl}/0/query?`,
-      handleAs: "text"
-    }).then(resp => resolve(resp), error => reject(error));
-  });
-}
+/**
+ * Make a request using fetch()
+ * @param  { Object } params Object containing key/value parameters to pass to fetch()
+ * @return { Promise}        Promise returned by fetch()
+ */
 
-export function setFilter(FeatureUrl) {
-  return new Promise((resolve, reject) => {
-    makeRequest({
-      url: `${FeatureUrl}/0/query?`,
-      handleAs: "text"
+ // @_data param,  pass in the features obj from state filtered based on the OBJECTID being updated
+export function updateFeatures(FeatureUrl, _data) {
+  console.log("\n\tupdateFeatures()\t FeatureUrl", FeatureUrl, "\l\t_data\t", _data);
+  let persistObj = JSON.parse(localStorage.getItem('esri_auth_id'));
+  console.log("\n\persistObj\t ", persistObj);
+  let credObj = persistObj['credentials'][0];
+  let tokenObj = credObj['token'];
+  //let featureObj = {};
+  //featureObj['features'] = _data
+  return new Promise ((resolve, reject) => {
+    updateFeatureLayer({
+      url: `${FeatureUrl}/0/updateFeatures?&token=${tokenObj}`,
+      features: _data,
+      httpMethod: "POST"
     }).then(resp => resolve(resp), error => reject(error));
-  });
+  })
+  // return new Promise((resolve, reject) => {
+  //   //?token=${tokenObj}&
+  //   makeRequest({
+  //     url: `${FeatureUrl}/0/updateFeatures?&token=${tokenObj}`,
+  //     handleAs: "text",
+  //     method: "post",
+  //     features: _data,
+  //     isFormData: true
+  //   }).then(resp => resolve(resp), error => reject(error));
+  // });
 }

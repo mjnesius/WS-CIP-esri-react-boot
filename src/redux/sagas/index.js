@@ -18,12 +18,13 @@ import { all, fork } from 'redux-saga/effects';
 import * as authSagas from './_auth';
 import * as configSagas from './_config';
 import * as mapSagas from './_map';
-
+import * as attSagas from './_attributes';
 export default function* rootSaga() {
   yield all([
     ...Object.values(authSagas),
     ...Object.values(configSagas),
-    ...Object.values(mapSagas)
+    ...Object.values(mapSagas),
+    ...Object.values(attSagas)
     // more sagas from different files
   ].map(fork));
 }

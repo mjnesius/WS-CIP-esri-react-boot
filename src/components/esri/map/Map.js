@@ -42,6 +42,7 @@ import Button from 'react-bootstrap/Button'
 //import { annotateTool24 } from "@esri/calcite-ui-icons";
 //import PencilSquareIcon from 'calcite-ui-icons-react/PencilSquareIcon';
 //import FilterComponent from '../../Filters';
+import TableIcon from 'calcite-ui-icons-react/TableIcon';
 
 const Container = styled.div`
   height: 100%;
@@ -60,6 +61,23 @@ const SVG =({
 
 // Variables
 const containerID = "map-view-container";
+var openDetailsAction = {
+  title: "Edit Details",
+  id: "edit-details",
+  className: "esri-icon-table"
+};
+var popupEditorAction = {
+  title: "Edit Details",
+  id: "edit-popup",
+  className: "esri-icon-edit"
+};
+
+var geometryEditorAction = {
+  title: "Edit Geometry",
+  id: "edit-geometry",
+  className: "esri-icon-polyline"
+};
+var actionsButtons = [openDetailsAction, popupEditorAction, geometryEditorAction]
 
 class Map extends Component {
   // constructor (props) {
@@ -97,32 +115,10 @@ class Map extends Component {
         where: this.props.defExp
       };
     });
-    // console.log(this.map.findLayerById("projects").then(function(lyr){
-    //   console.log(lyr.title);
-    //   console.log(lyr.id);
-    // }));
-    //console.log(this.map.findLayerById("projects").title);
-    console.log("# of layers: ", this.map.layers.length);
+
     if(this.map.layers.length>0){
-      console.log("title of layer 1: ", this.map.layers.getItemAt(0).title);
-      
-    this.map.layers.getItemAt(0).definitionExpression = this.props.defExp;
+      this.map.layers.getItemAt(0).definitionExpression = this.props.defExp;
     }
-
-    //  var propValue;
-    //  for (var propName in this.map.layers) {
-    //    propValue = this.map.layers[propName]
-
-    //    console.log(propName, propValue);
-    //  }
-    // if(this.map.layers[0]){
-    //   this.map.layers[0].definitionExpression(this.props.defExp);
-    // }
-    // if(this.props.map.layers){
-    //   console.error("this.props.map.layers ");
-    // }else{
-    //   console.log("    skipped   ");
-    // }
     
   }
 
@@ -167,13 +163,19 @@ class Map extends Component {
     ])
     .then( ([ FeatureLayer, Editor, UI, Expand, BasemapGallery,domConstruct
     ], containerNode) => {
+      var popTemplate = {
+        title: "Water-Sewer CIP",
+        content: "{Project_Name}",
+        actions: actionsButtons
+      }
       const featureLayer = new FeatureLayer({
         outFields: ["*"],
         portalItem: { // autocasts as new PortalItem()
           id: "10c79e631ce84ca19e5cdb7bb118262b"
         },
         title: "WaterSewerPM",
-        id: "projects"
+        id: "projects",
+        popupTemplate: popTemplate
       });
       this.map.add(featureLayer);
 
@@ -251,11 +253,14 @@ class Map extends Component {
     
       const getFeatures = (layer) => {
         var query = layer.createQuery();
-        query.returnGeometry = false;
+        query.returnGeometry = true;
         return layer.queryFeatures(query)
           .then((response) => {
             var repObj = response.toJSON();
             this.props.onSetFeatures(repObj.features);
+            //console.log("fields");
+            //console.log(JSON.stringify(layer.fields));
+            this.props.setFields(layer.fields);
             //this.props.onSetFeatures(response.features.toJSON());
            // var myJSON = repObj.features;
             //console.log("getFeatures " + myJSON);
@@ -308,11 +313,12 @@ class Map extends Component {
 const mapStateToProps = state => ({
   config: state.config,
   map: state.map,
-  featureLayer: state.map.featureLayer,
+  //featureLayer: state.map.featureLayer,
   defExp: state.filter.defExp,
   selectedYear: state.filter.selectedYear,
   selectedStatus: state.filter.selectedStatus,
   selectedManager: state.filter.selectedManager,
+  fields: state.map.fields
 });
 
 const mapDispatchToProps = function (dispatch) {

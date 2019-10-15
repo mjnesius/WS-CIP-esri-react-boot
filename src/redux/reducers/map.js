@@ -15,7 +15,9 @@ export const types = {
   SET_FEATURES: "SET_FEATURES",
   SET_FILTER: "SET_FILTER",
   APPLY_FILTER: "APPLY_FILTER",
-  TOGGLE_ATTRIBUTES:"TOGGLE_ATTRIBUTES"
+  TOGGLE_ATTRIBUTES: "TOGGLE_ATTRIBUTES",
+  SET_FIELDS: "SET_FIELDS",
+  SELECT_FEATURE: "SELECT_FEATURE"
 };
 
 // REDUCERS //
@@ -26,7 +28,10 @@ export const initialState = {
   statuses: [],
   years:[],
   featureLayer:{},
-  defExp: ""
+  defExp: "",
+  fields:[{}],
+  domains: [{}],
+  selectedFeature:{}
 };
 
 export default (state = initialState, action) => {
@@ -37,7 +42,7 @@ export default (state = initialState, action) => {
         loaded: true
       };
     case types.SET_FEATURES:
-      //console.log("set features: " + JSON.stringify(action.payload));
+      //console.log("set features: " + JSON.stringify(action));
       var _stat = [...new Set(action.payload.features.map(feature => feature.attributes.Status ||"null"))];
       var _years= [...new Set(action.payload.features.map(feature => feature.attributes.Proposed_Year || "null"))];
       var _managers= [...new Set(action.payload.features.map(feature => feature.attributes.Project_Manager || "null"))];
@@ -48,8 +53,14 @@ export default (state = initialState, action) => {
         years: _years.sort(),
         managers: _managers.sort()
       };
+    case types.SET_FIELDS:
+      //console.log("set FIELDS: " + JSON.stringify(action.payload));
+      return {
+        ...state,
+        fields: action.payload.fields
+      };
     case types.APPLY_FILTER:
-      console.log("apply filter: " + JSON.stringify(action.payload));
+      //console.log("apply filter: " + JSON.stringify(action.payload));
       return {
         ...state,
         //filter: "OBJECTID > 0 & " + action.payload
@@ -60,7 +71,21 @@ export default (state = initialState, action) => {
         ...state,
         attributesComponent: !state.attributesComponent
       };
-
+    case types.SELECT_FEATURE:
+      console.log("SELECT_FEATURE: " + JSON.stringify(action.payload));
+      if (action.payload['feature'] !== undefined && action.payload['feature'] !== null){
+        return {
+          ...state,
+          selectedFeature: action.payload['feature']
+        };
+      }
+      else {
+        return {
+          ...state,
+          selectedFeature: action.payload
+        };
+      }
+        
     default:
       return state;
   }
@@ -76,6 +101,18 @@ export const actions = {
     type: types.SET_FEATURES,
     payload: {
       features
+    }
+  }),
+  selectFeature: feature => ({
+    type: types.SELECT_FEATURE,
+    payload: {
+      feature
+    }
+  }),
+  setFields: fields => ({
+    type: types.SET_FIELDS,
+    payload: {
+      fields
     }
   }),
   setFilter: filter => ({
