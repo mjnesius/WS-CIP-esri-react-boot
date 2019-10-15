@@ -6,9 +6,9 @@ import { createSelector } from 'reselect';
 const parseFields = (state) => {
     var _fields =[];
     //console.log("parseFields\n",JSON.stringify(state.map.fields))
-    var fldList = state.map.fields["fields"];
-    console.log("fldList\n",JSON.stringify(fldList))
-    fldList.forEach((fld) => {
+    //var fldList = state.map.fields["fields"];
+    //console.log("fldList\n",JSON.stringify(fldList))
+    state.map.fields.forEach((fld) => {
         var _fld = {};
         //console.log(typeof fld);
         //console.log( fld);
@@ -19,11 +19,11 @@ const parseFields = (state) => {
         //console.log( project);
         _fields.push(_fld);
     })
-    console.log(JSON.stringify(_fields));
-    var visibleFields = ["Project_Name", "Project_Type", "Project_Location", "Project_Originator", "Project_Year", "WRE_ProjectNo", "Project_Manager",
-        "Const_Start_Date_NTP", "Const_End_Date", "Total_Cost"]
+    //console.log(JSON.stringify(_fields));
+    var visibleFields = ["Project_Name", "Project_Type", "Project_Location", "Project_Originator", "Proposed_Year", "WRE_ProjectNo", "Project_Manager",
+         "Total_Cost", "Inspector", "Contractor"]
     const _fieldsFiltered = _fields.filter(fld => visibleFields.indexOf(fld.name) > -1);
-    console.log(JSON.stringify(_fieldsFiltered));
+    //console.log(JSON.stringify(_fieldsFiltered));
     return _fieldsFiltered
 }
 
@@ -38,19 +38,19 @@ const parseProjects = (state) => {
         //console.log( JSON.stringify(prj));
         _data.push(prj['attributes']);
     })
-    console.log(JSON.stringify(_data));
+    //console.log(JSON.stringify(_data));
     return _data
 }
 
 const parseDomains = (state) => {
     var _fieldsWithDomains =[];
-    state.map.fields['fields'].forEach((fld) => {
+    state.map.fields.forEach((fld) => {
         if (!(fld['domain'] === undefined || fld['domain'] === null)){
           _fieldsWithDomains.push(fld['domain']);  
         }
         
     })
-    console.log("_fieldsWithDomains\n\t",JSON.stringify(_fieldsWithDomains));
+    //console.log("_fieldsWithDomains\n\t",JSON.stringify(_fieldsWithDomains));
     var _domains =[];
     _fieldsWithDomains.forEach((d) =>{
         var key = d.name.slice(0,-7);
@@ -64,7 +64,7 @@ const parseDomains = (state) => {
         _domains.push(obj);
     })
     // [{"domain name": ["values"]}]
-    console.log(JSON.stringify(_domains));
+    //console.log("parse domains \n\t", JSON.stringify(_domains));
     return _domains
 }
 // fields array of obj

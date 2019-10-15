@@ -79,34 +79,6 @@ class ProjectsTable extends React.Component {
             }
           }}
           />
-        {/* <ReactTable
-          data={data}
-          columns={[
-            {
-              Header: "First Name",
-              accessor: "firstName",
-              Cell: this.renderEditable
-            },
-            {
-              Header: "Last Name",
-              accessor: "lastName",
-              Cell: this.renderEditable
-            },
-            {
-              Header: "Full Name",
-              id: "full",
-              accessor: d =>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: d.firstName + " " + d.lastName
-                  }}
-                />
-            }
-          ]}
-          defaultPageSize={10}
-          className="-striped -highlight"
-        />
-        <br /> */}
       </div>
     );
   }

@@ -68,6 +68,9 @@ export default class AuthManager {
         if (esriAuthID) {
           // if auth was persisted, just use that
           this.idManager.initialize(esriAuthID);
+          console.log("\n\tcreateIDManager(), esriAuthID", JSON.stringify(esriAuthID));
+          console.log("\n\t1. IDManager,", JSON.stringify(this.idManager.toJSON()));
+
         } else {
           console.log("in createID Manager")
           this.idManager.useSignInPage = false;//true;//!this.loginWithPopup;
@@ -76,8 +79,9 @@ export default class AuthManager {
             portalUrl: myConfig.portalUrl, //this.portalUrl,
             popup: false//this.loginWithPopup
           });
-          console.log(JSON.stringify(this.oAuthInfo));
+          console.log("\n\tcreateIDManager(), oAuthInfo", JSON.stringify(this.oAuthInfo));
           this.idManager.registerOAuthInfos([this.oAuthInfo]);
+          console.log("\n\t2. IDManager,", JSON.stringify(this.idManager.toJSON()));
         }
 
         resolve();
@@ -138,7 +142,7 @@ export default class AuthManager {
       }
 
       const sharingUrl = this.portalUrl + '/sharing';
-      console.log("sharing url: ", sharingUrl);
+      console.log("checkLogin()\tsharing url: ", sharingUrl);
       this.idManager
         .checkSignInStatus(sharingUrl)
         .then(credential => {
@@ -146,7 +150,7 @@ export default class AuthManager {
           this.getUser().then(resolve, reject);
         })
         .otherwise(e => {
-          reject('User is not logged in');
+          reject('checkLogin() User is not logged in');
         });
     });
   };

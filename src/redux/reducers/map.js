@@ -57,7 +57,7 @@ export default (state = initialState, action) => {
       //console.log("set FIELDS: " + JSON.stringify(action.payload));
       return {
         ...state,
-        fields: action.payload
+        fields: action.payload.fields
       };
     case types.APPLY_FILTER:
       //console.log("apply filter: " + JSON.stringify(action.payload));
