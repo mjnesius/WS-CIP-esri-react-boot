@@ -5,22 +5,14 @@ import { createSelector } from 'reselect';
 //reshape state for the table components
 const parseFields = (state) => {
     var _fields =[];
-    //console.log("parseFields\n",JSON.stringify(state.map.fields))
-    //var fldList = state.map.fields["fields"];
-    //console.log("fldList\n",JSON.stringify(fldList))
     state.map.fields.forEach((fld) => {
         var _fld = {};
-        //console.log(typeof fld);
-        //console.log( fld);
-        //console.log( fld['name']);
         _fld['name'] = fld['name'];//state.map.fields[fld].name;
         _fld['type'] = fld['type'];//state.map.fields[fld].type;
-        //console.log("state.map.fields[fld]", JSON.stringify(state.map.fields[fld]));
-        //console.log( project);
         _fields.push(_fld);
     })
     //console.log(JSON.stringify(_fields));
-    var visibleFields = ["Project_Name", "Project_Type", "Project_Location", "Project_Originator", "Proposed_Year", "WRE_ProjectNo", "Project_Manager",
+    var visibleFields = ["Project_Name", "Project_Type", "Project_Location", "Project_Originator", "Status","Proposed_Year", "WRE_ProjectNo", "Project_Manager",
          "Total_Cost", "Inspector", "Contractor"]
     const _fieldsFiltered = _fields.filter(fld => visibleFields.indexOf(fld.name) > -1);
     //console.log(JSON.stringify(_fieldsFiltered));

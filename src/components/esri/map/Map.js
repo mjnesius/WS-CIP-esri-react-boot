@@ -27,6 +27,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actions as mapActions } from '../../../redux/reducers/map';
 import { actions as filterActions } from '../../../redux/reducers/filters';
+import { actions as attributeActions } from '../../../redux/reducers/attributes';
 import {StoreContext} from '../../StoreContext';
 import {store} from '../../../index';
 // ESRI
@@ -35,7 +36,7 @@ import { createView } from '../../../utils/esriHelper';
 
 // Styled Components
 import styled from 'styled-components';
-import Button from 'react-bootstrap/Button'
+import Button from 'react-bootstrap/Button';
 //import { stat } from 'fs';
 //import yargs from 'yargs';
 //import PencilSquare16 from '@esri/calcite-ui-icons';
@@ -67,7 +68,7 @@ var openDetailsAction = {
   className: "esri-icon-table"
 };
 var popupEditorAction = {
-  title: "Edit Details",
+  title: "Edit Popup",
   id: "edit-popup",
   className: "esri-icon-edit"
 };
@@ -79,23 +80,20 @@ var geometryEditorAction = {
 };
 var actionsButtons = [openDetailsAction, popupEditorAction, geometryEditorAction]
 
+
+
+
 class Map extends Component {
-  // constructor (props) {
-  //   super(props);
-  //   this.state = {
-  //     map:{
-  //       features: [{}],
-  //       loaded: Boolean,
-  //       selectedYear: "",
-  //       selectedStatus: "",
-  //       selectedManager: "",
-  //     },
-  //     featureLayer: {},
-  //     defExp:" "
-  //   }
-    
-    //this.updateFilter = this.updateFilter.bind(this);
-  //}
+   constructor (props) {
+     super(props);
+     //set this binding to the class; note: arrow functions do not have their own context
+     this.setupEventHandlers = this.setupEventHandlers.bind(this);
+     //this.toggleAttributes = this.props.toggleAttributes.bind(this);
+     //this.editDetails = this.editDetails.bind(this);
+     //this.editGeom = this.editGeom.bind(this);
+     console.log(this.props);
+     }
+
   componentDidMount() {
     this.startup(
       this.props.mapConfig,
@@ -108,7 +106,7 @@ class Map extends Component {
     // Tell React to never update this component, that's up to us
     return true;
   }
-  componentDidUpdate(featureLayer){
+  componentDidUpdate(){
     console.log(" this.props.defExp:   ", this.props.defExp);
     this.view.whenLayerView(this.map.layers.getItemAt(0)).then(function(featureLayerView) {
       featureLayerView.filter = {
@@ -122,19 +120,30 @@ class Map extends Component {
     
   }
 
-  render() {
-    return (
-        <Container ref="mapDiv" id={containerID}/>
-    );
+  editGeom = () => {
+    console.log("editGeom()");
+    //startUpdateWorkflowAtFeatureEdit(feature) of the esri-widgets-Editor-EditorViewModel
+  
   }
+
+  editDetails () {
+    console.log("editDetails"); 
+    this.toggleAttributes()
+  };
+  
+  
 
   // ESRI JSAPI
   startup = (mapConfig, node, isScene = false) => {
     createView(mapConfig, node, isScene).then(
       response => {
         this.init(response);
-        this.setupEventHandlers(this.map);
         this.setupWidgetsAndLayers();
+        console.log("this.setupEventHandlers(this.map)");
+        console.log("this.view: ", typeof(this.view));
+
+        this.setupEventHandlers(this.view);
+        console.log("this.finishedLoading();");
         this.finishedLoading();
       },
       error => {
@@ -150,18 +159,19 @@ class Map extends Component {
     this.props.onMapLoaded();
     
   }
-  
 
   init = (response) => {
     this.view = response.view
     this.map = response.view.map;
   }
 
+
+
   setupWidgetsAndLayers = () => {
-    loadModules(['esri/layers/FeatureLayer','esri/widgets/Editor', 'esri/views/ui/UI' , 'esri/widgets/Expand',
-    'esri/widgets/BasemapGallery','dojo/dom-construct'
+    loadModules(['esri/layers/FeatureLayer','esri/widgets/Editor', 'esri/widgets/Expand',
+    'esri/widgets/BasemapGallery'
     ])
-    .then( ([ FeatureLayer, Editor, UI, Expand, BasemapGallery,domConstruct
+    .then( ([ FeatureLayer, Editor, Expand, BasemapGallery
     ], containerNode) => {
       var popTemplate = {
         title: "Water-Sewer CIP",
@@ -204,31 +214,28 @@ class Map extends Component {
       });
       
       this.view.ui.add(expandEditor, "top-right"); 
-      const butt = <Button as="div" size="sm" variant="outline-info" onClick={() => this.props.toggleAttributes()}><SVG className="svg-icon-light-blue" /> </Button>;
+      const butt = <Button as="div" size="sm" variant="light" 
+        onClick={() => this.props.toggleAttributes()}>
+          <TableIcon size={16} filled /> 
+        </Button>;
 
       var btn = document.createElement("div");
       btn.setAttribute("id", "projectAttributes");
       this.view.ui.add(btn, "top-right");
       ReactDOM.render(butt, document.getElementById("projectAttributes"));
 
-      //this.view.ui.add(FilterComponent, "center-right");
-      //console.log("this.defExp ? ", this.state.defExp ? this.state.defExp: "...");
-
       featureLayer.when(function() {
         featureLayer.definitionExpression = createDefinitionExpression("");
         zoomToLayer(featureLayer);
         getFeatures(featureLayer);
         this.featureLayer = featureLayer;
-        //this.setState({ featureLayer: featureLayer});
       });
 
       function createDefinitionExpression(subExpression) {
-        //console.log("SUB expression ", subExpression ? subExpression: "... ");
-        //console.log("selectedStatus ", typeof this.props.selectedStatus);
          const baseExpression =
            "( 1=1 )";
          var _stat = typeof store.statuses !== 'undefined' ? store.selectedStatus : "";
-         //console.log("_stat ", _stat);
+         
          var _yr =  store.selectedYear ? store.selectedYear : "";
          var _man = store.selectedManager ? store.selectedManager : "";
          subExpression = "Status Like '%" + _stat
@@ -246,10 +253,6 @@ class Map extends Component {
             this.view.goTo(response.extent);
           });
       }
-      
-      //this.view.ui.add(node, "top-trailing");
-    //ReactDOM.render(<PencilSquareIcon filled onClick={() => console.log('clicked')} size={33} color="rgba(255, 255, 255, 0.8)"/>, node);
-    
     
       const getFeatures = (layer) => {
         var query = layer.createQuery();
@@ -258,33 +261,9 @@ class Map extends Component {
           .then((response) => {
             var repObj = response.toJSON();
             this.props.onSetFeatures(repObj.features);
-            //console.log("fields");
-            //console.log(JSON.stringify(layer.fields));
             this.props.setFields(layer.fields);
-            //this.props.onSetFeatures(response.features.toJSON());
-           // var myJSON = repObj.features;
-            //console.log("getFeatures " + myJSON);
           }).then((res) => {
-            //const node = document.createElement("div");
-            //  var node = domConstruct.create("div", {
-            //   id: "divFilters", innerHTML: "<p>hi</p>", style:{width: "100%"}
-            // });
-
-            // //node.setAttribute("id", "divFilters");
-
-            //  var expandFilters = new Expand({
-            //   expandIconClass: "esri-icon-search",
-            //   view: this.view,
-            //   content: node
-            // }); 
-            // this.view.ui.add(expandFilters, "top-right");
-            //  ReactDOM.render(<FilterComponent/>, node
-            //  ); 
-          //    ReactDOM.render(<FilterComponent years={this.props.map.years} 
-          //     statuses={this.props.map.statuses} managers={this.props.map.managers}/>, node
-          //  );  
-            
-          });
+        });
       }
       
       //
@@ -294,18 +273,61 @@ class Map extends Component {
     });
   }
 
-  setupEventHandlers = (map) => {
-    loadModules([
+  setupEventHandlers = (view) => {
+    console.log("setupEventHandlers()\tprops\t", this.props);
+    
+    //this popup.on function is messing up the "this" context
+    view.popup.on("trigger-action",  (event) => {
+      // If the zoom-out action is clicked, fire the zoomOut() function
+      console.log(event);
+      console.log(event.action);
+      if (event.action.id === "edit-geometry") {
+        this.editGeom();
+      }
+      if (event.action.id === "edit-popup") {
+        console.log("this.view: ", view);
+        view.ui.editor.viewModel.startUpdateWorkflowAtFeatureSelection()
+        //editPopup(view.popup);
+      }
 
-    ], (
+      if (event.action.id === "edit-details") {
+        //console.log("edit-details()");
+        console.log("edit-details() type: ");
+        this.props.toggleAttributes();
+        //this.editDetails();
+        var selected = {};
+        selected['feature'] = view.popup.selectedFeature['attributes'];
+        this.props.selectFeature(selected['feature']);
+        this.props.setPanel("project_details");
 
-    ) => {
-
-      //
-      // JSAPI Map Event Handlers go here!
-      //
-
+        // var prom = new Promise (() => {
+        //   var selected = {};
+        //   console.log("view.popup.selectedFeature: ", JSON.stringify(view.popup.selectedFeature));
+        //   selected['feature'] = view.popup.selectedFeature['attributes'];
+        //   console.log("selected['feature']: ", JSON.stringify(selected['feature']));
+        //   this.props.selectFeature(selected['feature']);
+        // });
+        // prom.then(res => {
+        //   console.log("prom.then")
+        //   this.props.setPanel("project_details")
+        // }).catch(console.error('prom error'));
+        // prom.then(() => {
+        //   this.props.setPanel("project_details");
+        // })
+        // need to TOGGLE_ATTRIBUTES action, SELECT_FEATURE acction with feature payloadthen SET_PANEL action with "project_details"
+        //editPopup(view.popup);
+      }
     });
+
+    //
+    // JSAPI Map Event Handlers go here!
+    //
+  }
+  
+  render() {
+    return (
+        <Container ref="mapDiv" id={containerID}/>
+    );
   }
 }
 
@@ -323,7 +345,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = function (dispatch) {
   return bindActionCreators({
-    ...mapActions, ...filterActions
+    ...mapActions, ...filterActions, ...attributeActions
   }, dispatch);
 }
 

@@ -7,11 +7,22 @@ import{StoreContext} from "./StoreContext";
 import { connect } from 'react-redux';
 import {parseDomainValues} from '../redux/selectors';
 
-import Form from 'react-bootstrap/Form';
+//import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col'
 
 import DatePicker from 'calcite-react/DatePicker'
+import Form, {
+    FormControl,
+    FormControlLabel,
+    FormHelperText,
+    Fieldset,
+    Legend
+} from 'calcite-react/Form';
+import { MenuItem } from 'calcite-react/Menu';
+import TextField from 'calcite-react/TextField';
+import Select from 'calcite-react/Select';
+
 import styled from 'styled-components';
 const Container = styled.div`
   display: inline-flex;
@@ -50,16 +61,16 @@ class ProjectDetails extends React.Component {
         this.props.domains.forEach(function(_domain){
             
             if (!(_domain[domainName] === undefined || _domain[domainName] === null)){
-                console.log("_return domain ", JSON.stringify(_domain[domainName]) );
+                //console.log("_return domain ", JSON.stringify(_domain[domainName]) );
                 Object.keys(_domain[domainName]).forEach(function(key){
                     var _key = Object.keys(_domain[domainName][key])[0];
                     var _val = _domain[domainName][key][_key];
-                    console.log("\t returning option with key: ", _key , "\tand value: " , _val);
-                    items.push( <option key={_key} >{ _val}</option>);
+                    //console.log("\t returning option with key: ", _key , "\tand value: " , _val);
+                    items.push( <MenuItem value={_key} >{ _val}</MenuItem>);
                 })
                 
             } else {
-                console.log("\t domain ", JSON.stringify(_domain), "\t doesn't match\t", domainName )
+                //console.log("\t domain ", JSON.stringify(_domain), "\t doesn't match\t", domainName )
             }
         });
         return items;
@@ -67,41 +78,48 @@ class ProjectDetails extends React.Component {
     // Dates  var event = new Date(1361923200000); ==> toString() Tue Feb 26 2013 19:00:00 GMT-0500 (Eastern Standard Time)
 
     render() {
-        console.log("this.props.selectedFeature['Project_Name']", this.props.selectedFeature['Project_Name']);
-        console.log("this.props.selectedFeature['Status']", this.props.selectedFeature['Status']);
+        //console.log("this.props.selectedFeature['Project_Name']", this.props.selectedFeature['Project_Name']);
+        //console.log("this.props.selectedFeature['Status']", this.props.selectedFeature['Status']);
         return (
             <Container>
-                <Form style={{flex: 1}}>
-                    <Form.Group as={Row} controlId="formProjectName">
-                        <Form.Label column sm="2">Project Name</Form.Label>
+                <Form horizontal style={{flex: 1}}>
+                    <Row style={{flex: 1}}>
                         <Col sm="4">
-                            <Form.Control type="text" placeholder={this.props.selectedFeature['Project_Name']} />
+                            <FormControl >
+                                <FormControlLabel style={{ minWidth: '160px' }}>Project Name</FormControlLabel>
+                                <TextField fullWidth type="textarea" style={{maxWidth: '100%', resize: "both" }} 
+                                    defaultValue={this.props.selectedFeature['Project_Name']} />
+                            </FormControl>
                         </Col>
-                        <Form.Label column sm="2">Status</Form.Label>
                         <Col sm="4">
-                            <Form.Control as="select">
-                                <option key={this.props.selectedFeature['Status']}>{this.props.selectedFeature['Status']}</option>
-                                {this._returnDomainDropdowns('Status')}
-                            </Form.Control>
+                                    <FormControl>
+                                        <FormControlLabel style={{ minWidth: '120px' }}>Status</FormControlLabel>
+                                        <Select selectedValue={this.props.selectedFeature['Status']} onChange={() => true} fullWidth>
+                                            {this._returnDomainDropdowns('Status')}
+                                        </Select>
+                                    </FormControl>
                         </Col>
-                        <Form.Label column sm="2">Project Type</Form.Label>
                         <Col sm="4">
-                            <Form.Control column sm="4" as="select">
-                                <option key={this.props.selectedFeature['Project_Type']}>{this.props.selectedFeature['Project_Type']}</option>
+                            <FormControl >
+                                <FormControlLabel style={{ minWidth: '140px' }}>Project Type</FormControlLabel>
+                                <Select selectedValue={this.props.selectedFeature['Project_Type']} onChange={() => true} fullWidth>
                                 {this._returnDomainDropdowns('Project_Type')}
-                            </Form.Control>
+                                </Select>
+                            </FormControl>
                         </Col>
-                        <Form.Label column sm="2">Contact</Form.Label>
                         <Col sm="4">
-                            <Form.Control as="select">
-                                <option key={this.props.selectedFeature['Contact']}>{this.props.selectedFeature['Contact']}</option>
-                                {this.props.optionsManagers.map((e, key) => {
-                                    return <option key={key} value={e}>{e}</option>;
-                                })}
-                            </Form.Control>
+                            <FormControl>
+                                <FormControlLabel style={{ minWidth: '120px' }}>Contact</FormControlLabel>
+                                <Select selectedValue={this.props.selectedFeature['Contact']} onChange={() => true} fullWidth>
+                                    {this.props.optionsManagers.map((e, key) => {
+                                    return <MenuItem key={key} value={e}>{e}</MenuItem>;
+                                })} 
+                                </Select>
+                            </FormControl>
                         </Col>
-                        <Form.Label column sm="2">CreateDate</Form.Label>
                         <Col sm="4">
+                        <FormControl>
+                            <FormControlLabel style={{ minWidth: '120px' }}>CreateDate</FormControlLabel>
                             <DatePicker
                                 id="basicDatePicker"
                                 yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year',10).year() }}
@@ -114,8 +132,10 @@ class ProjectDetails extends React.Component {
                                 isOutsideRange={() => {}}
                                 monthYearSelectionMode="MONTH_YEAR"
                             />
+                        </FormControl>
+                        
                         </Col>
-                    </Form.Group>
+                    </Row>
                 </Form>
             </Container>
         )

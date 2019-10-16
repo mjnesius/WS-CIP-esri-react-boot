@@ -41,12 +41,12 @@ class ProjectsTable extends React.Component {
   render() {
     //const { data } = this.state;
     const columns = this.props.fields.map((fld) => {
-      console.log(fld.name.length);
+      //console.log(fld.name.length);
         
       return {Header: fld.name,  Cell: this.renderEditable, id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: true}
     })
     
-    console.log( "columns\n\t", JSON.stringify(columns));
+    //console.log( "columns\n\t", JSON.stringify(columns));
     //{this.props.optionsStatus.map((e, key) => {
     //     return <option key={key} value={e}>{e}</option>;
     // })}

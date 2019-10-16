@@ -18,6 +18,7 @@ import { actions as filterActions } from '../redux/reducers/filters';
 import{StoreContext} from "./StoreContext";
 //import { ReactReduxContext } from 'react-redux'
 // Styled Components
+import Button from 'calcite-react/Button';
 import styled from 'styled-components';
 const Container = styled.div`
   display: flex;
@@ -29,7 +30,14 @@ const Container = styled.div`
 class FilterComponent extends Component {
   constructor(props) {
     super(props);
-    this._onSelect = this._onSelect.bind(this)
+    this._onSelect = this._onSelect.bind(this);
+    this._clearFilter = this._clearFilter.bind(this)
+  }
+  _clearFilter(){
+    this.props.setStatus("%");
+    this.props.setManager("%");
+    this.props.setYear("%");
+    this.props.setDefExp();
   }
   _onSelect(option) {
     
@@ -50,18 +58,18 @@ class FilterComponent extends Component {
 
     }
   } 
-  shouldComponentUpdate(){
-    //console.log("filter component did update")
-    if (typeof this.props.statuses !== 'undefined'){
-      //console.log("false should update")
-      return false
-    }
+  // shouldComponentUpdate(){
+  //   //console.log("filter component did update")
+  //   if (typeof this.props.statuses !== 'undefined'){
+  //     //console.log("false should update")
+  //     return false
+  //   }
       
-    else {
-      //console.log("true should update"); 
-      return true
-    } 
-  }
+  //   else {
+  //     //console.log("true should update"); 
+  //     return true
+  //   } 
+  // }
   render() {
     if (typeof this.props.optionsStatus !== 'undefined') {
       console.log("filter component with drop downs")
@@ -70,26 +78,49 @@ class FilterComponent extends Component {
           <Row lg="auto" >
             <Col >
               <Form inline>
-                <Form.Label column xs="5" md="1">Filter</Form.Label>
-
-                <Form.Control placeholder="Filter by Status" as="select" onChange={this._onSelect}>
-                  <option key={"All Statuses"} value={"%_Statuses"}>All Statuses</option>
+                <Form.Control as="select" onChange={this._onSelect}
+                  value={(this.props.selectedStatus === "%") ? "%_Statuses": this.props.selectedStatus }>
+                  {/* <option key={"All Statuses"} value={"%_Statuses"}>All Statuses</option>
                   {this.props.optionsStatus.map((e, key) => {
                     return <option key={key} value={e}>{e}</option>;
+                  })} */}
+                  {this.props.optionsStatus.map((e, key) => {
+                    
+                    if (e.indexOf("All Statuses") > -1){
+                      return <option key="All Statuses" value="%_Statuses">All Statuses</option>;
+                    } else{
+                      return <option key={key} value={e}>{e}</option>;
+                    }
+                    
                   })}
                 </Form.Control>
-                <Form.Control as="select" onChange={this._onSelect}>>
-                  <option key={"All Years"} value={"%_Years"}>All Years</option>
+                <Form.Control as="select" onChange={this._onSelect}
+                  value={(this.props.selectedYear.indexOf("%") > -1) ? "%_Years" : this.props.selectedYear }>
                   {this.props.optionsYears.map((e, key) => {
-                    return <option key={key} value={e}>{e}</option>;
+                    console.log(e);
+                    console.log(`String(e).indexOf("All Years"): `, String(e).indexOf("All Years"));
+                    if (String(e).indexOf("All Years") > -1) {
+                      return <option key="All Years" value="%_Years">All Years</option>;
+                    } else {
+                      return <option key={key} value={String(e)}>{e}</option>;
+                    }
+
                   })}
                 </Form.Control>
-                <Form.Control as="select" onChange={this._onSelect}>>
-                  <option key={"All Managers"} value={"%_Managers"}>All Mangers</option>
+                <Form.Control as="select" onChange={this._onSelect} 
+                  value={!(this.props.selectedManager === "%") ? this.props.selectedManager : "%_Managers"}>
+                  {/* <option key={"All Managers"} value={"%_Managers"}>All Mangers</option> */}
                   {this.props.optionsManagers.map((e, key) => {
-                    return <option key={key} value={e}>{e}</option>;
+                    
+                    if (e.indexOf("All Managers") > -1){
+                      return <option key="All Managers" value="%_Managers">All Managers</option>;
+                    } else{
+                      return <option key={key} value={e}>{e}</option>;
+                    }
+                    
                   })}
                 </Form.Control>
+                <Button clear small className="m-1 ml-3 p-1 px-2" onClick={this._clearFilter}>Clear Filter</Button>
               </Form>
             </Col>
           </Row>
@@ -105,10 +136,9 @@ const mapStateToProps = state => ({
   optionsYears:state.map.years,
   optionsStatus: state.map.statuses,
   optionsManagers: state.map.managers,
-  selectedYear: state.map.selectedYear,
-  selectedStatus: state.selectedStatus,
-  selectedManager: state.selectedManager,
-  filter: state.filter
+  selectedYear: state.filter.selectedYear,
+  selectedStatus: state.filter.selectedStatus,
+  selectedManager: state.filter.selectedManager
 });
   
   const mapDispatchToProps = dispatch => {

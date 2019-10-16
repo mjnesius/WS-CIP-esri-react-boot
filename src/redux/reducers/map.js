@@ -44,8 +44,12 @@ export default (state = initialState, action) => {
     case types.SET_FEATURES:
       //console.log("set features: " + JSON.stringify(action));
       var _stat = [...new Set(action.payload.features.map(feature => feature.attributes.Status ||"null"))];
+      console.log("set features _stat: " + JSON.stringify(_stat));
+      _stat.push("All Statuses");
       var _years= [...new Set(action.payload.features.map(feature => feature.attributes.Proposed_Year || "null"))];
+      _years.push("All Years");
       var _managers= [...new Set(action.payload.features.map(feature => feature.attributes.Project_Manager || "null"))];
+      _managers.push("All Managers");
       return {
         ...state,
         features: action.payload.features,
@@ -66,7 +70,7 @@ export default (state = initialState, action) => {
         //filter: "OBJECTID > 0 & " + action.payload
       };
     case types.TOGGLE_ATTRIBUTES:
-      console.log("TOGGLE_ATTRIBUTES: " + JSON.stringify(action.payload));
+      console.log("TOGGLE_ATTRIBUTES: " + JSON.stringify(action));
       return {
         ...state,
         attributesComponent: !state.attributesComponent
