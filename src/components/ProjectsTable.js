@@ -15,9 +15,9 @@ import "react-table/react-table.css";
 class ProjectsTable extends React.Component {
   constructor(props) {
     super();
-    this.state ={
-      data: props.projects
-    }
+    // this.state ={
+    //   data: props.projects
+    // }
     this.renderEditable = this.renderEditable.bind(this);
   }
   renderEditable(cellInfo) {
@@ -27,12 +27,12 @@ class ProjectsTable extends React.Component {
         contentEditable
         suppressContentEditableWarning
         onBlur={e => {
-          const data = [...this.state.data];
+          const data = [...this.props.projects];
           data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
           //this.setState({ data });
         }}
         dangerouslySetInnerHTML={{
-          __html: this.state.data[cellInfo.index][cellInfo.column.id]
+          __html: this.props.projects[cellInfo.index][cellInfo.column.id]
         }}
       />
     );

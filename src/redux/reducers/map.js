@@ -42,7 +42,7 @@ export default (state = initialState, action) => {
         loaded: true
       };
     case types.SET_FEATURES:
-      //console.log("set features: " + JSON.stringify(action));
+      console.log("set features: " + JSON.stringify(action));
       var _stat = [...new Set(action.payload.features.map(feature => feature.attributes.Status ||"null"))];
       console.log("set features _stat: " + JSON.stringify(_stat));
       _stat.push("All Statuses");

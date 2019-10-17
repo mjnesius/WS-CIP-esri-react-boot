@@ -108,15 +108,94 @@ class Map extends Component {
   }
   componentDidUpdate(){
     console.log(" this.props.defExp:   ", this.props.defExp);
-    this.view.whenLayerView(this.map.layers.getItemAt(0)).then(function(featureLayerView) {
-      featureLayerView.filter = {
-        where: this.props.defExp
-      };
-    });
+    const getFeatures = (layer) => {
+      var query = layer.createQuery();
+      query.returnGeometry = true;
+      query.where = this.props.map.defExp ? this.props.map.defExp : "1=1"
+      return layer.queryFeatures(query)
+        .then((response) => {
+          var repObj = response.toJSON();
+          console.log("getFeatures json: ", repObj)
+          this.props.setFeatures(repObj.features);
+          this.props.setFields(layer.fields);
+        }).then((res) => {
+        });
+    };
 
-    if(this.map.layers.length>0){
-      this.map.layers.getItemAt(0).definitionExpression = this.props.defExp;
-    }
+    if (this.map.layers.length > 0) {
+      var lyr = this.map.layers.getItemAt(0);
+      console.log(lyr.definitionExpression, " vs ", this.props.defExp)
+      if (!(lyr.definitionExpression === this.props.defExp)) {
+        lyr.definitionExpression = this.props.defExp;
+        var query = lyr.createQuery();
+        query.returnGeometry = true;
+        query.where =this.props.defExp ? this.props.defExp : "1=1";
+        lyr.queryFeatures(query).then((response) => {
+          var repObj = response.toJSON();
+          console.log("getFeatures json: ", repObj)
+          this.props.setFeatures(repObj.features);
+          this.props.setFields(lyr.fields);
+        })
+      }
+       
+    //   var query = lyr.createQuery();
+    //   query.returnGeometry = true;
+    //   query.where = this.props.map.defExp ? this.props.map.defExp : "1=1";
+    //   lyr.queryFeatures(query)
+    //     .then((response) => {
+    //       var repObj = response.toJSON();
+    //       console.log("getFeatures json: ", repObj)
+    //       this.props.setFeatures(repObj.features);
+    //       this.props.setFields(lyr.fields);
+    //     })
+    //   //getFeatures(lyr);
+    //   //this.featureLayer = lyr;
+      
+     }
+    // this.view.whenLayerView(this.map.layers.getItemAt(0)).then(function(featureLayerView) {
+    //   this.map.layers.getItemAt(0).definitionExpression = this.props.defExp;
+    //   var query = featureLayerView.createQuery();
+    //   query.where = this.props.defExp ? this.props.defExp : "1=1";
+    //   featureLayerView.queryFeatures(query).then(function (results) {
+    //     console.log("component did update query: ", results.features)
+    //     this.props.setFeatures(results.features);
+    //   })
+    // })
+    //   this.map.layers.getItemAt(0)).then(function(featureLayerView) {
+    //     console.log(" this.view.whenLayerView:   ");
+    //     featureLayerView.filter = {
+    //       where: this.props.defExp
+    //     };
+    //     var query = featureLayerView.createQuery();
+    //     query.where = this.props.defExp ? this.props.defExp : "1=1";
+    //     featureLayerView.queryFeatures(query).then(function (results) {
+    //       this.props.setFeatures(results.features);})
+    //     // featureLayerView.watch("updating", function (val) {
+    //     //   if (!val) {  // wait for the layer view to finish updating
+    //     //     featureLayerView.queryFeatures(query).then(function (results) {
+    //     //       this.props.setFeatures(results.features);
+    //     //       //this.props.setFields(layer.fields);
+    //     //       console.log(results.features);  // prints the array of client-side graphics to the console
+    //     //     });
+    //     //   }
+
+    //     // });
+    // });
+    
+
+    
+    //    this.map.layers.getItemAt(0).definitionExpression = this.props.defExp;
+    //    var query = this.map.layers.getItemAt(0).createQuery();
+    //    query.returnGeometry = true;
+    //    query.where = this.props.defExp ? this.props.defExp : "1=1";
+    //    this.map.layers.getItemAt(0).queryFeatures(query).then(function (results) {
+    //      console.log("component did update query: ", results.features);
+    //      var repObj = results.toJSON();
+    //      this.props.onSetFeatures(repObj.features);
+    //      console.log("component did update query: json", repObj);
+    //      //this.props.setFeatures(results.features);
+    //    })
+    //  }
     
   }
 
@@ -126,9 +205,9 @@ class Map extends Component {
   
   }
 
-  editDetails () {
+  editDetails = () =>{
     console.log("editDetails"); 
-    this.toggleAttributes()
+    this.toggleAttributes();
   };
   
   
@@ -225,27 +304,27 @@ class Map extends Component {
       ReactDOM.render(butt, document.getElementById("projectAttributes"));
 
       featureLayer.when(function() {
-        featureLayer.definitionExpression = createDefinitionExpression("");
+        //featureLayer.definitionExpression = createDefinitionExpression("");
         zoomToLayer(featureLayer);
         getFeatures(featureLayer);
         this.featureLayer = featureLayer;
       });
 
-      function createDefinitionExpression(subExpression) {
-         const baseExpression =
-           "( 1=1 )";
-         var _stat = typeof store.statuses !== 'undefined' ? store.selectedStatus : "";
+      // function createDefinitionExpression(subExpression) {
+      //    const baseExpression =
+      //      "( 1=1 )";
+      //    var _stat = typeof store.statuses !== 'undefined' ? store.selectedStatus : "";
          
-         var _yr =  store.selectedYear ? store.selectedYear : "";
-         var _man = store.selectedManager ? store.selectedManager : "";
-         subExpression = "Status Like '%" + _stat
-             + "%' AND Project_Manager Like '%" +_man
-             + "%' AND Proposed_Year Like '%" + _yr +"%'";
+      //    var _yr =  store.selectedYear ? store.selectedYear : "";
+      //    var _man = store.selectedManager ? store.selectedManager : "";
+      //    subExpression = "Status Like '%" + _stat
+      //        + "%' AND Project_Manager Like '%" +_man
+      //        + "%' AND Proposed_Year Like '%" + _yr +"%'";
         
-        //console.log("def expression ", baseExpression + " AND (" + subExpression +")")
-        return subExpression ? baseExpression + " AND (" + subExpression +
-          ")" : baseExpression;
-      }
+      //   //console.log("def expression ", baseExpression + " AND (" + subExpression +")")
+      //   return subExpression ? baseExpression + " AND (" + subExpression +
+      //     ")" : baseExpression;
+      // }
 
       const zoomToLayer = (layer) => {
         return layer.queryExtent()
@@ -257,10 +336,12 @@ class Map extends Component {
       const getFeatures = (layer) => {
         var query = layer.createQuery();
         query.returnGeometry = true;
+        query.where = this.props.map.defExp ? this.props.map.defExp : "1=1"
         return layer.queryFeatures(query)
           .then((response) => {
             var repObj = response.toJSON();
-            this.props.onSetFeatures(repObj.features);
+            console.log("getFeatures json: ", repObj)
+            this.props.setFeatures(repObj.features);
             this.props.setFields(layer.fields);
           }).then((res) => {
         });
