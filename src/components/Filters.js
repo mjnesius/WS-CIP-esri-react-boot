@@ -38,11 +38,12 @@ class FilterComponent extends Component {
     this.props.setManager("%");
     this.props.setYear("%");
     this.props.setDefExp();
+    this.props.setFilterButton();
   }
   _onSelect(option) {
     
     if(option){
-      //console.log('You selected', option.target.value, " \t", option.target);
+      console.log('You selected', option.target.value, " \t", option.target);
       if (this.props.optionsStatus.indexOf(option.target.value) > -1 ||  option.target.value.indexOf("Statuses") >-1){
         this.props.setStatus(option.target.value.split('_')[0] );
         this.props.setDefExp();
@@ -54,6 +55,10 @@ class FilterComponent extends Component {
       } else{
         this.props.setYear(option.target.value.split('_')[0] );
         this.props.setDefExp();
+      }
+
+      if(this.props.filterButton){
+        this.props.setFilterButton();
       }
     }
   } 
@@ -71,7 +76,7 @@ class FilterComponent extends Component {
   // }
   render() {
     if (typeof this.props.optionsStatus !== 'undefined') {
-      console.log("filter component with drop downs")
+      //console.log("filter component with drop downs")
       return (
         <Container>
           <Row lg="auto" >
@@ -112,7 +117,7 @@ class FilterComponent extends Component {
                     }
                   })}
                 </Form.Control>
-                <Button clear small className="m-1 ml-3 p-1 px-2" onClick={this._clearFilter}>Clear Filter</Button>
+                <Button disabled={this.props.filterButton} small className="m-1 ml-3 p-1 px-2" onClick={this._clearFilter}>Clear Filter</Button>
               </Form>
             </Col>
           </Row>
@@ -130,7 +135,8 @@ const mapStateToProps = state => ({
   optionsManagers: state.map.managers,
   selectedYear: state.filter.selectedYear,
   selectedStatus: state.filter.selectedStatus,
-  selectedManager: state.filter.selectedManager
+  selectedManager: state.filter.selectedManager,
+  filterButton: state.filter.filterButton
 });
   
   const mapDispatchToProps = dispatch => {

@@ -46,10 +46,6 @@ class ProjectsTable extends React.Component {
       return {Header: fld.name,  Cell: this.renderEditable, id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: true}
     })
     
-    //console.log( "columns\n\t", JSON.stringify(columns));
-    //{this.props.optionsStatus.map((e, key) => {
-    //     return <option key={key} value={e}>{e}</option>;
-    // })}
     return (
       <div className="overflow-y">
           <ReactTable defaultPageSize={10} className="-striped -highlight" columns={columns} data={this.props.projects}

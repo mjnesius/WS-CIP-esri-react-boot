@@ -3,7 +3,8 @@ export const types = {
     SET_FILTER_YEARS: "SET_FILTER_YEARS",
     SET_FILTER_STATUS: "SET_FILTER_STATUS",
     SET_FILTER_MANAGER: "SET_FILTER_MANAGER",
-    SET_DEF_EXPRESSION: "SET_DEF_EXPRESSION"
+    SET_DEF_EXPRESSION: "SET_DEF_EXPRESSION",
+    FILTER_BUTTON: "FILTER_BUTTON"
   };
   
 
@@ -11,7 +12,8 @@ export const initialState = {
     selectedYear: "%",
     selectedStatus: "%",
     selectedManager: "%",
-    defExp:"(1=1)"
+    defExp:"(1=1)",
+    filterButton: true
 }
 
 // REDUCERS //
@@ -34,6 +36,11 @@ export default (state = initialState, action) => {
           ...state,
           selectedManager: action.payload.filter
         };
+    case types.FILTER_BUTTON:
+      return {
+        ...state,
+        filterButton: !state.filterButton
+      };
     case types.SET_DEF_EXPRESSION:
       var defExp = "Status Like '%" + state.selectedStatus
       + "%' AND Project_Manager Like '%" + state.selectedManager
@@ -69,5 +76,9 @@ export const actions = {
   }),
   setDefExp: filter => ({
     type: types.SET_DEF_EXPRESSION,
+  }),
+  setFilterButton: filter => ({
+    type: types.FILTER_BUTTON,
   })
+
 };
