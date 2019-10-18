@@ -108,19 +108,19 @@ class Map extends Component {
   }
   componentDidUpdate(){
     console.log(" this.props.defExp:   ", this.props.defExp);
-    const getFeatures = (layer) => {
-      var query = layer.createQuery();
-      query.returnGeometry = true;
-      query.where = this.props.map.defExp ? this.props.map.defExp : "1=1"
-      return layer.queryFeatures(query)
-        .then((response) => {
-          var repObj = response.toJSON();
-          console.log("getFeatures json: ", repObj)
-          this.props.setFeatures(repObj.features);
-          this.props.setFields(layer.fields);
-        }).then((res) => {
-        });
-    };
+    // const getFeatures = (layer) => {
+    //   var query = layer.createQuery();
+    //   query.returnGeometry = true;
+    //   query.where = this.props.map.defExp ? this.props.map.defExp : "1=1"
+    //   return layer.queryFeatures(query)
+    //     .then((response) => {
+    //       var repObj = response.toJSON();
+    //       console.log("getFeatures json: ", repObj)
+    //       this.props.setFeatures(repObj.features);
+    //       this.props.setFields(layer.fields);
+    //     }).then((res) => {
+    //     });
+    // };
 
     if (this.map.layers.length > 0) {
       var lyr = this.map.layers.getItemAt(0);

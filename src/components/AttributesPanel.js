@@ -70,7 +70,7 @@ class AttributesPanel extends Component {
                       </Row>
                     </Col>
                     <Col style={{ flex: 3, justifyContent: 'right', textAlign: 'right' }}>
-                      <Button clear className="m-1 mx-3 p-1 px-2"
+                      <Button clear disabled={this.props.saveButton} className="m-1 mx-3 p-1 px-2"
                         onClick={() => this.props.updateAttributes(this.props.featureURLs[0], this.props.projects)}
                         icon={<SaveIcon size={16} />}
                         iconPosition="before"> Save
@@ -104,7 +104,8 @@ const mapStateToProps = state => ({
   projects: state.map.features,
   isVisible: state.map.attributesComponent,
   card: state.attributes.card,
-  featureURLs: state.config.featureURLs
+  featureURLs: state.config.featureURLs,
+  saveButton: state.attributes.saveButton
 });
   
   const mapDispatchToProps = dispatch => {

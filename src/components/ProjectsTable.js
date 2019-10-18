@@ -27,8 +27,14 @@ class ProjectsTable extends React.Component {
         contentEditable
         suppressContentEditableWarning
         onBlur={e => {
+          console.log("blur event")
+          
           const data = [...this.props.projects];
           data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
+          if (this.props.saveButton){
+            console.log("setSaveButton")
+            this.props.setSaveButton()
+          }
           //this.setState({ data });
         }}
         dangerouslySetInnerHTML={{
@@ -45,7 +51,7 @@ class ProjectsTable extends React.Component {
         
       return {Header: fld.name,  Cell: this.renderEditable, id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: true}
     })
-    
+
     return (
       <div className="overflow-y">
           <ReactTable defaultPageSize={10} className="-striped -highlight" columns={columns} data={this.props.projects}
@@ -85,7 +91,8 @@ const mapStateToProps = state => ({
     fields: getColumnsFromFields(state),
     projects: parseProjectData(state),
     isVisible: state.map.attributesComponent,
-    domains: parseDomainValues(state)
+    domains: parseDomainValues(state),
+    saveButton: state.attributes.saveButton
   });
     
     const mapDispatchToProps = dispatch => {

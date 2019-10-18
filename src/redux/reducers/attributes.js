@@ -3,13 +3,15 @@ export const types = {
     SET_PANEL: "SET_PANEL",
     UPDATE_ATTRIBUTES: "UPDATE_ATTRIBUTES",
     UPDATE_SUCCESS: "UPDATE_SUCCESS",
-    UPDATE_FAIL: "UPDATE_FAIL"
+    UPDATE_FAIL: "UPDATE_FAIL",
+    SAVE_BUTTON: "SAVE_BUTTON"
   };
   
   // REDUCERS //
   export const initialState = {
     card: "projects_overview",
-    update_success: Boolean
+    updateSuccess: Boolean,
+    saveButton: true
   };
 
 export default (state = initialState, action) => {
@@ -29,14 +31,21 @@ export default (state = initialState, action) => {
       //console.log("set FIELDS: " + JSON.stringify(action.payload));
       return {
         ...state,
-        update_success: true
+        updateSuccess: true,
+        saveButton: true
       }
     case types.UPDATE_FAIL:
       //console.log("set FIELDS: " + JSON.stringify(action.payload));
       return {
         ...state,
-        update_success: false
+        updateSuccess: false
       }
+    case types.SAVE_BUTTON:
+      //console.log("set FIELDS: " + JSON.stringify(action.payload));
+      return {
+        ...state,
+        saveButton: !state.saveButton
+      } 
     default:
       return state;
   }
@@ -56,6 +65,9 @@ export const actions = {
       url: featureURL,
       data: data
     }
+  }),
+  setSaveButton: card => ({
+    type: types.SAVE_BUTTON,
   })
 };
     

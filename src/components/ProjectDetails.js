@@ -1,11 +1,13 @@
 import React from "react";
 import moment from 'moment';
-//import year from 'moment/year';
+
 import { bindActionCreators } from 'redux';
 import { actions as attributeActions } from '../redux/reducers/attributes';
+import { actions as mapActions } from '../redux/reducers/map';
+
 import{StoreContext} from "./StoreContext";
 import { connect } from 'react-redux';
-import {parseDomainValues} from '../redux/selectors';
+import {parseDomainValues, parseProjectData} from '../redux/selectors';
 
 //import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
@@ -35,6 +37,7 @@ const Container = styled.div`
 class ProjectDetails extends React.Component {
     constructor(props) {
         super();
+        // TO-DO refactor to use Redux state
         this.state = {
             date: null,
             datePickerFocused: false,
@@ -48,9 +51,20 @@ class ProjectDetails extends React.Component {
         var _date = date.valueOf();
         this.setState({
             date: _date,
-        })
+        });
+        if (this.props.saveButton) {
+            console.log("setSaveButton")
+            this.props.setSaveButton()
+        }
     }
 
+    activateSaveButton = (event) => {
+        if (this.props.saveButton) {
+            console.log("setSaveButton: ", this.props.saveButton, " \t event: ", event);
+            this.props.setSaveButton();
+            console.log("\t new prop: ", this.props.saveButton)
+        }
+    }
     onFocusChange({ focused }) {
         this.setState({
             datePickerFocused: focused,
@@ -66,7 +80,7 @@ class ProjectDetails extends React.Component {
                     var _key = Object.keys(_domain[domainName][key])[0];
                     var _val = _domain[domainName][key][_key];
                     //console.log("\t returning option with key: ", _key , "\tand value: " , _val);
-                    items.push( <MenuItem value={_key} >{ _val}</MenuItem>);
+                    items.push( <MenuItem key ={_key} value={_key} >{ _val}</MenuItem>);
                 })
                 
             } else {
@@ -88,13 +102,16 @@ class ProjectDetails extends React.Component {
                             <FormControl >
                                 <FormControlLabel style={{ minWidth: '160px' }}>Project Name</FormControlLabel>
                                 <TextField fullWidth type="textarea" style={{maxWidth: '100%', resize: "both" }} 
-                                    defaultValue={this.props.selectedFeature['Project_Name']} />
+                                    defaultValue={this.props.selectedFeature['Project_Name']} 
+                                    onChange={
+                                        this.activateSaveButton
+                                        }/>
                             </FormControl>
                         </Col>
                         <Col sm="4">
                                     <FormControl>
                                         <FormControlLabel style={{ minWidth: '120px' }}>Status</FormControlLabel>
-                                        <Select selectedValue={this.props.selectedFeature['Status']} onChange={() => true} fullWidth>
+                                        <Select selectedValue={this.props.selectedFeature['Status']} onChange={this.activateSaveButton} fullWidth>
                                             {this._returnDomainDropdowns('Status')}
                                         </Select>
                                     </FormControl>
@@ -102,7 +119,7 @@ class ProjectDetails extends React.Component {
                         <Col sm="4">
                             <FormControl >
                                 <FormControlLabel style={{ minWidth: '140px' }}>Project Type</FormControlLabel>
-                                <Select selectedValue={this.props.selectedFeature['Project_Type']} onChange={() => true} fullWidth>
+                                <Select selectedValue={this.props.selectedFeature['Project_Type']} onChange={this.activateSaveButton} fullWidth>
                                 {this._returnDomainDropdowns('Project_Type')}
                                 </Select>
                             </FormControl>
@@ -110,7 +127,7 @@ class ProjectDetails extends React.Component {
                         <Col sm="4">
                             <FormControl>
                                 <FormControlLabel style={{ minWidth: '120px' }}>Contact</FormControlLabel>
-                                <Select selectedValue={this.props.selectedFeature['Contact']} onChange={() => true} fullWidth>
+                                <Select selectedValue={this.props.selectedFeature['Contact']} onChange={this.activateSaveButton} fullWidth>
                                     {this.props.optionsManagers.map((e, key) => {
                                     return <MenuItem key={key} value={e}>{e}</MenuItem>;
                                 })} 
@@ -145,13 +162,15 @@ class ProjectDetails extends React.Component {
   // selector functions to reshape the state
 const mapStateToProps = state => ({
     selectedFeature: state.map.selectedFeature,
+    projects: parseProjectData(state),
     domains: parseDomainValues(state),
-    optionsManagers: state.map.managers
+    optionsManagers: state.map.managers,
+    saveButton: state.attributes.saveButton
 });
 
 const mapDispatchToProps = dispatch => {
     return bindActionCreators({
-        ...attributeActions
+        ...attributeActions, ...mapActions
     }, dispatch);
 }
 
