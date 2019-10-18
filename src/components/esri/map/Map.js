@@ -37,6 +37,7 @@ import { createView } from '../../../utils/esriHelper';
 // Styled Components
 import styled from 'styled-components';
 import Button from 'react-bootstrap/Button';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 //import { stat } from 'fs';
 //import yargs from 'yargs';
 //import PencilSquare16 from '@esri/calcite-ui-icons';
@@ -108,19 +109,7 @@ class Map extends Component {
   }
   componentDidUpdate(){
     console.log(" this.props.defExp:   ", this.props.defExp);
-    // const getFeatures = (layer) => {
-    //   var query = layer.createQuery();
-    //   query.returnGeometry = true;
-    //   query.where = this.props.map.defExp ? this.props.map.defExp : "1=1"
-    //   return layer.queryFeatures(query)
-    //     .then((response) => {
-    //       var repObj = response.toJSON();
-    //       console.log("getFeatures json: ", repObj)
-    //       this.props.setFeatures(repObj.features);
-    //       this.props.setFields(layer.fields);
-    //     }).then((res) => {
-    //     });
-    // };
+    
 
     if (this.map.layers.length > 0) {
       var lyr = this.map.layers.getItemAt(0);
@@ -137,66 +126,7 @@ class Map extends Component {
           this.props.setFields(lyr.fields);
         })
       }
-       
-    //   var query = lyr.createQuery();
-    //   query.returnGeometry = true;
-    //   query.where = this.props.map.defExp ? this.props.map.defExp : "1=1";
-    //   lyr.queryFeatures(query)
-    //     .then((response) => {
-    //       var repObj = response.toJSON();
-    //       console.log("getFeatures json: ", repObj)
-    //       this.props.setFeatures(repObj.features);
-    //       this.props.setFields(lyr.fields);
-    //     })
-    //   //getFeatures(lyr);
-    //   //this.featureLayer = lyr;
-      
      }
-    // this.view.whenLayerView(this.map.layers.getItemAt(0)).then(function(featureLayerView) {
-    //   this.map.layers.getItemAt(0).definitionExpression = this.props.defExp;
-    //   var query = featureLayerView.createQuery();
-    //   query.where = this.props.defExp ? this.props.defExp : "1=1";
-    //   featureLayerView.queryFeatures(query).then(function (results) {
-    //     console.log("component did update query: ", results.features)
-    //     this.props.setFeatures(results.features);
-    //   })
-    // })
-    //   this.map.layers.getItemAt(0)).then(function(featureLayerView) {
-    //     console.log(" this.view.whenLayerView:   ");
-    //     featureLayerView.filter = {
-    //       where: this.props.defExp
-    //     };
-    //     var query = featureLayerView.createQuery();
-    //     query.where = this.props.defExp ? this.props.defExp : "1=1";
-    //     featureLayerView.queryFeatures(query).then(function (results) {
-    //       this.props.setFeatures(results.features);})
-    //     // featureLayerView.watch("updating", function (val) {
-    //     //   if (!val) {  // wait for the layer view to finish updating
-    //     //     featureLayerView.queryFeatures(query).then(function (results) {
-    //     //       this.props.setFeatures(results.features);
-    //     //       //this.props.setFields(layer.fields);
-    //     //       console.log(results.features);  // prints the array of client-side graphics to the console
-    //     //     });
-    //     //   }
-
-    //     // });
-    // });
-    
-
-    
-    //    this.map.layers.getItemAt(0).definitionExpression = this.props.defExp;
-    //    var query = this.map.layers.getItemAt(0).createQuery();
-    //    query.returnGeometry = true;
-    //    query.where = this.props.defExp ? this.props.defExp : "1=1";
-    //    this.map.layers.getItemAt(0).queryFeatures(query).then(function (results) {
-    //      console.log("component did update query: ", results.features);
-    //      var repObj = results.toJSON();
-    //      this.props.onSetFeatures(repObj.features);
-    //      console.log("component did update query: json", repObj);
-    //      //this.props.setFeatures(results.features);
-    //    })
-    //  }
-    
   }
 
   editGeom = () => {
@@ -275,7 +205,8 @@ class Map extends Component {
       var expandBasemap = new Expand({
         expandIconClass: "esri-icon-basemap",
         view: this.view,
-        content: basemapGallery
+        content: basemapGallery,
+        expandTooltip: "Expand Basemap Gallery"
       });
 
       this.view.ui.add(expandBasemap, {position :"top-right"});
@@ -289,14 +220,39 @@ class Map extends Component {
       var expandEditor = new Expand({
         expandIconClass: "esri-icon-edit",
         view: this.view,
-        content: editor
+        content: editor,
+        expandTooltip: "Expand Edit Widget"
       });
       
       this.view.ui.add(expandEditor, "top-right"); 
-      const butt = <Button as="div" size="sm" variant="light" 
-        onClick={() => this.props.toggleAttributes()}>
-          <TableIcon size={16} filled /> 
-        </Button>;
+      const renderTooltip = props => (
+        <div
+          {...props}
+          style={{
+            backgroundColor: 'rgba(255, 255, 255, 1)',
+            padding: '2px 5px',
+            color: 'black',
+            borderRadius: 1,
+            borderStyle: 'solid',
+            borderWidth: 1,
+            fontFamily: 'Times New Roman',
+            fontSize:12,
+            ...props.style,
+          }}
+        >
+          Launch Attribute Panel
+        </div>
+      );
+
+      const butt = <OverlayTrigger
+        placement="bottom-start"
+        delay={{ show: 250, hide: 200 }}
+        overlay={renderTooltip}>
+          <Button as="div" size="sm" variant="light"
+            onClick={() => this.props.toggleAttributes()}>
+            <TableIcon size={16} filled />
+          </Button>
+        </OverlayTrigger>;
 
       var btn = document.createElement("div");
       btn.setAttribute("id", "projectAttributes");

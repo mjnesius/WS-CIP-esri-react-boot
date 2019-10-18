@@ -48,8 +48,8 @@ class ProjectsTable extends React.Component {
     //const { data } = this.state;
     const columns = this.props.fields.map((fld) => {
       //console.log(fld.name.length);
-        
-      return {Header: fld.name,  Cell: this.renderEditable, id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: true}
+      var _filter =  fld.name.toUpperCase().indexOf("COST") > -1 ? false : true;
+      return {Header: fld.name,  Cell: this.renderEditable, id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: _filter}
     })
 
     return (
