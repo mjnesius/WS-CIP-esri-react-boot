@@ -6,14 +6,14 @@
   "logoutUrl": "api/logout",
   "jsapiUrl": "https://js.arcgis.com/4.12/",
   "jsapiV4": true,
-  "loginWithPopup": false,
+  "loginWithPopup": true,
 
   "portalUrl": "https://tlcgis.maps.arcgis.com",
   "appId": "hkdtqXBMmZ8JJ5tD",
 
 
   "mapConfig": {
-    "basemap": "streets",
+    "basemap": "gray-vector",
     "zoom": 4,
     "center": [40, -80]
   },
@@ -27,10 +27,6 @@
       "ymax":3579250,
       "spatialReference": 102100
     }
-  },
-
-  "sceneConfig": {
-    "basemap": "dark-gray-vector"
   },
 
   "featureURLs": [

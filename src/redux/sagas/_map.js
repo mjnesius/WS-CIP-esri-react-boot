@@ -1,6 +1,6 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
-import { setFilter } from '../../services/api'; //getFeatures,
-import { types as mapActions } from '../reducers/map';
+// import { call, put, takeLatest } from 'redux-saga/effects';
+// import { setFilter } from '../../services/api'; //getFeatures,
+// import { types as mapActions } from '../reducers/map';
 
 // Worker Saga: gets fired with SET_FEATURES // note: uses generator functions (special iterator functions, execute until they reach 'yield'
 // function* fetchFeatures (action) {

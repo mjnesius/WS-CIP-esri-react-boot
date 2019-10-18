@@ -24,7 +24,6 @@ import {StoreContext} from './StoreContext';
 import Navbar from 'react-bootstrap/Navbar';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import TopNav from 'calcite-react/TopNav';
 import TopNavBrand from 'calcite-react/TopNav/TopNavBrand';
 import TopNavTitle from 'calcite-react/TopNav/TopNavTitle';
 //import TopNavList from 'calcite-react/TopNav/TopNavList';

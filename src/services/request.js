@@ -77,7 +77,7 @@ export function makeRequest(params) {
     const data = params.data || {};
     const headers = getHeaders(params.isFormData);
     console.log("headers\t", JSON.stringify(headers));
-    headers['Authorization'] =`token ${params.token}`;
+    
     console.log("\t2. headers\t", JSON.stringify(headers));
     const options = {
       method: params.method || "get",
@@ -88,12 +88,14 @@ export function makeRequest(params) {
     if (!params.hideCredentials) {
       options.credentials = "include";
     }
-    var body ={};
+    var body = {};
     //body['token']=params.token;
     if (params.features) {
-      body['features']=params.features
+      body['features'] = params.features
       options.body = JSON.stringify(body);
-    } else{
+      headers['Authorization'] = `token ${params.token}`;
+      options['token']=params.token;
+    } else {
       body = getRequestBody(data, params.isFormData);
       if (options.method === "get") {
         url = `${url}?${body}`;
@@ -101,7 +103,7 @@ export function makeRequest(params) {
         options.body = body;
       }
     }
-    options['token']=params.token;
+    
     options['authMode']="immediate";
     console.log("url \t", url,"\n\t options", options);
     //fetch(url, options)

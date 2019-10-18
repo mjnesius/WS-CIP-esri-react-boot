@@ -19,8 +19,9 @@ import { updateFeatures as updateFeatureLayer} from "@esri/arcgis-rest-feature-l
 export function getAppConfig() {
   return new Promise((resolve, reject) => {
     makeRequest({
-      url: `http://tipdbt2/WaterSewerProjects/static/config.json`,
-      method: "get"
+      url: `/config.json`,
+      method: "get",
+      hideCredentials: true
     }).then(resp => resolve(resp));
   });
 }
@@ -42,9 +43,9 @@ export function logout(portalUrl) {
 
  // @_data param,  pass in the features obj from state filtered based on the OBJECTID being updated
 export function updateFeatures(FeatureUrl, _data) {
-  console.log("\n\tupdateFeatures()\t FeatureUrl", FeatureUrl, "\l\t_data\t", _data);
+  console.log("\n\tupdateFeatures()\t FeatureUrl", FeatureUrl, "\t_data\t", _data);
   let persistObj = JSON.parse(localStorage.getItem('esri_auth_id'));
-  console.log("\n\persistObj\t ", persistObj);
+  console.log("\n\tpersistObj\t ", persistObj);
   let credObj = persistObj['credentials'][0];
   let tokenObj = credObj['token'];
   //let featureObj = {};

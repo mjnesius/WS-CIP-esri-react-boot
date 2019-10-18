@@ -16,10 +16,7 @@ import Col from 'react-bootstrap/Col'
 import DatePicker from 'calcite-react/DatePicker'
 import Form, {
     FormControl,
-    FormControlLabel,
-    FormHelperText,
-    Fieldset,
-    Legend
+    FormControlLabel
 } from 'calcite-react/Form';
 import { MenuItem } from 'calcite-react/Menu';
 import TextField from 'calcite-react/TextField';

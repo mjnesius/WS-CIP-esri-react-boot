@@ -42,10 +42,11 @@ export default class AuthManager {
             return resolve();
           }
           // If we need authentication then set up IDManager
-          console.log("startup() ==> createIDManager()")
+          console.log("startup() ==> createIDManager()");
           this.createIDManager().then(resolve());
         })
         .catch(err => {
+          console.log("startup() error: ", err);
           reject();
         });
     });
@@ -73,11 +74,11 @@ export default class AuthManager {
 
         } else {
           console.log("in createID Manager")
-          this.idManager.useSignInPage = false;//true;//!this.loginWithPopup;
+          this.idManager.useSignInPage = !this.loginWithPopup;
           this.oAuthInfo = new OAuthInfo({
             appId: this.appId,
-            portalUrl: myConfig.portalUrl, //this.portalUrl,
-            popup: false//this.loginWithPopup
+            portalUrl: this.portalUrl,
+            popup: this.loginWithPopup
           });
           console.log("\n\tcreateIDManager(), oAuthInfo", JSON.stringify(this.oAuthInfo));
           this.idManager.registerOAuthInfos([this.oAuthInfo]);

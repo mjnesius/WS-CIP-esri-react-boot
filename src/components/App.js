@@ -45,6 +45,7 @@ class App extends Component {
         this.props.config.jsapiV4,
         this.props.config.loginWithPopup
       );
+      console.log("create authManager, running startup()");
       window.authManager.startup().then(this.props.checkAuth);
     }
   }

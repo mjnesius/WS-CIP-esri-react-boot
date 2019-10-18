@@ -21,7 +21,7 @@ function* fetchConfig (action) {
         //const config = yield call(getAppConfig);
         //var configPath = 'json!./config.json';
         //var myConfig = require(configPath);
-        console.log(JSON.stringify(myConfig));
+        //console.log(JSON.stringify(myConfig));
         // Put config in store
         yield put({
             type: configTypes.SET_CONFIG,

@@ -29,7 +29,6 @@ import { actions as mapActions } from '../../../redux/reducers/map';
 import { actions as filterActions } from '../../../redux/reducers/filters';
 import { actions as attributeActions } from '../../../redux/reducers/attributes';
 import {StoreContext} from '../../StoreContext';
-import {store} from '../../../index';
 // ESRI
 import { loadModules } from 'esri-loader';
 import { createView } from '../../../utils/esriHelper';
@@ -51,14 +50,14 @@ const Container = styled.div`
   width: 100%;
 `;
 
-const SVG =({
-  style = {},
-  fill = '#fff',
-  width = '100%',
-  className = 'svg-icon-light-blue',
-  height = '100%',
-  viewBox = '0 0 16 16',
-}) =><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" className="svg-icon-light-blue"><path d="M2 2v26h30V2H2zm14 7.999h6V14h-6V9.999zM16 16h6v4h-6v-4zm-2 10H4v-4h10v4zm0-6H4v-4h10v4zm0-6H4V9.999h10V14zm2 12v-4h6v4h-6zm14 0h-6v-4h6v4zm0-6h-6v-4h6v4zm0-6h-6V9.999h6V14z"/></svg>
+// const SVG =({
+//   style = {},
+//   fill = '#fff',
+//   width = '100%',
+//   className = 'svg-icon-light-blue',
+//   height = '100%',
+//   viewBox = '0 0 16 16',
+// }) =><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" className="svg-icon-light-blue"><path d="M2 2v26h30V2H2zm14 7.999h6V14h-6V9.999zM16 16h6v4h-6v-4zm-2 10H4v-4h10v4zm0-6H4v-4h10v4zm0-6H4V9.999h10V14zm2 12v-4h6v4h-6zm14 0h-6v-4h6v4zm0-6h-6v-4h6v4zm0-6h-6V9.999h6V14z"/></svg>
 
 
 // Variables
