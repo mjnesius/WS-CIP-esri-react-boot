@@ -80,8 +80,6 @@ export function createView(mapConfig, node, isScene = false) {
             reject('JSAPI is not yet loaded');
             return;
         }
-
-
         initMap(mapConfig, node).then(
             response => {
                 resolve(response);

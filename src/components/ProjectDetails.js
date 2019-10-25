@@ -1,5 +1,6 @@
 import React from "react";
 import moment from 'moment';
+import SearchComponent from './SearchComponent';
 
 import { bindActionCreators } from 'redux';
 import { actions as attributeActions } from '../redux/reducers/attributes';
@@ -18,6 +19,10 @@ import Form, {
     FormControl,
     FormControlLabel
 } from 'calcite-react/Form';
+import Panel, {
+    PanelTitle,
+    PanelText
+  } from 'calcite-react/Panel';
 import { MenuItem } from 'calcite-react/Menu';
 import TextField from 'calcite-react/TextField';
 import Select from 'calcite-react/Select';
@@ -54,6 +59,20 @@ class ProjectDetails extends React.Component {
             this.props.setSaveButton()
         }
     }
+    _handleChangeEvent(val) {
+        console.log("_handleChangeEvent val is: ",val, "\ttarget: ", val.target);
+        let stateCopy ={...this.props.selectedFeature};
+        stateCopy[val.target.id] = val.target.value;
+        // val['Contractor']
+        // this.setState({          
+        //     ..,
+        //     contractor: this.props.selectedContractor['Contractor'] ? this.props.selectedContractor['Contractor'] : ""
+        // });
+        //this.props.setSelected(stateCopy, 'projects')
+        this.props.selectFeature(stateCopy);
+        this.activateSaveButton();
+        return val.target.value;
+      }
 
     activateSaveButton = (event) => {
         if (this.props.saveButton) {
@@ -93,22 +112,27 @@ class ProjectDetails extends React.Component {
         //console.log("this.props.selectedFeature['Status']", this.props.selectedFeature['Status']);
         return (
             <Container>
+                <Row > 
+                    <Panel style={{flex: 1}}>
+                        <Col lg="12">
+                            <SearchComponent type='projects'/>
+                        </Col>
+                    </Panel>
+                </Row>
                 <Form horizontal style={{flex: 1}}>
                     <Row style={{flex: 1}}>
                         <Col sm="4">
                             <FormControl >
                                 <FormControlLabel style={{ minWidth: '160px' }}>Project Name</FormControlLabel>
-                                <TextField fullWidth type="textarea" style={{maxWidth: '100%', resize: "both" }} 
-                                    defaultValue={this.props.selectedFeature['Project_Name']} 
-                                    onChange={
-                                        this.activateSaveButton
-                                        }/>
+                                <TextField id='Project_Name' fullWidth type="textarea" style={{maxWidth: '100%', resize: "both" }} 
+                                    value={this.props.selectedFeature['Project_Name']}
+                                    onChange={this._handleChangeEvent.bind(this)}/>
                             </FormControl>
                         </Col>
                         <Col sm="4">
                                     <FormControl>
                                         <FormControlLabel style={{ minWidth: '120px' }}>Status</FormControlLabel>
-                                        <Select selectedValue={this.props.selectedFeature['Status']} onChange={this.activateSaveButton} fullWidth>
+                                        <Select id='Status' selectedValue={this.props.selectedFeature['Status']} onChange={this._handleChangeEvent.bind(this)} fullWidth>
                                             {this._returnDomainDropdowns('Status')}
                                         </Select>
                                     </FormControl>
@@ -116,7 +140,7 @@ class ProjectDetails extends React.Component {
                         <Col sm="4">
                             <FormControl >
                                 <FormControlLabel style={{ minWidth: '140px' }}>Project Type</FormControlLabel>
-                                <Select selectedValue={this.props.selectedFeature['Project_Type']} onChange={this.activateSaveButton} fullWidth>
+                                <Select id ='Project_Type' selectedValue={this.props.selectedFeature['Project_Type']} onChange={this.activateSaveButton} fullWidth>
                                 {this._returnDomainDropdowns('Project_Type')}
                                 </Select>
                             </FormControl>

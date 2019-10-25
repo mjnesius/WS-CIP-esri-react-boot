@@ -196,6 +196,17 @@ class Map extends Component {
         popupTemplate: popTemplate
       });
       this.map.add(featureLayer);
+      // featureLayer.when(function () {
+      //   console.log("layer relationships", featureLayer.relationships.length);
+      
+      //   featureLayer.relationships.forEach(function (relationship) {
+      //     console.log("relationship id:", relationship.id)
+      //     console.log("relationship cardinality:", relationship.cardinality)
+      //     console.log("relationship key field:", relationship.keyField)
+      //     console.log("relationship name:", relationship.name)
+      //     console.log("relationship relatedTableId:", relationship.relatedTableId)
+      //   });
+      // });
 
       var basemapGallery  = new BasemapGallery({
         view: this.view
@@ -298,6 +309,8 @@ class Map extends Component {
             console.log("getFeatures json: ", repObj)
             this.props.setFeatures(repObj.features);
             this.props.setFields(layer.fields);
+            this.props.getEmployeess(this.props.config.employeesURL);
+            this.props.getContractors(this.props.config.contractorsURL);
           }).then((res) => {
         });
       }

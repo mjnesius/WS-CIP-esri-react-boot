@@ -6,7 +6,7 @@
   "logoutUrl": "api/logout",
   "jsapiUrl": "https://js.arcgis.com/4.12/",
   "jsapiV4": true,
-  "loginWithPopup": true,
+  "loginWithPopup": false,
 
   "portalUrl": "https://tlcgis.maps.arcgis.com",
   "appId": "hkdtqXBMmZ8JJ5tD",
@@ -31,5 +31,11 @@
 
   "featureURLs": [
     "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/arcgis/rest/services/WaterSewerPM/FeatureServer"
+  ],
+  "contractorsURL": [
+    "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/ArcGIS/rest/services/WaterSewerPM/FeatureServer/1"
+  ],
+  "employeesURL": [
+    "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/ArcGIS/rest/services/WaterSewerPM/FeatureServer/2"
   ]
 }

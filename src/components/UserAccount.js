@@ -16,6 +16,8 @@
 
 // React
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import {StoreContext} from './StoreContext';
 
 // Components
 import TopNavActionsList from 'calcite-react/TopNav/TopNavActionsList';
@@ -33,27 +35,22 @@ class UserAccount extends Component {
           portal={this.props.portal}
           onRequestSwitchAccount={() => console.log('switch account clicked')}
           onRequestSignOut={this.props.signOut}
+          hideSwitchAccount="true"
         >
           <ArcgisAccountMenuItem
-            onClick={() => console.log('Profile & Settings clicked')}
+            onClick={() => window.location.href = (this.props.config.portalUrl + '/home/user.html')}
           >
             Profile & Settings
           </ArcgisAccountMenuItem>
-          <ArcgisAccountMenuItem onClick={() => console.log('My Esri clicked')}>
-            My Esri
-          </ArcgisAccountMenuItem>
-          <ArcgisAccountMenuItem onClick={() => console.log('Training clicked')}>
-            Training
+          <ArcgisAccountMenuItem
+            onClick={() => window.location.href = (this.props.config.portalUrl + '/home/index.html')}
+          >
+            TLCGIS Home
           </ArcgisAccountMenuItem>
           <ArcgisAccountMenuItem
-            onClick={() => console.log('Community & Forums clicked')}
+            onClick={() => window.location.href = (this.props.config.portalUrl + '/home/group.html?id=5bc520989e654bb7a092a62baacbae18#overview')}
           >
-            Community & Forums
-          </ArcgisAccountMenuItem>
-          <ArcgisAccountMenuItem
-            onClick={() => console.log('ArcGIS Online clicked')}
-          >
-            ArcGIS Online
+            ArcGIS Online Water-Sewer Group
           </ArcgisAccountMenuItem>
         </ArcgisAccount>
       </TopNavActionsList>
@@ -80,4 +77,9 @@ class UserAccount extends Component {
   }
 }
 
-export default UserAccount;
+const mapStateToProps = state => ({
+  config: state.config
+});
+
+//export default UserAccount;
+export default connect(mapStateToProps, null, null, {context:StoreContext})(UserAccount)

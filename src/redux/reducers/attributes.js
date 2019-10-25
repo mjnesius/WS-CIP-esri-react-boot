@@ -4,14 +4,17 @@ export const types = {
     UPDATE_ATTRIBUTES: "UPDATE_ATTRIBUTES",
     UPDATE_SUCCESS: "UPDATE_SUCCESS",
     UPDATE_FAIL: "UPDATE_FAIL",
-    SAVE_BUTTON: "SAVE_BUTTON"
+    SAVE_BUTTON: "SAVE_BUTTON",
+    SET_SELECTED: "SET_SELECTED"
   };
   
   // REDUCERS //
   export const initialState = {
     card: "projects_overview",
     updateSuccess: Boolean,
-    saveButton: true
+    saveButton: true,
+    selectedContractor: {},
+    selectedEmployee: {}
   };
 
 export default (state = initialState, action) => {
@@ -45,7 +48,23 @@ export default (state = initialState, action) => {
       return {
         ...state,
         saveButton: !state.saveButton
-      } 
+      }
+    case types.SET_SELECTED:
+      //console.log("set FIELDS: " + JSON.stringify(action.payload));
+      if (action.payload.type.includes('contractors')){
+        return {
+          ...state,
+          selectedContractor: action.payload.item
+          }
+      }
+
+      else{
+        return {
+        ...state,
+        selectedEmployee: action.payload.item
+        }
+      }
+       
     default:
       return state;
   }
@@ -68,6 +87,13 @@ export const actions = {
   }),
   setSaveButton: card => ({
     type: types.SAVE_BUTTON,
+  }),
+  setSelected: (_item, _type) => ({
+    type: types.SET_SELECTED,
+    payload: {
+      item: _item,
+      type: _type
+    }
   })
 };
     

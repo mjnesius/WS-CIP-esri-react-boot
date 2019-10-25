@@ -26,6 +26,7 @@
     "react-select": "^3.0.7",
     "react-table": "^6.10.3",
     "react-transition-group": "^4.2.2",
+    "react-validation": "^3.0.7",
     "redux": "^4.0.4",
     "redux-devtools-extension": "^2.13.8",
     "redux-logger": "^3.0.6",

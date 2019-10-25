@@ -11,21 +11,21 @@
 
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { getAppConfig } from '../../services/api';
-import config, { types as configTypes } from '../reducers/config';
-import myConfig from '../../config';
+import { types as configTypes } from '../reducers/config';
+//import myConfig from '../../config';
 
 // Worker Saga: gets fired with SET_CONFIG // note: uses generator functions (special iterator functions, execute until they reach 'yield'
 function* fetchConfig (action) {
     try {
         // call API to fetch config
-        //const config = yield call(getAppConfig);
+        const config = yield call(getAppConfig);
         //var configPath = 'json!./config.json';
         //var myConfig = require(configPath);
         //console.log(JSON.stringify(myConfig));
         // Put config in store
         yield put({
             type: configTypes.SET_CONFIG,
-            payload: myConfig
+            payload: config
         });
 
     } catch (e) {

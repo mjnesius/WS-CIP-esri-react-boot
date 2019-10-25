@@ -22,6 +22,8 @@ import {StoreContext} from "./StoreContext";
 //  Components
 import ProjectsTable from './ProjectsTable';
 import ProjectDetails from './ProjectDetails';
+import EmployeeAttributes from './EmployeeAttributes';
+import ContractorAttributes from './ContractorAttributes';
 import SaveIcon from 'calcite-ui-icons-react/SaveIcon';
 import Button from 'calcite-react/Button';
 
@@ -64,7 +66,7 @@ class AttributesPanel extends Component {
                             <Nav.Link onClick={() => this.props.setPanel("contractors")}>Contractors</Nav.Link>
                           </Nav.Item>
                           <Nav.Item>
-                            <Nav.Link onClick={() => this.props.setPanel("inspectors")}>Inspectors</Nav.Link>
+                            <Nav.Link onClick={() => this.props.setPanel("employees")}>Employees</Nav.Link>
                           </Nav.Item>
                         </Nav>
                       </Row>
@@ -84,6 +86,8 @@ class AttributesPanel extends Component {
                   <div className="overflow-y" style={{ flex: 5 }}>
                     {this.props.card === "projects_overview" && <ProjectsTable />}
                     {this.props.card === "project_details" && <ProjectDetails />}
+                    {this.props.card === "employees" && <EmployeeAttributes />}
+                    {this.props.card === "contractors" && <ContractorAttributes selectedContractor={this.props.selectedContractor}/>}
                   </div>
                 </Card.Body>
               </Card>
