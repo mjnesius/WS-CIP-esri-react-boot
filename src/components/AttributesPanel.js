@@ -41,6 +41,31 @@ const Container = styled.div`
 
 
 class AttributesPanel extends Component {
+  _handleNavigation(val) {
+    this.props.setPanel(val);
+    this.props.setSaveButton();
+  }
+
+  _handleSave(val) {
+    switch (this.props.card){
+      case 'project_details':
+        this.props.updateAttributes(this.props.featureURLs[0], this.props.projects)
+        this.props.setSaveButton();
+        break;
+      case 'contractors':
+        this.props.updateAttributes(this.props.contractorsURL[0], this.props.selectedContractor)
+        this.props.setSaveButton();
+        break;
+      case 'employees':
+          this.props.updateAttributes(this.props.employeesURL[0], this.props.selectedEmployee)
+          this.props.setSaveButton();
+          break; 
+      default:
+        return
+    }
+       
+    
+  }
 
   render() {
 
@@ -57,16 +82,16 @@ class AttributesPanel extends Component {
                       <Row>
                         <Nav variant="tabs" defaultActiveKey="projects_overview" style={{ justifycontent: 'right', textAlign: 'right' }}>
                           <Nav.Item>
-                            <Nav.Link onClick={() => this.props.setPanel("projects_overview")}>Projects Overview</Nav.Link>
+                            <Nav.Link onClick={() => this._handleNavigation("projects_overview")}>Projects Overview</Nav.Link>
                           </Nav.Item>
                           <Nav.Item>
-                            <Nav.Link onClick={() => this.props.setPanel("project_details")}>Project Details</Nav.Link>
+                            <Nav.Link onClick={() => this._handleNavigation("project_details")}>Project Details</Nav.Link>
                           </Nav.Item>
                           <Nav.Item>
-                            <Nav.Link onClick={() => this.props.setPanel("contractors")}>Contractors</Nav.Link>
+                            <Nav.Link onClick={() => this._handleNavigation("contractors")}>Contractors</Nav.Link>
                           </Nav.Item>
                           <Nav.Item>
-                            <Nav.Link onClick={() => this.props.setPanel("employees")}>Employees</Nav.Link>
+                            <Nav.Link onClick={() => this._handleNavigation("employees")}>Employees</Nav.Link>
                           </Nav.Item>
                         </Nav>
                       </Row>
@@ -109,7 +134,11 @@ const mapStateToProps = state => ({
   isVisible: state.map.attributesComponent,
   card: state.attributes.card,
   featureURLs: state.config.featureURLs,
-  saveButton: state.attributes.saveButton
+  contractorsURL: state.config.contractorsURL,
+  employeesURL: state.config.employeesURL,
+  saveButton: state.attributes.saveButton,
+  selectedEmployee: state.attributes.selectedEmployee,
+  selectedContractor: state.attributes.selectedContractor,
 });
   
   const mapDispatchToProps = dispatch => {

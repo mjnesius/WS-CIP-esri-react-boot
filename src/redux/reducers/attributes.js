@@ -45,6 +45,13 @@ export default (state = initialState, action) => {
       }
     case types.SAVE_BUTTON:
       //console.log("set FIELDS: " + JSON.stringify(action.payload));
+      if(action.payload.deactivate){
+        console.log("set save button to flase ");
+        return {
+          ...state,
+          saveButton: true
+        } 
+      }
       return {
         ...state,
         saveButton: !state.saveButton
@@ -85,8 +92,11 @@ export const actions = {
       data: data
     }
   }),
-  setSaveButton: card => ({
+  setSaveButton: deactivate => ({
     type: types.SAVE_BUTTON,
+    payload:{
+      deactivate: deactivate
+    }
   }),
   setSelected: (_item, _type) => ({
     type: types.SET_SELECTED,
