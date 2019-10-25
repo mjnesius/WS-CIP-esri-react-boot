@@ -22,6 +22,8 @@ import {StoreContext} from "./StoreContext";
 //  Components
 import ProjectsTable from './ProjectsTable';
 import ProjectDetails from './ProjectDetails';
+import EmployeeAttributes from './EmployeeAttributes';
+import ContractorAttributes from './ContractorAttributes';
 import SaveIcon from 'calcite-ui-icons-react/SaveIcon';
 import Button from 'calcite-react/Button';
 
@@ -36,80 +38,47 @@ const Container = styled.div`
   justify-content: center;
   overflow-y: auto;
 `;
-// const Button = styled.button`
-//   position: absolute; right: 0;
-//   float: right;
-//   text-align: right;
-//   flex-grow: 2;
-//   justify-content: right;
-//   overflow-y: auto;
-// `;
 
 
 class AttributesPanel extends Component {
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     card: "projects_overview",
-  // };
-  //   this._onSelect = this._onSelect.bind(this)
-  // }
-  
-  // _onSelect(link) {
-  //   if(!(this.state.card === link)){
-  //     console.log(this.state.card, "   ", link)
-  //     this.props.setPanel(link);
-  //   } 
-  // }
-  
-  
+
   render() {
-    //console.log(JSON.stringify(this.props.projects))
-    // var project;
-    // for (var proj in this.props.projects){
-    //     //console.log(typeof proj);
-    //     //console.log( proj);
-    //     project = this.props.projects[proj];
-    //     //console.log(typeof project);
-    //     //console.log( project);
-    //     break;
-    // }
-    //console.log(typeof project);
-   // console.log(JSON.stringify(project.attributes))
 
     if (this.props.isVisible) {
-      console.log("project attributes component")
+      //console.log("project attributes component")
       return (
         <Container>
           <Row style={{ flex: 1 }}>
             <Col style={{ flex: 3 }}>
               <Card style={{ flex: 4 }}>
                 <Card.Header className="bg-light m-1 p-1" style={{ flex: 4 }}>
-                  <Row>
-                  
-                  <Col style={{ flex: 3 }}>
-                  <Nav variant="tabs" defaultActiveKey="projects_overview" style={{ justifycontent: 'right', textAlign: 'right'}}>
-                    <Nav.Item>
-                      <Nav.Link onClick={() => this.props.setPanel("projects_overview")}>Projects Overview</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                      <Nav.Link onClick={() => this.props.setPanel("project_details")}>Project Details</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                      <Nav.Link onClick={() => this.props.setPanel("contractors")}>Contractors</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                      <Nav.Link onClick={() => this.props.setPanel("inspectors")}>Inspectors</Nav.Link>
-                    </Nav.Item>
-                  </Nav></Col>
-                  <Col style={{ flex: 3, justifyContent: 'right', textAlign: 'right' }}>
-                  <Button className="mx-2 p-1"
-                    onClick={() =>this.props.updateAttributes(this.props.featureURLs[0], this.props.projects)}
-                    icon={<SaveIcon size={16}/>}
-                    iconPosition="before"> Save
+                  <Row className=" mx-2 p-1">
+                    <Col style={{ flex: 3 }}>
+                      <Row>
+                        <Nav variant="tabs" defaultActiveKey="projects_overview" style={{ justifycontent: 'right', textAlign: 'right' }}>
+                          <Nav.Item>
+                            <Nav.Link onClick={() => this.props.setPanel("projects_overview")}>Projects Overview</Nav.Link>
+                          </Nav.Item>
+                          <Nav.Item>
+                            <Nav.Link onClick={() => this.props.setPanel("project_details")}>Project Details</Nav.Link>
+                          </Nav.Item>
+                          <Nav.Item>
+                            <Nav.Link onClick={() => this.props.setPanel("contractors")}>Contractors</Nav.Link>
+                          </Nav.Item>
+                          <Nav.Item>
+                            <Nav.Link onClick={() => this.props.setPanel("employees")}>Employees</Nav.Link>
+                          </Nav.Item>
+                        </Nav>
+                      </Row>
+                    </Col>
+                    <Col style={{ flex: 3, justifyContent: 'right', textAlign: 'right' }}>
+                      <Button clear disabled={this.props.saveButton} className="m-1 mx-3 p-1 px-2"
+                        onClick={() => this.props.updateAttributes(this.props.featureURLs[0], this.props.projects)}
+                        icon={<SaveIcon size={16} />}
+                        iconPosition="before"> Save
                     </Button>
-                  <Button className="m-1 mx-3 p-1 px-2" white="true" onClick={() => this.props.toggleAttributes()}>X</Button>
-                  </Col>
+                      <Button className="m-1 mr-n3 p-1 px-2" red style={{ fontSize: 20 }} onClick={() => this.props.toggleAttributes()}>X</Button>
+                    </Col>
                   </Row>
                   
                 </Card.Header>
@@ -117,8 +86,9 @@ class AttributesPanel extends Component {
                   <div className="overflow-y" style={{ flex: 5 }}>
                     {this.props.card === "projects_overview" && <ProjectsTable />}
                     {this.props.card === "project_details" && <ProjectDetails />}
+                    {this.props.card === "employees" && <EmployeeAttributes />}
+                    {this.props.card === "contractors" && <ContractorAttributes selectedContractor={this.props.selectedContractor}/>}
                   </div>
-
                 </Card.Body>
               </Card>
             </Col>
@@ -138,7 +108,8 @@ const mapStateToProps = state => ({
   projects: state.map.features,
   isVisible: state.map.attributesComponent,
   card: state.attributes.card,
-  featureURLs: state.config.featureURLs
+  featureURLs: state.config.featureURLs,
+  saveButton: state.attributes.saveButton
 });
   
   const mapDispatchToProps = dispatch => {

@@ -22,6 +22,7 @@ import * as esriLoader from 'esri-loader';
 export function bootstrapJSAPI(portalUrl, jsapiUrl, jsapiV4) {
   return new Promise((resolve, reject) => {
     if (esriLoader.isLoaded()) {
+        console.log("esriLoader isLoaded == true (in bootstrapJSAPI)");
       resolve();
       return;
     }
@@ -29,16 +30,19 @@ export function bootstrapJSAPI(portalUrl, jsapiUrl, jsapiV4) {
     const options = {
       url: jsapiUrl
     };
+    console.log("esriLoader.loadScript(options). options = ", JSON.stringify(options))
 
     esriLoader
       .loadScript(options)
       .then(() => {
+        console.log("loadScript complete now running initAPI (in bootstrapJSAPI): ");
         initApi(portalUrl, jsapiV4).then(
           success => resolve(),
           error => reject(error)
         );
       })
       .catch(err => {
+        console.log("loadScript failed (?) (in bootstrapJSAPI): ", err);
         reject(err);
       });
   });
@@ -47,19 +51,24 @@ export function bootstrapJSAPI(portalUrl, jsapiUrl, jsapiV4) {
 function initApi(portalUrl, jsapiV4) {
   return new Promise((resolve, reject) => {
     if (jsapiV4 && portalUrl) {
+        console.log("1. initAPI ");
       esriLoader
         .loadModules(['esri/identity/IdentityManager'])
         .then(([IdentityManager]) => {
+            console.log("resolve with the IdentityManager")
           resolve();
         });
     } else if (!jsapiV4 && portalUrl) {
+        console.log("2. initAPI ");
       esriLoader
         .loadModules(['esri/IdentityManager', 'esri/arcgis/utils'])
         .then(([IdentityManager, arcgisUtils]) => {
+            console.log("2. LoadModules success ");
           arcgisUtils.arcgisUrl = `${portalUrl}/sharing/rest/content/items`;
           resolve();
         });
     } else if (!portalUrl) {
+        console.log("3. initAPI , NO PORTAL");
       resolve();
     }
   });
@@ -71,26 +80,15 @@ export function createView(mapConfig, node, isScene = false) {
             reject('JSAPI is not yet loaded');
             return;
         }
-
-        if (isScene) {
-          initScene(mapConfig, node).then(
-              response => {
+        initMap(mapConfig, node).then(
+            response => {
                 resolve(response);
-              },
-              error => {
-                  reject(error);
-              }
-          );
-        } else {
-          initMap(mapConfig, node).then(
-              response => {
-                  resolve(response);
-              },
-              error => {
-                  reject(error);
-              }
-          );
-        }
+            },
+            error => {
+                reject(error);
+            }
+        );
+        
     });
 }
 
@@ -157,61 +155,4 @@ function initMap(mapConfig, node) {
     });
 }
 
-function initScene(mapConfig, node) {
-    // if there is a portal ID then this is a web scene
-    if (mapConfig.id) {
-        return new Promise((resolve, reject) => {
-            esriLoader.loadModules([
-                'esri/WebScene',
-                'esri/views/SceneView',
-            ]).then( ([WebScene, SceneView]) => {
 
-                let webmap = new WebScene({
-                    portalItem: {
-                        id: mapConfig.id
-                    }
-                });
-
-                new SceneView({
-                    map: webmap,
-                    container: node
-                }).when(
-                    response => {
-                        resolve({
-                            view: response,
-                        });
-                    },
-                    error => {
-                        reject(error);
-                    }
-                )
-            });
-        });
-    }
-    // else if there is no portal ID then we return the default scene view
-    return new Promise((resolve, reject) => {
-        esriLoader.loadModules([
-            'esri/Map',
-            'esri/views/SceneView'
-        ]).then( ([Map, SceneView]) => {
-
-            const map = new Map({
-                basemap: mapConfig.basemap
-            });
-
-            new SceneView({
-                container: node,
-                map: map
-            }).when(
-                response => {
-                    resolve({
-                        view: response,
-                    });
-                },
-                error => {
-                    reject(error);
-                }
-            );
-        });
-    });
-}

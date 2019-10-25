@@ -29,11 +29,14 @@
     }
   },
 
-  "sceneConfig": {
-    "basemap": "dark-gray-vector"
-  },
 
   "featureURLs": [
     "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/arcgis/rest/services/WaterSewerPM/FeatureServer"
+  ],
+  "contractorsURL": [
+    "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/ArcGIS/rest/services/WaterSewerPM/FeatureServer/1"
+  ],
+  "employeesURL": [
+    "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/ArcGIS/rest/services/WaterSewerPM/FeatureServer/2"
   ]
 }

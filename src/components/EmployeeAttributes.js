@@ -6,13 +6,13 @@ import { actions as attributeActions } from '../redux/reducers/attributes';
 import { actions as mapActions } from '../redux/reducers/map';
 import{StoreContext} from "./StoreContext";
 import { connect } from 'react-redux';
-import {getColumnsFromFields, parseProjectData, parseDomainValues} from '../redux/selectors';
+import {getColumnsFromFields, parseEmployeesData, parseDomainValues} from '../redux/selectors';
 
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 
-class ProjectsTable extends React.Component {
+class EmployeeAttributes extends React.Component {
   constructor(props) {
     super();
     // this.state ={
@@ -29,7 +29,7 @@ class ProjectsTable extends React.Component {
         onBlur={e => {
           console.log("blur event")
           
-          const data = [...this.props.projects];
+          const data = [...this.props.employees];
           data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
           if (this.props.saveButton){
             console.log("setSaveButton")
@@ -38,7 +38,7 @@ class ProjectsTable extends React.Component {
           //this.setState({ data });
         }}
         dangerouslySetInnerHTML={{
-          __html: this.props.projects[cellInfo.index][cellInfo.column.id]
+          __html: this.props.employees[cellInfo.index][cellInfo.column.id]
         }}
       />
     );
@@ -46,15 +46,18 @@ class ProjectsTable extends React.Component {
 
   render() {
     //const { data } = this.state;
-    const columns = this.props.fields.map((fld) => {
-      //console.log(fld.name.length);
+    const filterCol = this.props.fields.filter (col => {
+        return col.name !== "OBJECTID"
+    })
+    const columns = filterCol.map((fld) => {
+      console.log(fld.name);
       var _filter =  fld.name.toUpperCase().indexOf("COST") > -1 ? false : true;
-      return {Header: fld.name,  Cell: this.renderEditable, id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: _filter}
+      return {Header: fld.alias,  Cell: this.renderEditable, id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: _filter}
     })
 
     return (
       <div className="overflow-y">
-          <ReactTable defaultPageSize={10} className="-striped -highlight" columns={columns} data={this.props.projects}
+          <ReactTable defaultPageSize={10} className="-striped -highlight" columns={columns} data={this.props.employees}
           defaultFilterMethod = {(filter, row, column) => {
             const id = filter.pivotId || filter.id
             return row[id] !== undefined ? String(row[id]).toUpperCase().indexOf(String(filter.value).toUpperCase()) > -1: true}
@@ -68,7 +71,7 @@ class ProjectsTable extends React.Component {
                 console.log('It was in this row:', rowInfo)
                 //console.log('It was in this table instance:', instance)
                 this.props.selectFeature(rowInfo.original);
-                this.props.setPanel("project_details")
+                //this.props.setPanel("project_details")
                 // IMPORTANT! React-Table uses onClick internally to trigger
                 // events like expanding SubComponents and pivots.
                 // By default a custom 'onClick' handler will override this functionality.
@@ -87,9 +90,10 @@ class ProjectsTable extends React.Component {
 }
 
 // selector functions to reshape the state
+//getColumnsFromFields(state, "employees")
 const mapStateToProps = state => ({
-    fields: getColumnsFromFields(state, "features"),
-    projects: parseProjectData(state),
+    fields: state.map.employees['fields'],
+    employees: parseEmployeesData(state),
     isVisible: state.map.attributesComponent,
     domains: parseDomainValues(state),
     saveButton: state.attributes.saveButton
@@ -101,4 +105,4 @@ const mapStateToProps = state => ({
       }, dispatch);
     } 
   
-  export default connect(mapStateToProps, mapDispatchToProps, null, {context:StoreContext}) (ProjectsTable);
+  export default connect(mapStateToProps, mapDispatchToProps, null, {context:StoreContext}) (EmployeeAttributes);

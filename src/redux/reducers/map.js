@@ -17,7 +17,11 @@ export const types = {
   APPLY_FILTER: "APPLY_FILTER",
   TOGGLE_ATTRIBUTES: "TOGGLE_ATTRIBUTES",
   SET_FIELDS: "SET_FIELDS",
-  SELECT_FEATURE: "SELECT_FEATURE"
+  SELECT_FEATURE: "SELECT_FEATURE",
+  SET_CONTRACTORS: "SET_CONTRACTORS",
+  SET_EMPLOYEES: "SET_EMPLOYEES",
+  GET_CONTRACTORS : "GET_CONTRACTORS",
+  GET_EMPLOYEES : "GET_EMPLOYEES",
 };
 
 // REDUCERS //
@@ -31,7 +35,9 @@ export const initialState = {
   defExp: "",
   fields:[{}],
   domains: [{}],
-  selectedFeature:{}
+  selectedFeature:{},
+  contractors: [],
+  employees: []
 };
 
 export default (state = initialState, action) => {
@@ -41,11 +47,27 @@ export default (state = initialState, action) => {
         ...state,
         loaded: true
       };
+    case types.SET_CONTRACTORS:
+      console.log("set contractors: " + JSON.stringify(action));
+      return {
+        ...state,
+        contractors: action.payload
+      };
+    case types.SET_EMPLOYEES:
+      console.log("set employees: " + JSON.stringify(action));
+      return {
+        ...state,
+        employees: action.payload
+      };
     case types.SET_FEATURES:
-      //console.log("set features: " + JSON.stringify(action));
+      console.log("set features: " + JSON.stringify(action));
       var _stat = [...new Set(action.payload.features.map(feature => feature.attributes.Status ||"null"))];
+      //console.log("set features _stat: " + JSON.stringify(_stat));
+      _stat.push("All Statuses");
       var _years= [...new Set(action.payload.features.map(feature => feature.attributes.Proposed_Year || "null"))];
+      _years.push("All Years");
       var _managers= [...new Set(action.payload.features.map(feature => feature.attributes.Project_Manager || "null"))];
+      _managers.push("All Managers");
       return {
         ...state,
         features: action.payload.features,
@@ -66,7 +88,7 @@ export default (state = initialState, action) => {
         //filter: "OBJECTID > 0 & " + action.payload
       };
     case types.TOGGLE_ATTRIBUTES:
-      console.log("TOGGLE_ATTRIBUTES: " + JSON.stringify(action.payload));
+      console.log("TOGGLE_ATTRIBUTES: " + JSON.stringify(action));
       return {
         ...state,
         attributesComponent: !state.attributesComponent
@@ -130,5 +152,17 @@ export const actions = {
   toggleAttributes: () => ({
     type: types.TOGGLE_ATTRIBUTES,
     payload: {}
+  }),
+  getContractors: (tableUrl) => ({
+    type: types.GET_CONTRACTORS,
+    payload: {
+      url: tableUrl
+    }
+  }),
+  getEmployeess: (tableUrl) => ({
+    type: types.GET_EMPLOYEES,
+    payload: {
+      url: tableUrl
+    }
   })
 };

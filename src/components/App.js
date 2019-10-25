@@ -17,7 +17,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as authActions } from '../redux/reducers/auth';
 import { actions as configActions } from '../redux/reducers/config';
-import{StoreContext} from "./StoreContext";
+import {StoreContext} from "./StoreContext";
 
 // Components
 import AuthManager from './esri/auth/AuthManager';
@@ -45,6 +45,7 @@ class App extends Component {
         this.props.config.jsapiV4,
         this.props.config.loginWithPopup
       );
+      console.log("create authManager, running startup()");
       window.authManager.startup().then(this.props.checkAuth);
     }
   }

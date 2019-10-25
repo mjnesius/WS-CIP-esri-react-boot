@@ -1,43 +1,45 @@
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { setFilter } from '../../services/api'; //getFeatures,
+//getTables(FeatureUrl, _layerID)
+import { getTables } from '../../services/api'; 
 import { types as mapActions } from '../reducers/map';
 
-// Worker Saga: gets fired with SET_FEATURES // note: uses generator functions (special iterator functions, execute until they reach 'yield'
-// function* fetchFeatures (action) {
-//     try {
-//         console.log("-map.js fetchFeatures(): "+ JSON.stringify(action))
-//         // call API to fetch config
-//         const features = yield call(getFeatures);
+// Worker Saga:  // note: uses generator functions (special iterator functions, execute until they reach 'yield'
 
-//         // Put config in store
-//         yield put({
-//             type: mapActions.SET_FEATURES,
-//             payload: features
-//         });
+ // @_data param,  pass in the features obj from state filtered based on the OBJECTID being updated
+ //export function updateFeatures(FeatureUrl, _data) {
 
-//     } catch (e) {
-//         console.log('SAGA ERROR: map/fetchFeatures, ', e);
-//     }
-// }
+function* getContractors(action) {
+    console.log("\n\ngetContractors action: ", JSON.stringify(action))
+    try {
+        const contractors = yield call(getTables, action.payload.url);
+        //put() is an Effect, a plain object that is fulfilled by middleware (e.g. the Saga will be 'paused' until the effect is complete)
+        console.log("\n\tgetTables resp: ", JSON.stringify(contractors))
+        yield put({
+            type: mapActions.SET_CONTRACTORS,
+            payload: contractors
+        });
+    } catch (e) {
+        console.error('SAGA ERROR: getContractors, ', e);
+    }
+}
+function* getEmployees(action) {
+    console.log("\n\ngetEmployees action: ", JSON.stringify(action))
+    try {
+        const employees = yield call(getTables, action.payload.url);
+        console.log("\n\tgetTables resp: ", JSON.stringify(employees))
+        //put() is an Effect, a plain object that is fulfilled by middleware (e.g. the Saga will be 'paused' until the effect is complete)
+        yield put({
+            type: mapActions.SET_EMPLOYEES,
+            payload: employees
+        });
+    } catch (e) {
+        console.error('SAGA ERROR: getEmployees, ', e);
+    }
+}
 
-// function* setFilters (action) {
-//     try {
-//         // call API apply filter
-//         const features = yield call(setFilter);
-
-//         // Put filtered features in store
-//         yield put({
-//             type: mapActions.SET_FEATURES,
-//             payload: features
-//         });
-
-//     } catch (e) {
-//         console.log('SAGA ERROR: map/setFilters, ', e);
-//     }
-// }
-
-// // WATCHER: gets tied into Redux via createStore() using applyMiddleware() //
-// export function* watchFetchFeatures() {
-//     //yield takeLatest(mapActions.SET_FEATURES, fetchFeatures);
-//     yield takeLatest(mapActions.APPLY_FILTER, setFilters);
-// }
+// Saga WATCHER //
+// takeLatest does not allow concurrent fetches, it'll replace a pending fetch with the most recent
+export function* watchStartAPI() {
+    yield takeLatest(mapActions.GET_CONTRACTORS, getContractors);
+    yield takeLatest(mapActions.GET_EMPLOYEES, getEmployees);
+}

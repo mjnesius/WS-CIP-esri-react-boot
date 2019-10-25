@@ -14,13 +14,16 @@
  */
 
 import { makeRequest } from "./request";
-import { updateFeatures as updateFeatureLayer} from "@esri/arcgis-rest-feature-layer";
+import { updateFeatures as updateFeatureLayer } from "@esri/arcgis-rest-feature-layer";
+//import { queryFeatures } from '@esri/arcgis-rest-feature-layer';
+import { request } from '@esri/arcgis-rest-request';
 
 export function getAppConfig() {
   return new Promise((resolve, reject) => {
     makeRequest({
-      url: `http://tipdbt2/WaterSewerProjects/static/config.json`,
-      method: "get"
+      url: `/config.json`,
+      method: "get",
+      hideCredentials: true
     }).then(resp => resolve(resp));
   });
 }
@@ -34,21 +37,15 @@ export function logout(portalUrl) {
   });
 }
 
-/**
- * Make a request using fetch()
- * @param  { Object } params Object containing key/value parameters to pass to fetch()
- * @return { Promise}        Promise returned by fetch()
- */
 
  // @_data param,  pass in the features obj from state filtered based on the OBJECTID being updated
 export function updateFeatures(FeatureUrl, _data) {
-  console.log("\n\tupdateFeatures()\t FeatureUrl", FeatureUrl, "\l\t_data\t", _data);
+  console.log("\n\tupdateFeatures()\t FeatureUrl", FeatureUrl, "\t_data\t", _data);
   let persistObj = JSON.parse(localStorage.getItem('esri_auth_id'));
-  console.log("\n\persistObj\t ", persistObj);
+  console.log("\n\tpersistObj\t ", persistObj);
   let credObj = persistObj['credentials'][0];
   let tokenObj = credObj['token'];
-  //let featureObj = {};
-  //featureObj['features'] = _data
+  
   return new Promise ((resolve, reject) => {
     updateFeatureLayer({
       url: `${FeatureUrl}/0/updateFeatures?&token=${tokenObj}`,
@@ -56,14 +53,24 @@ export function updateFeatures(FeatureUrl, _data) {
       httpMethod: "POST"
     }).then(resp => resolve(resp), error => reject(error));
   })
-  // return new Promise((resolve, reject) => {
-  //   //?token=${tokenObj}&
-  //   makeRequest({
-  //     url: `${FeatureUrl}/0/updateFeatures?&token=${tokenObj}`,
-  //     handleAs: "text",
-  //     method: "post",
-  //     features: _data,
-  //     isFormData: true
-  //   }).then(resp => resolve(resp), error => reject(error));
-  // });
+}
+
+export function getTables(tableUrl) {
+  console.log("\n\ttableUrl()\t tableUrl", tableUrl);
+  let persistObj = JSON.parse(localStorage.getItem('esri_auth_id'));
+  let credObj = persistObj['credentials'][0];
+  let tokenObj = credObj['token'];
+
+  return new Promise ((resolve, reject) => {
+    request( `${tableUrl}/query?`,{
+      params: {
+        httpMethod: "GET",
+        outFields: "*",
+        f: "json",
+        where: "1=1",
+        token: `${tokenObj}`,
+        returnGeometry: false
+      }
+    }).then(resp => resolve(resp), error => reject(error));
+  })
 }

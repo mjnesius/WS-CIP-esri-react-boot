@@ -3,13 +3,18 @@ export const types = {
     SET_PANEL: "SET_PANEL",
     UPDATE_ATTRIBUTES: "UPDATE_ATTRIBUTES",
     UPDATE_SUCCESS: "UPDATE_SUCCESS",
-    UPDATE_FAIL: "UPDATE_FAIL"
+    UPDATE_FAIL: "UPDATE_FAIL",
+    SAVE_BUTTON: "SAVE_BUTTON",
+    SET_SELECTED: "SET_SELECTED"
   };
   
   // REDUCERS //
   export const initialState = {
     card: "projects_overview",
-    update_success: Boolean
+    updateSuccess: Boolean,
+    saveButton: true,
+    selectedContractor: {},
+    selectedEmployee: {}
   };
 
 export default (state = initialState, action) => {
@@ -29,14 +34,37 @@ export default (state = initialState, action) => {
       //console.log("set FIELDS: " + JSON.stringify(action.payload));
       return {
         ...state,
-        update_success: true
+        updateSuccess: true,
+        saveButton: true
       }
     case types.UPDATE_FAIL:
       //console.log("set FIELDS: " + JSON.stringify(action.payload));
       return {
         ...state,
-        update_success: false
+        updateSuccess: false
       }
+    case types.SAVE_BUTTON:
+      //console.log("set FIELDS: " + JSON.stringify(action.payload));
+      return {
+        ...state,
+        saveButton: !state.saveButton
+      }
+    case types.SET_SELECTED:
+      //console.log("set FIELDS: " + JSON.stringify(action.payload));
+      if (action.payload.type.includes('contractors')){
+        return {
+          ...state,
+          selectedContractor: action.payload.item
+          }
+      }
+
+      else{
+        return {
+        ...state,
+        selectedEmployee: action.payload.item
+        }
+      }
+       
     default:
       return state;
   }
@@ -55,6 +83,16 @@ export const actions = {
     payload: {
       url: featureURL,
       data: data
+    }
+  }),
+  setSaveButton: card => ({
+    type: types.SAVE_BUTTON,
+  }),
+  setSelected: (_item, _type) => ({
+    type: types.SET_SELECTED,
+    payload: {
+      item: _item,
+      type: _type
     }
   })
 };

@@ -3,28 +3,46 @@ import { createSelector } from 'reselect';
 
 
 //reshape state for the table components
-const parseFields = (state) => {
+const parseFields = (state, _propName) => {
     var _fields =[];
-    //console.log("parseFields\n",JSON.stringify(state.map.fields))
-    //var fldList = state.map.fields["fields"];
-    //console.log("fldList\n",JSON.stringify(fldList))
-    state.map.fields.forEach((fld) => {
-        var _fld = {};
-        //console.log(typeof fld);
-        //console.log( fld);
-        //console.log( fld['name']);
-        _fld['name'] = fld['name'];//state.map.fields[fld].name;
-        _fld['type'] = fld['type'];//state.map.fields[fld].type;
-        //console.log("state.map.fields[fld]", JSON.stringify(state.map.fields[fld]));
-        //console.log( project);
-        _fields.push(_fld);
-    })
-    //console.log(JSON.stringify(_fields));
-    var visibleFields = ["Project_Name", "Project_Type", "Project_Location", "Project_Originator", "Proposed_Year", "WRE_ProjectNo", "Project_Manager",
-         "Total_Cost", "Inspector", "Contractor"]
-    const _fieldsFiltered = _fields.filter(fld => visibleFields.indexOf(fld.name) > -1);
-    //console.log(JSON.stringify(_fieldsFiltered));
-    return _fieldsFiltered
+    switch (_propName){
+        case "features":
+            state.map.fields.forEach((fld) => {
+                var _fld = {};
+                _fld['name'] = fld['name'];//state.map.fields[fld].name;
+                _fld['type'] = fld['type'];//state.map.fields[fld].type;
+                _fields.push(_fld);
+            })
+            console.log("\nparseFields 'features'",JSON.stringify(_fields));
+            var visibleFields = ["Project_Name", "Project_Type", "Project_Location", "Project_Originator", "Status", "Proposed_Year", "WRE_ProjectNo", "Project_Manager",
+                "Total_Cost", "Inspector", "Contractor"]
+            const _fieldsFiltered = _fields.filter(fld => visibleFields.indexOf(fld.name) > -1);
+            //console.log(JSON.stringify(_fieldsFiltered));
+            return _fieldsFiltered
+        case "employees":
+            state.map.employees['fields'].forEach((fld) => {
+                var _fld = {};
+                _fld['name'] = fld['name'];//state.map.fields[fld].name;
+                _fld['type'] = fld['type'];//state.map.fields[fld].type;
+                _fields.push(_fld);
+            })
+            return _fields
+        case "contractors":
+            state.map.contractors.forEach((emp) => {
+                var _fld = {};
+                emp['fields'].forEach((fld) => {
+                    _fld['name'] = fld['name'];//state.map.fields[fld].name;
+                    _fld['type'] = fld['type'];//state.map.fields[fld].type;
+                    _fields.push(_fld);
+                })
+            })
+            return _fields
+        default:
+            return _fields
+    }
+        
+
+    
 }
 
 const parseProjects = (state) => {
@@ -39,6 +57,23 @@ const parseProjects = (state) => {
         _data.push(prj['attributes']);
     })
     //console.log(JSON.stringify(_data));
+    return _data
+}
+
+const parseContractors = (state) => {
+    var _data = [];
+    state.map.contractors['features'].forEach((con) => {
+        _data.push(con['attributes']);
+    })
+    return _data
+}
+
+const parseEmployeess = (state) => {
+    var _data = [];
+    state.map.employees['features'].forEach((emp) => {
+        //console.log(emp);
+        _data.push(emp['attributes']);
+    })
     return _data
 }
 
@@ -88,10 +123,10 @@ const parseDomains = (state) => {
 //createSelector takes an array of input-selectors and a transform function as its arguments.
 //If the Redux state tree is changed in a way that causes the value of an input-selector to change,
 // the selector will call its transform function with the values of the input-selectors as arguments and return the result.
-export const getColumnsFromFields = (state) => createSelector(
+export const getColumnsFromFields = (state, _propName) => createSelector(
     [parseFields], (fields) => 
         fields || []
-    )(state)
+    )(state, _propName)
 
 export const parseProjectData = (state) => createSelector(
     [parseProjects], (projects) =>
@@ -101,4 +136,14 @@ export const parseProjectData = (state) => createSelector(
 export const parseDomainValues = (state) => createSelector(
     [parseDomains], (fields) =>
     fields || []
+)(state)
+
+export const parseContractorData = (state) => createSelector(
+    [parseContractors], (contractor) =>
+    contractor || []
+)(state)
+
+export const parseEmployeesData = (state) => createSelector(
+    [parseEmployeess], (contractor) =>
+    contractor || []
 )(state)
