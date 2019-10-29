@@ -6,7 +6,8 @@ import { actions as attributeActions } from '../redux/reducers/attributes';
 import { actions as mapActions } from '../redux/reducers/map';
 import{StoreContext} from "./StoreContext";
 import { connect } from 'react-redux';
-import {getColumnsFromFields, parseEmployeesData, parseDomainValues} from '../redux/selectors';
+//getColumnsFromFields,
+import { parseEmployeesData, parseDomainValues} from '../redux/selectors';
 
 // Import React Table
 import ReactTable from "react-table";

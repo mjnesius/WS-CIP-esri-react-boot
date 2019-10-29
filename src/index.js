@@ -26,11 +26,19 @@ import { homepage } from '../package.json';
 import App from './components/App';
 //import FilterComponent from './components/Filters';
 // Styles //
-import CalciteThemeProvider from 'calcite-react/CalciteThemeProvider';
+import CalciteThemeProvider,{ CalciteTheme } from 'calcite-react/CalciteThemeProvider';
 import { GlobalStyle } from './styles/global';
 import './styles/fonts.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+// COT navy cmyk: 100, 57, 0, 40
+const COTtheme = {
+  ...CalciteTheme,
+  palette: {
+    ...CalciteTheme.palette,
+    COTblue: '#004299'
+  }
+};
 
 // App runs at the root locally, but under /{homepage} in production
 let basename;
@@ -43,7 +51,7 @@ export const store = initStore();
 ReactDOM.render(
   <Provider store={store} context={StoreContext}>
       <BrowserRouter basename={basename}>
-        <CalciteThemeProvider>
+        <CalciteThemeProvider theme={COTtheme}>
           <GlobalStyle />
           <Route path='/' component={App} />
           

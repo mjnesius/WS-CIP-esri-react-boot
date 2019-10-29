@@ -11,10 +11,8 @@ import { parseContractorData, parseDomainValues } from '../redux/selectors';
 import{StoreContext} from "./StoreContext";
 import { connect } from 'react-redux';
 
-import Panel, {
-    PanelTitle,
-    PanelText
-  } from 'calcite-react/Panel';
+//, {PanelTitle,PanelText } 
+import Panel from 'calcite-react/Panel';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col'
 
@@ -82,6 +80,10 @@ class ContractorAttributes extends Component{
         return items;
     }
 
+    _getAttribute(fld) {
+        return this.props.selectedContractor[fld] ? this.props.selectedContractor[fld]: ''
+    }
+
     componentDidUpdate(prevProps){
         console.log("component didupate(): \n\tprevProps.selectedContractor: ", prevProps.selectedContractor, "\n\tthis.props.selectedContractor: ", this.props.selectedContractor)
         if(prevProps.selectedContractor !== this.props.selectedContractor){
@@ -110,28 +112,31 @@ class ContractorAttributes extends Component{
                                     <FormControlLabel style={{ minWidth: '160px' }}>Contractor</FormControlLabel>
                                     <input type="textarea" id="Contractor" style={{ maxWidth: '100%', resize: "both" }}
                                         onChange={this._handleChangeEvent.bind(this)}
-                                        value={this.props.selectedContractor['Contractor']}
+                                        value={this.props._getAttribute('Contractor')}
                                          />
                                 </FormControl>
                             </Col>
                             <Col sm="4">
                                 <FormControl>
                                     <FormControlLabel style={{ minWidth: '120px' }}>Main Number</FormControlLabel>
-                                    <TextField id="Main_Number" value={this.props.selectedContractor['Main_Number']} onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                    <TextField id="Main_Number" value={this._getAttribute('Main_Number')} 
+                                        onChange={this._handleChangeEvent.bind(this)} fullWidth>
                                     </TextField>
                                 </FormControl>
                             </Col>
                             <Col sm="4">
                                 <FormControl error required>
                                     <FormControlLabel style={{ minWidth: '140px' }}>Contact Email</FormControlLabel>
-                                    <TextField label="Email:" id="Contact_Email" value={this.props.selectedContractor['Contact_Email']} onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                    <TextField label="Email:" id="Contact_Email" value={this._getAttribute('Contact_Email')} 
+                                        onChange={this._handleChangeEvent.bind(this)} fullWidth>
                                     </TextField>
                                 </FormControl>
                             </Col>
                             <Col sm="4">
                                 <FormControl required>
                                     <FormControlLabel style={{ minWidth: '120px' }}>Contact</FormControlLabel>
-                                    <TextField id="Contact_LastName" value={this.props.selectedContractor['Contact_LastName']} onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                    <TextField id="Contact_LastName" value={this._getAttribute('Contact_LastName')} 
+                                        onChange={this._handleChangeEvent.bind(this)} fullWidth>
                                     </TextField>
                                 </FormControl>
                             </Col>

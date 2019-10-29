@@ -1,6 +1,10 @@
-import React, { Component } from 'react';
+// COT navy cmyk: 100, 57, 0, 40
+import React from 'react'; //, { Component }
 import Search from 'calcite-react/Search';
-import moment from 'moment';
+import { CalciteTheme } from 'calcite-react/CalciteThemeProvider';
+import MagnifyingGlassIcon from 'calcite-ui-icons-react/MagnifyingGlassIcon';
+import XCircleIcon from 'calcite-ui-icons-react/MagnifyingGlassIcon';
+//import moment from 'moment';
 
 //redux
 import { bindActionCreators } from 'redux';
@@ -12,22 +16,20 @@ import { parseContractorData, parseEmployeesData, parseDomainValues, parseProjec
 import{StoreContext} from "./StoreContext";
 import { connect } from 'react-redux';
 
-import Panel, {
-    PanelTitle,
-    PanelText
-  } from 'calcite-react/Panel';
+// ,{ PanelTitle, PanelText }
+import Panel from 'calcite-react/Panel';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col'
 
-import DatePicker from 'calcite-react/DatePicker'
-import Form, {
-    FormControl,
-    FormControlLabel
-} from 'calcite-react/Form';
-import { MenuItem } from 'calcite-react/Menu';
-import TextField from 'calcite-react/TextField';
-import Select from 'calcite-react/Select';
-import styled from 'styled-components';
+// import DatePicker from 'calcite-react/DatePicker'
+// import Form, {
+//     FormControl,
+//     FormControlLabel
+// } from 'calcite-react/Form';
+// import { MenuItem } from 'calcite-react/Menu';
+// import TextField from 'calcite-react/TextField';
+// import Select from 'calcite-react/Select';
+// import styled from 'styled-components';
 // const Container = styled.div`
 //   display: inline-flex;
 //   width: 100%;
@@ -45,13 +47,14 @@ class SearchComponent extends React.Component {
         
         this.state = {
             inputValue: '',
-            selectedItem: '',
+            selectedItem: this.setSelectedItem ? this.setSelectedItem : '',
             type:''
         }
 
-        this.searchChanged = this.searchChanged.bind(this)
-        this.clearSearch = this.clearSearch.bind(this)
-        this.onUserAction = this.onUserAction.bind(this)
+        this.searchChanged = this.searchChanged.bind(this);
+        this.clearSearch = this.clearSearch.bind(this);
+        this.onUserAction = this.onUserAction.bind(this);
+        this.setSelectedItem = this.setSelectedItem.bind(this);
     }
 
     searchChanged(e) {
@@ -81,7 +84,14 @@ class SearchComponent extends React.Component {
             inputValue: '',
             selectedItem: '',
         })
-        this.props.setSelected({}, 'contractors')
+        if (this.props.type.includes('contractor')){
+            this.props.setSelected({}, 'contractors')
+        } else if (this.props.type.includes('employees')){
+            this.props.setSelected({}, 'employees')
+        } else if (this.props.type.includes('projects')){
+            this.props.selectFeature({}, 'projects')
+        }
+
     }
 
     onUserAction(inputValue, selectedItemVal) {
@@ -115,14 +125,18 @@ class SearchComponent extends React.Component {
         }
         
     }
-    setSelectItem() {
-        console.log("set items");
+    setSelectedItem() {
         if (this.props.type.includes('contractor')){
-            return this.props.selectedContractor;
+            console.log("setSelectedItem() , ",this.props.selectedContractor['Contractor'] );
+            return this.props.selectedContractor['Contractor'] ? this.props.selectedContractor['Contractor'] : '';
         } else if (this.props.type.includes('employees')){
-            return this.props.selectedEmployee;
+            
+            console.log("setSelectedItem() , ",this.props.selectedEmployee['Name'] );
+            return this.props.selectedEmployee['Name'] ? this.props.selectedEmployee['Name'] : '';
         } else if (this.props.type.includes('projects')){
-            return this.props.selectedProject;
+            
+            console.log("setSelectedItem() , ",this.props.selectedProject['Project_Name'] );
+            return this.props.selectedProject['Project_Name'] ? this.props.selectedProject['Project_Name']: '';
         }
         
     }
@@ -131,9 +145,12 @@ class SearchComponent extends React.Component {
         var item = ''
         if (this.props.type.includes('contractors')){
             item = this.props.selectedContractor['Contractor'] ? this.props.selectedContractor['Contractor'] : '';
-        } else{
+        } else if (this.props.type.includes('employees')) {
             item = this.props.selectedEmployee['Name'] ? this.props.selectedEmployee['Name'] : '';
+        } else if (this.props.type.includes('projects')) {
+            item = this.props.selectedProject['Project_Name'] ? this.props.selectedProject['Project_Name'] : '';
         }
+
         this.setState({
             selectedItem: item,
         });
@@ -141,19 +158,37 @@ class SearchComponent extends React.Component {
 
     render() {
         var items = this.setItems();
-        var selectedItem = this.setSelectItem();
+        var selectedItem = this.setSelectedItem();
+        //props.theme.palette.COTblue
         return (
             <div className="container-fluid">
                 <Row > 
                     <Panel style={{flex: 1}}>
                         <Col lg="12">
                             <Search
+                                fullWidth
+                                placement = "bottom"
                                 inputValue={this.state.inputValue}
                                 selectedItem= {selectedItem}/*{this.props.selectedContractor}*/
                                 items={items} /* {this.props.contractors.map(con => con['Contractor'])} */
                                 onChange={this.searchChanged}
                                 onUserAction={this.onUserAction}
                                 onRequestClear={this.clearSearch}
+                                searchIcon={
+                                    <MagnifyingGlassIcon
+                                      filled
+                                      size={16}
+                                      color={CalciteTheme.palette.lighterBlue}
+                                    />
+                                  }
+                                  clearIcon={
+                                    <XCircleIcon
+                                      filled
+                                      size={16}
+                                      color={CalciteTheme.palette.white}
+                                    />
+                                  }
+                                  containerStyle ={{backgroundColor: CalciteTheme.palette.COTblue}}
                             />
                         </Col>
                     </Panel>

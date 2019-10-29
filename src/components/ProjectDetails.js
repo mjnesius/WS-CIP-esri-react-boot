@@ -22,10 +22,9 @@ import Form, {
     FormControl,
     FormControlLabel
 } from 'calcite-react/Form';
-import Panel, {
-    PanelTitle,
-    PanelText
-  } from 'calcite-react/Panel';
+
+// , { PanelTitle, PanelText } 
+import Panel from 'calcite-react/Panel';
 import { MenuItem } from 'calcite-react/Menu';
 import TextField from 'calcite-react/TextField';
 import Select from 'calcite-react/Select';
@@ -37,6 +36,7 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   flex-grow: 2;
+  class-name: container-fluid
 `;
 
 class ProjectDetails extends React.Component {
@@ -49,14 +49,14 @@ class ProjectDetails extends React.Component {
             datePickerFocused: false,
             validation: this.validator.valid()
         }
-        this.onDateChange = this.onDateChange.bind(this);
-        this.onFocusChange = this.onFocusChange.bind(this);
+        this._onDateChange = this._onDateChange.bind(this);
+        this._onFocusChange = this._onFocusChange.bind(this);
         
         this._returnDomainDropdowns = this._returnDomainDropdowns.bind(this);
 
         
     };
-    onDateChange(date) {
+    _onDateChange(date) {
         var _date = date.valueOf();
         this.setState({
             date: _date,
@@ -89,7 +89,7 @@ class ProjectDetails extends React.Component {
         return val.target.value;
       }
 
-    activateSaveButton = (event) => {
+    _activateSaveButton = (event) => {
         if (this.props.saveButton && this.state.validation.isValid) {
             console.log("setSaveButton: ", this.props.saveButton, " \t event: ", event, "\n\tvalidation: ", this.state.validation);
             this.props.setSaveButton();
@@ -98,7 +98,7 @@ class ProjectDetails extends React.Component {
             this.props.setSaveButton("deactivate");
         }
     }
-    onFocusChange({ focused }) {
+    _onFocusChange({ focused }) {
         this.setState({
             datePickerFocused: focused,
         })
@@ -116,85 +116,96 @@ class ProjectDetails extends React.Component {
         });
         return items;
     }
+
+    _getAttribute(fld) {
+        return this.props.selectedFeature[fld] ? this.props.selectedFeature[fld]: ''
+    }
+
     // Dates  var event = new Date(1361923200000); ==> toString() Tue Feb 26 2013 19:00:00 GMT-0500 (Eastern Standard Time)
 
     render() {
         let validation = this.validator.validate(this.props.selectedFeature);
         console.log("render's validation: ", validation) 
         return (
-            <Container>
-                <Row > 
-                    <Panel style={{flex: 1}}>
+            <div className="container-fluid">
+                <Row >
+                    <Panel style={{ flex: 1 }}>
                         <Col lg="12">
-                            <SearchComponent type='projects'/>
+                            <SearchComponent type='projects' />
                         </Col>
                     </Panel>
                 </Row>
-                <Form horizontal style={{flex: 1}}>
-                    <Row style={{flex: 1}}>
-                        <Col sm="4">
-                            <FormControl >
-                                <FormControlLabel style={{ minWidth: '160px' }}>Project Name</FormControlLabel>
-                                <TextField id='Project_Name' fullWidth type="textarea" style={{maxWidth: '100%', resize: "both" }} 
-                                    value={this.props.selectedFeature['Project_Name']}
-                                    onChange={this._handleChangeEvent.bind(this)}/>
-                            </FormControl>
-                        </Col>
-                        <Col sm="4">
-                                    <FormControl>
-                                        <FormControlLabel style={{ minWidth: '120px' }}>Status</FormControlLabel>
-                                        <Select id='Status' selectedValue={this.props.selectedFeature['Status']} onChange={this._handleChangeEvent.bind(this)} fullWidth>
-                                            {this._returnDomainDropdowns('Status')}
-                                        </Select>
-                                    </FormControl>
-                        </Col>
-                        <Col sm="4">
-                            <FormControl >
-                                <FormControlLabel style={{ minWidth: '140px' }}>Project Type</FormControlLabel>
-                                <Select id ='Project_Type' selectedValue={this.props.selectedFeature['Project_Type']} onChange={this.activateSaveButton} fullWidth>
-                                {this._returnDomainDropdowns('Project_Type')}
-                                </Select>
-                            </FormControl>
-                        </Col>
-                        <Col sm="4">
-                            <FormControl>
-                                <FormControlLabel style={{ minWidth: '120px' }}>Contact</FormControlLabel>
-                                <Select selectedValue={this.props.selectedFeature['Contact']} onChange={this.activateSaveButton} fullWidth>
-                                    {this.props.optionsManagers.map((e, key) => {
-                                    return <MenuItem key={key} value={e}>{e}</MenuItem>;
-                                })} 
-                                </Select>
-                            </FormControl>
-                        </Col>
-                        <Col sm="4">
-                            <FormControl error={validation.Contact_Phone.isInvalid}>
-                                <FormControlLabel style={{ minWidth: '160px' }}>Contact Phone #</FormControlLabel>
-                                <TextField id='Contact_Phone' fullWidth type="text" style={{maxWidth: '100%', resize: "both" }} 
-                                    value={this.props.selectedFeature['Contact_Phone']}
-                                    onChange={this._handleChangeEvent.bind(this)}/>
-                            </FormControl>
-                        </Col>
-                        <Col sm="4">
-                        <FormControl>
-                            <FormControlLabel style={{ minWidth: '120px' }}>CreateDate</FormControlLabel>
-                            <DatePicker
-                                id="basicDatePicker"
-                                yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year',10).year() }}
-                                placeholder="Create Date"
-                                date={moment(new Date(this.props.selectedFeature['CreateDate']))}
-                                onDateChange={this.onDateChange}
-                                focused={this.state.datePickerFocused}
-                                onFocusChange={this.onFocusChange}
-                                numberOfMonths={1}
-                                isOutsideRange={() => {}}
-                                monthYearSelectionMode="MONTH_YEAR"
-                            />
-                        </FormControl>
-                        
-                        </Col>
-                    </Row>
-                </Form>
-            </Container>
+                <Row>
+                    <Form horizontal style={{ flex: 1 }}>
+                        <Row style={{ flex: 1 }}>
+                            <Col sm="4">
+                                <FormControl >
+                                    <FormControlLabel style={{ minWidth: '160px' }}>Project Name</FormControlLabel>
+                                    <TextField id='Project_Name' fullWidth type="textarea" style={{ maxWidth: '100%', resize: "both" }}
+                                        value={this._getAttribute('Project_Name')}
+                                        onChange={this._handleChangeEvent.bind(this)} />
+                                </FormControl>
+                            </Col>
+                            <Col sm="4">
+                                <FormControl>
+                                    <FormControlLabel style={{ minWidth: '120px' }}>Status</FormControlLabel>
+                                    <Select id='Status' selectedValue={this._getAttribute('Status')} 
+                                        onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                        {this._returnDomainDropdowns('Status')}
+                                    </Select>
+                                </FormControl>
+                            </Col>
+                            <Col sm="4">
+                                <FormControl >
+                                    <FormControlLabel style={{ minWidth: '140px' }}>Project Type</FormControlLabel>
+                                    <Select id='Project_Type' selectedValue={this._getAttribute('Project_Type')} 
+                                        onChange={this.activateSaveButton} fullWidth>
+                                        {this._returnDomainDropdowns('Project_Type')}
+                                    </Select>
+                                </FormControl>
+                            </Col>
+                            <Col sm="4">
+                                <FormControl>
+                                    <FormControlLabel style={{ minWidth: '120px' }}>Contact</FormControlLabel>
+                                    <Select selectedValue={this._getAttribute('Contact')} 
+                                        onChange={this._activateSaveButton} fullWidth>
+                                        {this.props.optionsManagers.map((e, key) => {
+                                            return <MenuItem key={key} value={e}>{e}</MenuItem>;
+                                        })}
+                                    </Select>
+                                </FormControl>
+                            </Col>
+                            <Col sm="4">
+                                <FormControl error={validation.Contact_Phone.isInvalid}>
+                                    <FormControlLabel style={{ minWidth: '160px' }}>Contact Phone #</FormControlLabel>
+                                    <TextField id='Contact_Phone' fullWidth type="text" style={{ maxWidth: '100%', resize: "both" }}
+                                        value={this._getAttribute('Contact_Phone') }
+                                        onChange={this._handleChangeEvent.bind(this)} />
+                                </FormControl>
+                            </Col>
+                            <Col sm="4">
+                                <FormControl>
+                                    <FormControlLabel style={{ minWidth: '120px' }}>CreateDate</FormControlLabel>
+                                    <DatePicker
+                                        id="basicDatePicker"
+                                        yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
+                                        placeholder="Create Date"
+                                        date={moment(new Date(this._getAttribute('CreateDate')))}
+                                        onDateChange={this._onDateChange}
+                                        focused={this.state._datePickerFocused}
+                                        onFocusChange={this._onFocusChange}
+                                        numberOfMonths={1}
+                                        isOutsideRange={() => { }}
+                                        monthYearSelectionMode="MONTH_YEAR"
+                                    />
+                                </FormControl>
+
+                            </Col>
+                        </Row>
+                    </Form>
+                </Row>
+
+            </div>
         )
     }
 }
