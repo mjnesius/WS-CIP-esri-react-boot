@@ -14,7 +14,7 @@ class FormValidator {
         // if the field isn't already marked invalid by an earlier rule
           if (rule.field in state) {
               if (!validation[rule.field].isInvalid) {
-                  console.log("rule.field: ", rule.field, "\n\tstate: ", JSON.stringify(state));
+                  //console.log("rule.field: ", rule.field, "\n\tstate: ", JSON.stringify(state));
                   // determine the field value, the method to invoke and
                   // optional args from the rule definition
                   const field_value = state[rule.field] ? state[rule.field].toString(): '';

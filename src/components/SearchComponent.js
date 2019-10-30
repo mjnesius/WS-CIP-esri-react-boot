@@ -3,7 +3,11 @@ import React from 'react'; //, { Component }
 import Search from 'calcite-react/Search';
 import { CalciteTheme } from 'calcite-react/CalciteThemeProvider';
 import MagnifyingGlassIcon from 'calcite-ui-icons-react/MagnifyingGlassIcon';
-import XCircleIcon from 'calcite-ui-icons-react/MagnifyingGlassIcon';
+import XCircleIcon from 'calcite-ui-icons-react/XCircleIcon';
+
+//import { useContext } from 'react';
+//import { ThemeContext } from 'styled-components';
+
 //import moment from 'moment';
 
 //redux
@@ -19,28 +23,20 @@ import { connect } from 'react-redux';
 // ,{ PanelTitle, PanelText }
 import Panel from 'calcite-react/Panel';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col'
+import Col from 'react-bootstrap/Col';
 
-// import DatePicker from 'calcite-react/DatePicker'
-// import Form, {
-//     FormControl,
-//     FormControlLabel
-// } from 'calcite-react/Form';
-// import { MenuItem } from 'calcite-react/Menu';
-// import TextField from 'calcite-react/TextField';
-// import Select from 'calcite-react/Select';
-// import styled from 'styled-components';
-// const Container = styled.div`
-//   display: inline-flex;
-//   width: 100%;
-//   height: 100%;
-//   text-align: center;
-//   flex-grow: 2;
-//   justify-content: center;
-//   overflow-y: auto;
-// `;
+ import styled from 'styled-components';
+ const StyledSearch = styled(Search)`
+    color: white;
+    ::placeholder,
+    ::-webkit-input-placeholder {
+        color: white;
+    }
+    :-ms-input-placeholder {
+        color: white;
+    }
+ `;
 
-  
 class SearchComponent extends React.Component {
     constructor(props) {
         super(props)
@@ -100,19 +96,6 @@ class SearchComponent extends React.Component {
             inputValue: inputValue,
             selectedItem: selectedItemVal,
         });
-        // if (this.props.type.includes('contractor')){
-        //     const contractor = this.props.contractors.filter(item => item['Contractor'].toUpperCase().includes(selectedItemVal.toUpperCase()))
-        //     console.log("contractor obj: ", contractor);
-        //     this.props.setSelected(contractor[0], 'contractors')
-        // } else if (this.props.type.includes('employees')){
-        //     const employees = this.props.employees.filter(item => item['Name'].toUpperCase().includes(selectedItemVal.toUpperCase()))
-        //     console.log("employees obj: ", employees);
-        //     this.props.setSelected(employees[0], 'employees')
-        // } else if (this.props.type.includes('projects')){
-        //     const projects = this.props.projects.filter(item => item['Project_Name'].toUpperCase().includes(selectedItemVal.toUpperCase()))
-        //     console.log("projects obj: ", projects);
-        //     this.props.setSelected(projects[0], 'projects')
-        // }
     }
     setItems() {
         console.log("set items");
@@ -142,14 +125,14 @@ class SearchComponent extends React.Component {
     }
 
     componentDidMount() {
-        var item = ''
-        if (this.props.type.includes('contractors')){
-            item = this.props.selectedContractor['Contractor'] ? this.props.selectedContractor['Contractor'] : '';
-        } else if (this.props.type.includes('employees')) {
-            item = this.props.selectedEmployee['Name'] ? this.props.selectedEmployee['Name'] : '';
-        } else if (this.props.type.includes('projects')) {
-            item = this.props.selectedProject['Project_Name'] ? this.props.selectedProject['Project_Name'] : '';
-        }
+        var item = this.setSelectedItem()//''
+        // if (this.props.type.includes('contractors')){
+        //     item = this.props.selectedContractor['Contractor'] ? this.props.selectedContractor['Contractor'] : '';
+        // } else if (this.props.type.includes('employees')) {
+        //     item = this.props.selectedEmployee['Name'] ? this.props.selectedEmployee['Name'] : '';
+        // } else if (this.props.type.includes('projects')) {
+        //     item = this.props.selectedProject['Project_Name'] ? this.props.selectedProject['Project_Name'] : '';
+        // }
 
         this.setState({
             selectedItem: item,
@@ -161,12 +144,13 @@ class SearchComponent extends React.Component {
         var selectedItem = this.setSelectedItem();
         //props.theme.palette.COTblue
         return (
-            <div className="container-fluid">
-                <Row > 
-                    <Panel style={{flex: 1}}>
-                        <Col lg="12">
-                            <Search
+            <div className="container-fluid" style={{padding: "0px", backgroundColor: "transparent"}} >
+                <Row className="m-0 p-0"> 
+                    <Panel noBorder noPadding style={{flex: 1}}>
+                        <Col lg="12" className="m-0 p-0">
+                            <StyledSearch style={{color: CalciteTheme.palette.white}}
                                 fullWidth
+                                minimal
                                 placement = "bottom"
                                 inputValue={this.state.inputValue}
                                 selectedItem= {selectedItem}/*{this.props.selectedContractor}*/
@@ -178,7 +162,7 @@ class SearchComponent extends React.Component {
                                     <MagnifyingGlassIcon
                                       filled
                                       size={16}
-                                      color={CalciteTheme.palette.lighterBlue}
+                                      color={CalciteTheme.palette.white}
                                     />
                                   }
                                   clearIcon={
@@ -188,7 +172,12 @@ class SearchComponent extends React.Component {
                                       color={CalciteTheme.palette.white}
                                     />
                                   }
-                                  containerStyle ={{backgroundColor: CalciteTheme.palette.COTblue}}
+                                  containerStyle ={{backgroundColor: CalciteTheme.palette.lightBlue,
+                                    color: 'white'
+                                }}
+                                menuStyle ={{backgroundColor: CalciteTheme.palette.lightBlue,
+                                    color: CalciteTheme.palette.blue
+                                }}
                             />
                         </Col>
                     </Panel>
@@ -198,6 +187,8 @@ class SearchComponent extends React.Component {
         )
     }
 }
+
+//SearchComponent.contextType = ThemeContext;
 
 const mapStateToProps = state => ({
     employees: parseEmployeesData(state),

@@ -43,7 +43,7 @@ const Container = styled.div`
 class AttributesPanel extends Component {
   _handleNavigation(val) {
     this.props.setPanel(val);
-    this.props.setSaveButton();
+    this.props.setSaveButton('deactivate');
   }
 
   _handleSave(val) {
@@ -108,7 +108,7 @@ class AttributesPanel extends Component {
                   
                 </Card.Header>
                 <Card.Body className="overflow-y" style={{ flex: 4 }}>
-                  <div className="overflow-y" style={{ flex: 5 }}>
+                  <div className="overflow-y" style={{flex: 5}}>
                     {this.props.card === "projects_overview" && <ProjectsTable />}
                     {this.props.card === "project_details" && <ProjectDetails />}
                     {this.props.card === "employees" && <EmployeeAttributes />}

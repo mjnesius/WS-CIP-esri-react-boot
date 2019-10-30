@@ -31,12 +31,13 @@ import { GlobalStyle } from './styles/global';
 import './styles/fonts.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// COT navy cmyk: 100, 57, 0, 40
+// COT navy cmyk: 100, 57, 0, 40 // rgb 0, 66, 153
 const COTtheme = {
   ...CalciteTheme,
   palette: {
     ...CalciteTheme.palette,
-    COTblue: '#004299'
+    cotBlue: '#004299',
+    cotTransparaent: 'rgba(0, 66, 153, 0.8)'
   }
 };
 
