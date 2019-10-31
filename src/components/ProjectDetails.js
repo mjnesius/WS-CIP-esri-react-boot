@@ -8,7 +8,7 @@ import { actions as mapActions } from '../redux/reducers/map';
 
 import{StoreContext} from "./StoreContext";
 import { connect } from 'react-redux';
-import {parseDomainValues, parseProjectData} from '../redux/selectors';
+import {parseDomainValues, parseProjectData, parseEmployeesData} from '../redux/selectors';
 
 //import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
@@ -20,10 +20,10 @@ import validationRules from '../utils/validationRules';
 import DatePicker from 'calcite-react/DatePicker'
 import Form, {
     FormControl,
-    FormControlLabel
+    FormControlLabel, FormHelperText
 } from 'calcite-react/Form';
 
-import {Form as BootstrapForm}  from 'react-bootstrap/Form';
+//import {Form as BootstrapForm}  from 'react-bootstrap/Form';
 // , { PanelTitle, PanelText } 
 import { ThemeContext } from 'styled-components';
 import { CalciteTheme } from 'calcite-react/CalciteThemeProvider';
@@ -77,9 +77,15 @@ class ProjectDetails extends React.Component {
         super();
         // TO-DO refactor to use Redux state
         this.validator = new formValidator(validationRules);
-        this.state = {
-            date: null,
-            datePickerFocused: false,
+        this.state = {/* 
+            Let_Date: null,
+            PreBid_Date: null,
+            BidOpening_Date: null,
+            PreCon_Date: null, */
+            Let_DatePicker: false, 
+            PreBid_DatePicker: false,
+            BidOpening_DatePicker: false, 
+            PreCon_DatePicker: false,
             validation: this.validator.valid()
         }
         this._onDateChange = this._onDateChange.bind(this);
@@ -88,17 +94,28 @@ class ProjectDetails extends React.Component {
 
         
     };
-    _onDateChange(date) {
-        console.log("onDateChange");
-        var _date = date.valueOf();
+    _onDateChange(date, id) {
+        console.log("onDateChange date: ", date._d, "  date._d.valueOf(): ", date._d.valueOf(), " id: ", id);
+        var _date = date._d.valueOf();
+        let stateCopy ={...this.props.selectedFeature};
+        stateCopy[id] = _date;
+        this.props.selectFeature(stateCopy);
         this.setState({
-            date: _date,
+            [id]: _date,
         });
-        this.activateSaveButton();
+        this._activateSaveButton();
         // if (this.props.saveButton && this.state.validation) {
         //     console.log("setSaveButton")
         //     this.props.setSaveButton()
         // }
+    }
+    _onFocusChange(e, id='') {
+        console.log("date picker focus change: ", e, " id: ", id);
+        console.log("before this.state: ", this.state);
+        this.setState({
+            [id]: e.focused,
+        });
+        console.log("after this.state: ", this.state);
     }
 
     _handleCheckboxEvent(val) {
@@ -149,11 +166,7 @@ class ProjectDetails extends React.Component {
             this.props.setSaveButton("deactivate");
         }
     }
-    _onFocusChange({ focused }) {
-        this.setState({
-            datePickerFocused: focused,
-        })
-    }
+    
     _returnDomainDropdowns(domainName){
         let items = [];
         this.props.domains.forEach(function(_domain){
@@ -165,6 +178,24 @@ class ProjectDetails extends React.Component {
                 })
             } 
         });
+        return items;
+    }
+    _returnValuesDropdowns(_type){
+        let items = [];
+        if (_type.indexOf('manager') > -1){
+            this.props.optionsManagers.forEach(function(_man){
+                items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
+            });   
+        } else if (_type.indexOf('inspector') > -1){
+            this.props.optionsInspectors.forEach(function(_man){
+                items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
+            });   
+        }
+        else if (_type.indexOf('contact') > -1){
+            this.props.optionsContacts.forEach(function(_man){
+                items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
+            });   
+        }
         return items;
     }
 
@@ -189,13 +220,13 @@ class ProjectDetails extends React.Component {
                 </Row>
                 <Row className="mt-2">
                     <Col lg="4">
-                        <Card bar="lightOrange" style={{ margin: '0px', flex: '1 1 20%', minHeight: '100%' }}>
+                        <Card bar="darkBlue" style={{ margin: '0px', flex: '1 1 20%', minHeight: '100%' }}>
                             <CardContent>
                                 <CardTitle style={{
                                     minWidth: '120px', fontWeight: 'bolder', fontSize: '16px', textAlign: 'left',
                                     color: CalciteTheme.palette.darkBlue
                                 }}> Project Info</CardTitle>
-                                <Form horizontal style={{ backgroundColor: CalciteTheme.palette.lightBlue }} >
+                                <Form horizontal style={{ backgroundColor: CalciteTheme.palette.lightBlue, paddingTop: '1px' }} >
                                     <StyledFormControl horizontal >
                                         <StyledProjectLabel>Project Name</StyledProjectLabel>
                                         <TextField fullWidth id='Project_Name' type="textarea"
@@ -204,7 +235,7 @@ class ProjectDetails extends React.Component {
                                             onChange={this._handleChangeEvent.bind(this)} />
                                     </StyledFormControl>
 
-                                    <StyledFormControl horizontal >
+                                    <StyledFormControl horizontal error={validation.Status.isInvalid}>
                                         <StyledProjectLabel>Status</StyledProjectLabel>
                                         <StyledSelect fullWidth id='Status' selectedValue={this._getAttribute('Status')}
                                             onChange={this._handleChangeEvent.bind(this)} >
@@ -212,7 +243,15 @@ class ProjectDetails extends React.Component {
                                         </StyledSelect>
                                     </StyledFormControl>
 
-                                    <StyledFormControl horizontal>
+                                    <StyledFormControl horizontal error={validation.Project_Manager.isInvalid}>
+                                        <StyledProjectLabel>Project Manager</StyledProjectLabel>
+                                        <Select className="d-flex align-items-center" fullWidth
+                                            id='Project_Manager' selectedValue={this._getAttribute('Project_Manager')}
+                                            onChange={this._activateSaveButton}>
+                                            {this._returnValuesDropdowns('manager')}
+                                        </Select>
+                                    </StyledFormControl>
+                                    <StyledFormControl horizontal error={validation.Project_Type.isInvalid}>
                                         <StyledProjectLabel>Project Type</StyledProjectLabel>
                                         <Select className="d-flex align-items-center" fullWidth
                                             id='Project_Type' selectedValue={this._getAttribute('Project_Type')}
@@ -222,29 +261,71 @@ class ProjectDetails extends React.Component {
                                     </StyledFormControl>
                                     <StyledFormControl horizontal>
                                         <StyledProjectLabel>Contact</StyledProjectLabel>
-                                        <Select fullWidth selectedValue={this._getAttribute('Contact')}
+                                        <Select fullWidth className="d-flex align-items-center"
+                                            id='Contact' selectedValue={this._getAttribute('Contact')}
                                             onChange={this._activateSaveButton} >
-                                            {this.props.optionsManagers.map((e, key) => {
-                                                return <MenuItem key={key} value={e}>{e}</MenuItem>;
-                                            })}
+                                            {this._returnValuesDropdowns('contact')}
                                         </Select>
                                     </StyledFormControl>
-                                    <StyledFormControl horizontal error={validation.Contact_Phone.isInvalid} >
+                                    <StyledFormControl horizontal  error={validation.Contact_Phone.isInvalid}  >
                                         <StyledProjectLabel >Contact Phone #</StyledProjectLabel>
                                         <TextField id='Contact_Phone' fullWidth type="text" style={{ minWidth: '80px' }}
                                             value={this._getAttribute('Contact_Phone')}
                                             onChange={this._handleChangeEvent.bind(this)} />
+                                        {validation.Contact_Phone.isInvalid ?  <FormHelperText className="d-flex align-items-center"> {validation.Contact_Phone.message}</FormHelperText>: null}
+                                    </StyledFormControl>
+                                    
+                                    <StyledFormControl horizontal>
+                                        <StyledProjectLabel>Pre Bid Date</StyledProjectLabel>
+                                        <DatePicker
+                                            id="PreBid_DatePicker"
+                                            yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
+                                            date={this._getAttribute('PreBid_Date') ? new moment(new Date(this._getAttribute('PreBid_Date'))) : undefined}
+                                            onDateChange={(e) => this._onDateChange(e, "PreBid_Date")}
+                                            focused={this.state.PreBid_DatePicker}
+                                            onFocusChange={ (e) => this._onFocusChange(e, 'PreBid_DatePicker')}
+                                            numberOfMonths={1}
+                                            isOutsideRange={() => { }}
+                                            monthYearSelectionMode="MONTH_YEAR"
+                                        />
                                     </StyledFormControl>
                                     <StyledFormControl horizontal>
-                                        <StyledProjectLabel>Create Date</StyledProjectLabel>
+                                        <StyledProjectLabel>Bid Opening Date</StyledProjectLabel>
                                         <DatePicker
-                                            id="basicDatePicker"
+                                            id="BidOpening_DatePicker"
                                             yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
-                                            placeholder="Create Date"
-                                            date={moment(new Date(this._getAttribute('CreateDate')))}
-                                            onDateChange={this._onDateChange}
-                                            focused={this.state._datePickerFocused}
-                                            onFocusChange={this._onFocusChange}
+                                            date={this._getAttribute('BidOpening_Date') ? new moment(new Date(this._getAttribute('BidOpening_Date'))) : undefined}
+                                            onDateChange={(e) => this._onDateChange(e, "BidOpening_Date")}
+                                            focused={this.state.BidOpening_DatePicker}
+                                            onFocusChange={(e) => this._onFocusChange(e, 'BidOpening_DatePicker')}
+                                            numberOfMonths={1}
+                                            isOutsideRange={() => { }}
+                                            monthYearSelectionMode="MONTH_YEAR"
+                                        />
+                                    </StyledFormControl>
+                                    <StyledFormControl horizontal>
+                                        <StyledProjectLabel>Pre Con Date</StyledProjectLabel>
+                                        <DatePicker
+                                            id="PreCon_DatePicker"
+                                            yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
+                                            date={this._getAttribute('PreCon_Date') ? new moment(new Date(this._getAttribute('PreCon_Date'))) : undefined}
+                                            onDateChange={(e) => this._onDateChange(e, "PreCon_Date")}
+                                            focused={this.state.PreCon_DatePicker}
+                                            onFocusChange={(e) => this._onFocusChange(e, 'PreCon_DatePicker')}
+                                            numberOfMonths={1}
+                                            isOutsideRange={() => { }}
+                                            monthYearSelectionMode="MONTH_YEAR"
+                                        />
+                                    </StyledFormControl>
+                                    <StyledFormControl horizontal>
+                                        <StyledProjectLabel>Let Date</StyledProjectLabel>
+                                        <DatePicker
+                                            id="Let_DatePicker"
+                                            yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
+                                            date={this._getAttribute('Let_Date') ? new moment(new Date(this._getAttribute('Let_Date'))) : undefined}
+                                            onDateChange={(e) => this._onDateChange(e, "Let_Date")}
+                                            focused={this.state.Let_DatePicker}
+                                            onFocusChange={(e) => this._onFocusChange(e, 'Let_DatePicker')}
                                             numberOfMonths={1}
                                             isOutsideRange={() => { }}
                                             monthYearSelectionMode="MONTH_YEAR"
@@ -255,7 +336,6 @@ class ProjectDetails extends React.Component {
                         </Card>
                     </Col>
                     <Col lg="4">
-
                         <Card bar="lightOrange" style={{ margin: '0px', flex: '1 1 20%', minHeight: '100%' }}>
                             <CardContent>
                                 <CardTitle style={{
@@ -263,30 +343,29 @@ class ProjectDetails extends React.Component {
                                     color: CalciteTheme.palette.lightOrange
                                 }}> Utilities Involved</CardTitle>
                                 <Form vertical style={{ flex: 1, backgroundColor: CalciteTheme.palette.white }}>
-                                    <Row  style={{ flex: 1 }} className="align-items-center m-0 p-0">
+                                    <Row style={{ flex: 1 }} className="align-items-center m-0 p-0">
                                         <Col sm="6" className="d-flex justify-content-center m-0 p-0">
                                             <Checkbox id='WaterWork' labelStyle={{ fontWeight: 'bold' }}
-                                                value={this._getAttribute('WaterWork') }
-                                                checked={(this._getAttribute('WaterWork')=== 1) ? true: false}
+                                                value={this._getAttribute('WaterWork')}
+                                                checked={(this._getAttribute('WaterWork') === 1) ? true : false}
                                                 onChange={this._handleCheckboxEvent.bind(this)} fullWidth
-                                                > Water Work
+                                            > Water Work
                                             </Checkbox>
                                         </Col>
                                         <Col sm="6" className="d-flex justify-content-center">
                                             <Checkbox id='SewerWork' labelStyle={{ fontWeight: 'bold' }}
                                                 value={this._getAttribute('SewerWork')}
-                                                checked={(this._getAttribute('SewerWork') === 1) ? true: false}
+                                                checked={(this._getAttribute('SewerWork') === 1) ? true : false}
                                                 onChange={this._handleCheckboxEvent.bind(this)} fullWidth>
                                                 Sewer Work
                                             </Checkbox>
                                         </Col>
-                                        
                                     </Row>
                                     <Row style={{ flex: 1 }} className="align-items-center m-0 p-0">
                                         <Col sm="4" className="d-flex justify-content-center m-0 p-0">
                                             <Checkbox id='StormWork' labelStyle={{ fontWeight: 'bold' }}
                                                 value={this._getAttribute('StormWork')}
-                                                checked={(this._getAttribute('StormWork') === 1)? true: false}
+                                                checked={(this._getAttribute('StormWork') === 1) ? true : false}
                                                 onChange={this._handleCheckboxEvent.bind(this)} fullWidth>
                                                 Storm Work
                                             </Checkbox>
@@ -294,15 +373,15 @@ class ProjectDetails extends React.Component {
                                         <Col sm="4" className="d-flex justify-content-center m-0 p-0">
                                             <Checkbox id='RoadWork' labelStyle={{ fontWeight: 'bold' }}
                                                 value={this._getAttribute('RoadWork')}
-                                                checked={(this._getAttribute('RoadWork') === 1)? true: false}
+                                                checked={(this._getAttribute('RoadWork') === 1) ? true : false}
                                                 onChange={this._handleCheckboxEvent.bind(this)} fullWidth>
                                                 Road Work
                                             </Checkbox>
                                         </Col>
                                         <Col sm="4" className="d-flex justify-content-center m-0 p-0">
-                                            <Checkbox id='GasWork'  labelStyle={{ fontWeight: 'bold' }}
+                                            <Checkbox id='GasWork' labelStyle={{ fontWeight: 'bold' }}
                                                 value={this._getAttribute('GasWork')}
-                                                checked={(this._getAttribute('GasWork') === 1) ? true: false}
+                                                checked={(this._getAttribute('GasWork') === 1) ? true : false}
                                                 onChange={this._handleCheckboxEvent.bind(this)} fullWidth>
                                                 Gas Work
                                             </Checkbox>
@@ -328,7 +407,9 @@ const mapStateToProps = state => ({
     selectedFeature: state.map.selectedFeature,
     projects: parseProjectData(state),
     domains: parseDomainValues(state),
-    optionsManagers: state.map.managers,
+    optionsManagers: parseEmployeesData(state, 'managers'),//state.map.managers,
+    optionsContacts: parseEmployeesData(state, 'contacts'),
+    optionsInspectors: parseEmployeesData(state, 'inspectors'),
     saveButton: state.attributes.saveButton
 });
 

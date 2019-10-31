@@ -1,5 +1,29 @@
 const rules = [
     {
+        field: 'Project_Name',
+        method: 'isEmpty',
+        validWhen: false,
+        message: 'Pleave provide a project name.'
+    },
+    {
+        field: 'Status',
+        method: 'isEmpty',
+        validWhen: false,
+        message: 'Pleave select a status.'
+    },
+    {
+        field: 'Project_Type',
+        method: 'isEmpty',
+        validWhen: false,
+        message: 'Pleave select a project type.'
+    },
+    {
+        field: 'Project_Manager',
+        method: 'isEmpty',
+        validWhen: false,
+        message: 'Pleave select a project manager.'
+    },
+    {
         field: 'Total_Cost',
         method: 'isNumeric',
         validWhen: true,
@@ -28,7 +52,7 @@ const rules = [
         method: 'matches',
         args: [/^\d\d\d.\d\d\d.\d\d\d\d$/], // args is an optional array of arguements that will be passed to the validation method
         validWhen: true,
-        message: 'The required format is ###.###.####'
+        message: 'Required format: ###.###.####'
     },
     {
         field: 'Contractor_Phone',

@@ -68,12 +68,37 @@ const parseContractors = (state) => {
     return _data
 }
 
-const parseEmployeess = (state) => {
+const parseEmployees = (state, _type ) => {
     var _data = [];
-    state.map.employees['features'].forEach((emp) => {
-        //console.log(emp);
-        _data.push(emp['attributes']);
-    })
+    if (_type === undefined) _type = "all";
+    if (_type.indexOf('manager') > -1){
+        state.map.employees['features'].forEach((emp) => {
+            //console.log("emp.attributes.IsWSProjMgr: ", emp.attributes.IsWSProjMgr, "  emp.attributes.IsWSProjMgr: ", emp.attributes.IsWSProjMgr);
+            //console.log("emp.attributes.IsWSProjMgr === 1: ", emp.attributes.IsWSProjMgr === 1, "  emp.attributes.IsWSProjMgr === true: ", emp.attributes.IsWSProjMgr === true);
+            if (Number(emp.attributes.IsWSProjMgr) === 1 ||  emp.attributes.IsWSProjMgr === true){
+                _data.push(emp['attributes']);
+            }
+        }) 
+    } else if (_type.indexOf('inspector') > -1) {
+        state.map.employees['features'].forEach((emp) => {
+            if (Number(emp.attributes.IsWSPMInspector) === 1 ||  emp.attributes.IsWSPMInspector === true){
+                _data.push(emp['attributes']);
+            }
+        })
+    } else if (_type.indexOf('contact') > -1){
+        state.map.employees['features'].forEach((emp) => {
+            if (Number(emp.attributes.IsWSPMContact) === 1 ||  emp.attributes.IsWSPMContact === true){
+                _data.push(emp['attributes']);
+            }
+        })
+    }
+    else{
+        state.map.employees['features'].forEach((emp) => {
+            //console.log(emp);
+            _data.push(emp['attributes']);
+        })
+    }
+    console.log("parseEmployees _type: ", _type, "   data: ", _data);
     return _data
 }
 
@@ -143,7 +168,7 @@ export const parseContractorData = (state) => createSelector(
     contractor || []
 )(state)
 
-export const parseEmployeesData = (state) => createSelector(
-    [parseEmployeess], (contractor) =>
-    contractor || []
-)(state)
+export const parseEmployeesData = (state, _type) => createSelector(
+    [parseEmployees], (employee) =>
+    employee || []
+)(state, _type)

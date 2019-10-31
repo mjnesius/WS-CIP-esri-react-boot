@@ -67,7 +67,7 @@ class SearchComponent extends React.Component {
             console.log("employees obj: ", employees);
             this.props.setSelected(employees[0], 'employees')
         } else if (this.props.type.includes('projects')){
-            const projects = this.props.projects.filter(item => item['Project_Name'].toUpperCase().includes(e.toUpperCase()))
+            const projects = this.props.projects.filter(item => item['Project_Name'] ? item['Project_Name'].toUpperCase().includes(e.toUpperCase()): '')
             console.log("projects obj: ", projects);
             this.props.selectFeature(projects[0], 'projects')
         }

@@ -35,7 +35,7 @@ class UserAccount extends Component {
           portal={this.props.portal}
           onRequestSwitchAccount={() => console.log('switch account clicked')}
           onRequestSignOut={this.props.signOut}
-          hideSwitchAccount="true"
+          hideSwitchAccount={true}
         >
           <ArcgisAccountMenuItem
             onClick={() => window.location.href = (this.props.config.portalUrl + '/home/user.html')}
