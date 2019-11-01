@@ -166,7 +166,8 @@ class ProjectDetails extends React.Component {
       }
 
     _activateSaveButton = (event) => {
-        if (this.props.saveButton && this.state.validation.isValid) {
+        //&& this.state.validation.isValid
+        if (this.props.saveButton ) {
             console.log("setSaveButton: ", this.props.saveButton, " \t event: ", event, "\n\tvalidation: ", this.state.validation);
             this.props.setSaveButton();
             console.log("\t new prop: ", this.props.saveButton)
@@ -182,19 +183,19 @@ class ProjectDetails extends React.Component {
             //console.log("_man: ", _man);
             return Object.keys(_dom)[0].indexOf( _field) > -1;
         });
-        console.log("domain dropdown, match: ", match  );
+        //console.log("domain dropdown, match: ", match  );
 
         if (!(match === undefined || match === null)) {
             //var codedVals = Object.keys(match)[0];
             var domainObj = match[0]
-            console.log("domain dropdown, \n\t  domainObj: ", domainObj);
+            //console.log("domain dropdown, \n\t  domainObj: ", domainObj);
             var domainName = Object.keys(domainObj)[0];
-            console.log("domainName: ", domainName, " domainObj[domainName]");
+            //console.log("domainName: ", domainName, " domainObj[domainName]");
             if (!(domainObj === undefined || domainObj === null)) {
                 Object.keys(domainObj[domainName]).forEach(function (codedValObj) {
                     var _key = Object.keys(domainObj[domainName][codedValObj])[0];
                     var _val = domainObj[domainName][codedValObj][_key];
-                    console.log("codedValObj: ", codedValObj, "  _key: ", _key, "  _val: ", _val);
+                    //console.log("codedValObj: ", codedValObj, "  _key: ", _key, "  _val: ", _val);
                     items.push(<MenuItem key={_key} value={_key} >{_val}</MenuItem>);
                 })
             }
@@ -274,7 +275,7 @@ class ProjectDetails extends React.Component {
                                         <StyledProjectLabel>Project Name</StyledProjectLabel>
                                         <TextField fullWidth id='Project_Name' type="textarea"
                                             style={{ resize: 'both', maxHeight: '100%', }}
-                                            value={!(this.props.selectedFeature === 'undefined') ? 
+                                            value={!(Object.keys(this.props.selectedFeature).length > 0) ? 
                                                 " Search and Select a Project.       Use the Map to Create New Projects" : 
                                                 this._getAttribute('Project_Name')}
                                             onChange={this._handleChangeEvent.bind(this)} 

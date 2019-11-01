@@ -94,7 +94,7 @@ export default (state = initialState, action) => {
         attributesComponent: !state.attributesComponent
       };
     case types.SELECT_FEATURE:
-      console.log("SELECT_FEATURE: " + JSON.stringify(action.payload));
+      //console.log("SELECT_FEATURE: " + JSON.stringify(action.payload));
       if (action.payload['feature'] !== undefined && action.payload['feature'] !== null){
         return {
           ...state,
