@@ -26,6 +26,7 @@ import EmployeeAttributes from './EmployeeAttributes';
 import ContractorAttributes from './ContractorAttributes';
 import SaveIcon from 'calcite-ui-icons-react/SaveIcon';
 import Button from 'calcite-react/Button';
+import Tooltip from 'calcite-react/Tooltip'
 
 import styled from 'styled-components';
 const Container = styled.div`
@@ -81,18 +82,27 @@ class AttributesPanel extends Component {
                     <Col style={{ flex: 3 }}>
                       <Row>
                         <Nav variant="tabs" defaultActiveKey="projects_overview" style={{ justifycontent: 'right', textAlign: 'right' }}>
-                          <Nav.Item>
-                            <Nav.Link onClick={() => this._handleNavigation("projects_overview")}>Projects Overview</Nav.Link>
-                          </Nav.Item>
-                          <Nav.Item>
+                          <Tooltip title="Roster View of Projects">
+                            <Nav.Item>
+                              <Nav.Link onClick={() => this._handleNavigation("projects_overview")}>Projects Overview</Nav.Link>
+                            </Nav.Item>
+                          </Tooltip>
+                          <Tooltip title="Select and Edit a Single Project">
+                           <Nav.Item>
                             <Nav.Link onClick={() => this._handleNavigation("project_details")}>Project Details</Nav.Link>
+                          </Nav.Item> 
+                          </Tooltip>
+                          <Tooltip title="Manage Contractor Info">
+                            <Nav.Item style={{paddingLeft: '30px'}}>
+                            <Nav.Link onClick={() => this._handleNavigation("contractors")}>Contractor List</Nav.Link>
                           </Nav.Item>
-                          <Nav.Item>
-                            <Nav.Link onClick={() => this._handleNavigation("contractors")}>Contractors</Nav.Link>
+                          </Tooltip>
+                          <Tooltip title="Manage Employee Info">
+                            <Nav.Item>
+                            <Nav.Link onClick={() => this._handleNavigation("employees")}>Employee List</Nav.Link>
                           </Nav.Item>
-                          <Nav.Item>
-                            <Nav.Link onClick={() => this._handleNavigation("employees")}>Employees</Nav.Link>
-                          </Nav.Item>
+                          </Tooltip>
+                          
                         </Nav>
                       </Row>
                     </Col>

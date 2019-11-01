@@ -8,7 +8,7 @@ import { actions as mapActions } from '../redux/reducers/map';
 
 import{StoreContext} from "./StoreContext";
 import { connect } from 'react-redux';
-import {parseDomainValues, parseProjectData, parseEmployeesData} from '../redux/selectors';
+import {parseDomainValues, parseProjectData, parseEmployeesData, parseContractorData} from '../redux/selectors';
 
 //import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
@@ -23,7 +23,7 @@ import Form, {
     FormControlLabel, FormHelperText
 } from 'calcite-react/Form';
 
-//import {Form as BootstrapForm}  from 'react-bootstrap/Form';
+//import {FormControl as BootstrapFormControl}  from 'react-bootstrap/FormControl';
 // , { PanelTitle, PanelText } 
 import { ThemeContext } from 'styled-components';
 import { CalciteTheme } from 'calcite-react/CalciteThemeProvider';
@@ -62,6 +62,12 @@ const StyledSelect = styled(Select)`
     height: 65px;
     align-items: center !important;
 `;
+const StyledDatePicker = styled(DatePicker)`
+    width: 98%;
+    margin-left: 2;
+    height: 65px;
+    align-items: center !important;
+`;
 //import styled from 'styled-components';
 // const Container = styled.div`
 //   display: inline-flex;
@@ -86,6 +92,8 @@ class ProjectDetails extends React.Component {
             PreBid_DatePicker: false,
             BidOpening_DatePicker: false, 
             PreCon_DatePicker: false,
+            Const_Start_Date_NTPPicker: false,
+            Const_End_DatePicker: false,
             validation: this.validator.valid()
         }
         this._onDateChange = this._onDateChange.bind(this);
@@ -100,9 +108,9 @@ class ProjectDetails extends React.Component {
         let stateCopy ={...this.props.selectedFeature};
         stateCopy[id] = _date;
         this.props.selectFeature(stateCopy);
-        this.setState({
-            [id]: _date,
-        });
+        // this.setState({
+        //     [id]: _date,
+        // });
         this._activateSaveButton();
         // if (this.props.saveButton && this.state.validation) {
         //     console.log("setSaveButton")
@@ -135,10 +143,10 @@ class ProjectDetails extends React.Component {
         return val.target.value;
       }
 
-    _handleChangeEvent(val) {
-        console.log("_handleChangeEvent val is: ",val, "\ttarget: ", val.target);
+    _handleChangeEvent(val, target) {
+        console.log("_handleChangeEvent val is: ",val, "\ttarget: ", target);
         let stateCopy ={...this.props.selectedFeature};
-        stateCopy[val.target.id] = val.target.value;
+        stateCopy[target] = val;
         // val['Contractor']
         // this.setState({          
         //     ..,
@@ -154,7 +162,7 @@ class ProjectDetails extends React.Component {
         );
         //console.log( "this.state.validation: ", this.state.validation);
         
-        return val.target.value;
+        return val;
       }
 
     _activateSaveButton = (event) => {
@@ -167,19 +175,36 @@ class ProjectDetails extends React.Component {
         }
     }
     
-    _returnDomainDropdowns(domainName){
+    _returnDomainDropdowns(_field){
         let items = [];
-        this.props.domains.forEach(function(_domain){
-            if (!(_domain[domainName] === undefined || _domain[domainName] === null)){
-                Object.keys(_domain[domainName]).forEach(function(key){
-                    var _key = Object.keys(_domain[domainName][key])[0];
-                    var _val = _domain[domainName][key][_key];
-                    items.push( <MenuItem key ={_key} value={_key} >{ _val}</MenuItem>);
-                })
-            } 
+        //var domainName = _field + '_Domain';
+        const match = this.props.domains.filter((_dom) => {
+            //console.log("_man: ", _man);
+            return Object.keys(_dom)[0].indexOf( _field) > -1;
         });
+        console.log("domain dropdown, match: ", match  );
+
+        if (!(match === undefined || match === null)) {
+            //var codedVals = Object.keys(match)[0];
+            var domainObj = match[0]
+            console.log("domain dropdown, \n\t  domainObj: ", domainObj);
+            var domainName = Object.keys(domainObj)[0];
+            console.log("domainName: ", domainName, " domainObj[domainName]");
+            if (!(domainObj === undefined || domainObj === null)) {
+                Object.keys(domainObj[domainName]).forEach(function (codedValObj) {
+                    var _key = Object.keys(domainObj[domainName][codedValObj])[0];
+                    var _val = domainObj[domainName][codedValObj][_key];
+                    console.log("codedValObj: ", codedValObj, "  _key: ", _key, "  _val: ", _val);
+                    items.push(<MenuItem key={_key} value={_key} >{_val}</MenuItem>);
+                })
+            }
+            return items;
+        }
+       
+        console.log(" no domain match for: ", _field)
         return items;
     }
+
     _returnValuesDropdowns(_type){
         let items = [];
         if (_type.indexOf('manager') > -1){
@@ -197,6 +222,23 @@ class ProjectDetails extends React.Component {
             });   
         }
         return items;
+    }
+
+    _getRelatedAttribute(_type, _getFld, _matchFld, _matchVal) {
+        var val;
+        var fld =_getFld;
+        //OfficeNumber, CellNumber
+        console.log("_getRelatedAttribute, _type: ", _type, "  _getFld: ", _getFld, " _matchFld: ", _matchFld, "  _matchVal: ", _matchVal);
+        if (_type.indexOf('contact') > -1){
+            const match = this.props.optionsContacts.filter((_man) => {
+                //console.log("_man: ", _man);
+                return _man[_matchFld] === _matchVal;
+            });
+            console.log("related match: ", match);
+            var _match = match[0] ? match[0] : {};
+            val = _match[fld] ? _match[fld] : ''
+        } 
+        return val;  
     }
 
     _getAttribute(fld) {
@@ -219,7 +261,7 @@ class ProjectDetails extends React.Component {
                     </Col>
                 </Row>
                 <Row className="mt-2">
-                    <Col lg="4">
+                    <Col lg="8">
                         <Card bar="darkBlue" style={{ margin: '0px', flex: '1 1 20%', minHeight: '100%' }}>
                             <CardContent>
                                 <CardTitle style={{
@@ -227,18 +269,24 @@ class ProjectDetails extends React.Component {
                                     color: CalciteTheme.palette.darkBlue
                                 }}> Project Info</CardTitle>
                                 <Form horizontal style={{ backgroundColor: CalciteTheme.palette.lightBlue, paddingTop: '1px' }} >
-                                    <StyledFormControl horizontal >
+                                    <Col lg="8">
+                                    <StyledFormControl horizontal>
                                         <StyledProjectLabel>Project Name</StyledProjectLabel>
                                         <TextField fullWidth id='Project_Name' type="textarea"
                                             style={{ resize: 'both', maxHeight: '100%', }}
-                                            value={this._getAttribute('Project_Name')}
-                                            onChange={this._handleChangeEvent.bind(this)} />
+                                            value={!(this.props.selectedFeature === 'undefined') ? 
+                                                " Search and Select a Project.       Use the Map to Create New Projects" : 
+                                                this._getAttribute('Project_Name')}
+                                            onChange={this._handleChangeEvent.bind(this)} 
+                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}/>
                                     </StyledFormControl>
 
                                     <StyledFormControl horizontal error={validation.Status.isInvalid}>
                                         <StyledProjectLabel>Status</StyledProjectLabel>
                                         <StyledSelect fullWidth id='Status' selectedValue={this._getAttribute('Status')}
-                                            onChange={this._handleChangeEvent.bind(this)} >
+                                            onChange={(e) => this._handleChangeEvent(e, 'Status')}
+                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                            /* onChange={this._handleChangeEvent.bind(this)} */ >
                                             {this._returnDomainDropdowns('Status')}
                                         </StyledSelect>
                                     </StyledFormControl>
@@ -247,7 +295,8 @@ class ProjectDetails extends React.Component {
                                         <StyledProjectLabel>Project Manager</StyledProjectLabel>
                                         <Select className="d-flex align-items-center" fullWidth
                                             id='Project_Manager' selectedValue={this._getAttribute('Project_Manager')}
-                                            onChange={this._activateSaveButton}>
+                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                            onChange={(e) => this._handleChangeEvent(e, 'Project_Manager')}>
                                             {this._returnValuesDropdowns('manager')}
                                         </Select>
                                     </StyledFormControl>
@@ -255,7 +304,8 @@ class ProjectDetails extends React.Component {
                                         <StyledProjectLabel>Project Type</StyledProjectLabel>
                                         <Select className="d-flex align-items-center" fullWidth
                                             id='Project_Type' selectedValue={this._getAttribute('Project_Type')}
-                                            onChange={this._activateSaveButton}>
+                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                            onChange={(e) => this._handleChangeEvent(e, 'Project_Type')}>
                                             {this._returnDomainDropdowns('Project_Type')}
                                         </Select>
                                     </StyledFormControl>
@@ -263,21 +313,26 @@ class ProjectDetails extends React.Component {
                                         <StyledProjectLabel>Contact</StyledProjectLabel>
                                         <Select fullWidth className="d-flex align-items-center"
                                             id='Contact' selectedValue={this._getAttribute('Contact')}
-                                            onChange={this._activateSaveButton} >
+                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                            onChange={(e) => this._handleChangeEvent(e, 'Contact')}
+                                            /* onChange={this._activateSaveButton} */ >
                                             {this._returnValuesDropdowns('contact')}
                                         </Select>
                                     </StyledFormControl>
                                     <StyledFormControl horizontal  error={validation.Contact_Phone.isInvalid}  >
                                         <StyledProjectLabel >Contact Phone #</StyledProjectLabel>
-                                        <TextField id='Contact_Phone' fullWidth type="text" style={{ minWidth: '80px' }}
-                                            value={this._getAttribute('Contact_Phone')}
-                                            onChange={this._handleChangeEvent.bind(this)} />
+                                        <TextField fullWidth id='Contact' type="text"
+                                            value={this._getRelatedAttribute('contact', 'CellNumber', 'Name', this._getAttribute('Contact'))} 
+                                            onChange={this._handleChangeEvent.bind(this)} 
+                                            disabled={true}/>
                                         {validation.Contact_Phone.isInvalid ?  <FormHelperText className="d-flex align-items-center"> {validation.Contact_Phone.message}</FormHelperText>: null}
                                     </StyledFormControl>
-                                    
+                                    </Col>
+                                    <Col lg="4">
                                     <StyledFormControl horizontal>
                                         <StyledProjectLabel>Pre Bid Date</StyledProjectLabel>
-                                        <DatePicker
+                                        <StyledDatePicker
+                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                             id="PreBid_DatePicker"
                                             yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
                                             date={this._getAttribute('PreBid_Date') ? new moment(new Date(this._getAttribute('PreBid_Date'))) : undefined}
@@ -291,7 +346,8 @@ class ProjectDetails extends React.Component {
                                     </StyledFormControl>
                                     <StyledFormControl horizontal>
                                         <StyledProjectLabel>Bid Opening Date</StyledProjectLabel>
-                                        <DatePicker
+                                        <StyledDatePicker
+                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                             id="BidOpening_DatePicker"
                                             yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
                                             date={this._getAttribute('BidOpening_Date') ? new moment(new Date(this._getAttribute('BidOpening_Date'))) : undefined}
@@ -305,7 +361,8 @@ class ProjectDetails extends React.Component {
                                     </StyledFormControl>
                                     <StyledFormControl horizontal>
                                         <StyledProjectLabel>Pre Con Date</StyledProjectLabel>
-                                        <DatePicker
+                                        <StyledDatePicker
+                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                             id="PreCon_DatePicker"
                                             yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
                                             date={this._getAttribute('PreCon_Date') ? new moment(new Date(this._getAttribute('PreCon_Date'))) : undefined}
@@ -319,7 +376,8 @@ class ProjectDetails extends React.Component {
                                     </StyledFormControl>
                                     <StyledFormControl horizontal>
                                         <StyledProjectLabel>Let Date</StyledProjectLabel>
-                                        <DatePicker
+                                        <StyledDatePicker
+                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                             id="Let_DatePicker"
                                             yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
                                             date={this._getAttribute('Let_Date') ? new moment(new Date(this._getAttribute('Let_Date'))) : undefined}
@@ -331,12 +389,43 @@ class ProjectDetails extends React.Component {
                                             monthYearSelectionMode="MONTH_YEAR"
                                         />
                                     </StyledFormControl>
+                                    <StyledFormControl horizontal>
+                                        <StyledProjectLabel>Construction NTP</StyledProjectLabel>
+                                        <StyledDatePicker
+                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                            id="Const_Start_Date_NTPPicker"
+                                            yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
+                                            date={this._getAttribute('Const_Start_Date_NTP') ? new moment(new Date(this._getAttribute('Const_Start_Date_NTP'))) : undefined}
+                                            onDateChange={(e) => this._onDateChange(e, "Const_Start_Date_NTP")}
+                                            focused={this.state.Const_Start_Date_NTPPicker}
+                                            onFocusChange={(e) => this._onFocusChange(e, 'Const_Start_Date_NTPPicker')}
+                                            numberOfMonths={1}
+                                            isOutsideRange={() => { }}
+                                            monthYearSelectionMode="MONTH_YEAR"
+                                        />
+                                    </StyledFormControl>
+                                    <StyledFormControl horizontal>
+                                        <StyledProjectLabel>Const End Date</StyledProjectLabel>
+                                        <StyledDatePicker
+                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                            id="Const_End_DatePicker"
+                                            yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
+                                            date={this._getAttribute('Const_End_Date') ? new moment(new Date(this._getAttribute('Const_End_Date'))) : undefined}
+                                            onDateChange={(e) => this._onDateChange(e, "Const_End_Date")}
+                                            focused={this.state.Const_End_DatePicker}
+                                            onFocusChange={(e) => this._onFocusChange(e, 'Const_End_DatePicker')}
+                                            numberOfMonths={1}
+                                            isOutsideRange={() => { }}
+                                            monthYearSelectionMode="MONTH_YEAR"
+                                        />
+                                    </StyledFormControl>
+                                    </Col>
                                 </Form>
                             </CardContent>
                         </Card>
                     </Col>
                     <Col lg="4">
-                        <Card bar="lightOrange" style={{ margin: '0px', flex: '1 1 20%', minHeight: '100%' }}>
+                        <Card bar="lightOrange" style={{ margin: '0px', flex: '1 1 20%'}}>
                             <CardContent>
                                 <CardTitle style={{
                                     minWidth: '120px', fontWeight: 'bolder', fontSize: '16px', textAlign: 'left',
@@ -348,7 +437,9 @@ class ProjectDetails extends React.Component {
                                             <Checkbox id='WaterWork' labelStyle={{ fontWeight: 'bold' }}
                                                 value={this._getAttribute('WaterWork')}
                                                 checked={(this._getAttribute('WaterWork') === 1) ? true : false}
-                                                onChange={this._handleCheckboxEvent.bind(this)} fullWidth
+                                                onChange={this._handleCheckboxEvent.bind(this)} 
+                                                fullWidth
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                             > Water Work
                                             </Checkbox>
                                         </Col>
@@ -356,8 +447,10 @@ class ProjectDetails extends React.Component {
                                             <Checkbox id='SewerWork' labelStyle={{ fontWeight: 'bold' }}
                                                 value={this._getAttribute('SewerWork')}
                                                 checked={(this._getAttribute('SewerWork') === 1) ? true : false}
-                                                onChange={this._handleCheckboxEvent.bind(this)} fullWidth>
-                                                Sewer Work
+                                                onChange={this._handleCheckboxEvent.bind(this)} 
+                                                fullWidth
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                > Sewer Work
                                             </Checkbox>
                                         </Col>
                                     </Row>
@@ -366,23 +459,30 @@ class ProjectDetails extends React.Component {
                                             <Checkbox id='StormWork' labelStyle={{ fontWeight: 'bold' }}
                                                 value={this._getAttribute('StormWork')}
                                                 checked={(this._getAttribute('StormWork') === 1) ? true : false}
-                                                onChange={this._handleCheckboxEvent.bind(this)} fullWidth>
-                                                Storm Work
+                                                onChange={this._handleCheckboxEvent.bind(this)} 
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                fullWidth
+                                                > Storm Work
                                             </Checkbox>
                                         </Col>
                                         <Col sm="4" className="d-flex justify-content-center m-0 p-0">
                                             <Checkbox id='RoadWork' labelStyle={{ fontWeight: 'bold' }}
                                                 value={this._getAttribute('RoadWork')}
                                                 checked={(this._getAttribute('RoadWork') === 1) ? true : false}
-                                                onChange={this._handleCheckboxEvent.bind(this)} fullWidth>
-                                                Road Work
+                                                onChange={this._handleCheckboxEvent.bind(this)}  
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                fullWidth
+                                                > Road Work
                                             </Checkbox>
                                         </Col>
                                         <Col sm="4" className="d-flex justify-content-center m-0 p-0">
                                             <Checkbox id='GasWork' labelStyle={{ fontWeight: 'bold' }}
                                                 value={this._getAttribute('GasWork')}
                                                 checked={(this._getAttribute('GasWork') === 1) ? true : false}
-                                                onChange={this._handleCheckboxEvent.bind(this)} fullWidth>
+                                                onChange={this._handleCheckboxEvent.bind(this)} 
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                fullWidth
+                                                >
                                                 Gas Work
                                             </Checkbox>
                                         </Col>
@@ -390,9 +490,6 @@ class ProjectDetails extends React.Component {
                                 </Form>
                             </CardContent>
                         </Card>
-                    </Col>
-                    <Col lg="4">
-
                     </Col>
                 </Row>
 
@@ -410,6 +507,8 @@ const mapStateToProps = state => ({
     optionsManagers: parseEmployeesData(state, 'managers'),//state.map.managers,
     optionsContacts: parseEmployeesData(state, 'contacts'),
     optionsInspectors: parseEmployeesData(state, 'inspectors'),
+    employees: parseEmployeesData(state, 'all'),
+    contractors: parseContractorData(state),
     saveButton: state.attributes.saveButton
 });
 

@@ -105,7 +105,9 @@ const parseEmployees = (state, _type ) => {
 const parseDomains = (state) => {
     var _fieldsWithDomains =[];
     state.map.fields.forEach((fld) => {
+        JSON.stringify("parseDomains: ", fld)
         if (!(fld['domain'] === undefined || fld['domain'] === null)){
+            console.log("parseDomains: ",JSON.stringify( fld['domain']));
           _fieldsWithDomains.push(fld['domain']);  
         }
         
@@ -159,8 +161,8 @@ export const parseProjectData = (state) => createSelector(
 )(state)
 
 export const parseDomainValues = (state) => createSelector(
-    [parseDomains], (fields) =>
-    fields || []
+    [parseDomains], (domains) =>
+    domains || []
 )(state)
 
 export const parseContractorData = (state) => createSelector(

@@ -60,7 +60,7 @@ export default (state = initialState, action) => {
         employees: action.payload
       };
     case types.SET_FEATURES:
-      console.log("set features: " + JSON.stringify(action));
+      //console.log("set features: " + JSON.stringify(action));
       var _stat = [...new Set(action.payload.features.map(feature => feature.attributes.Status ||"null"))];
       //console.log("set features _stat: " + JSON.stringify(_stat));
       _stat.push("All Statuses");
@@ -76,7 +76,7 @@ export default (state = initialState, action) => {
         managers: _managers.sort()
       };
     case types.SET_FIELDS:
-      //console.log("set FIELDS: " + JSON.stringify(action.payload));
+      console.log("set FIELDS payload: " + JSON.stringify(action.payload));
       return {
         ...state,
         fields: action.payload.fields
@@ -88,7 +88,7 @@ export default (state = initialState, action) => {
         //filter: "OBJECTID > 0 & " + action.payload
       };
     case types.TOGGLE_ATTRIBUTES:
-      console.log("TOGGLE_ATTRIBUTES: " + JSON.stringify(action));
+      //console.log("TOGGLE_ATTRIBUTES: " + JSON.stringify(action));
       return {
         ...state,
         attributesComponent: !state.attributesComponent
