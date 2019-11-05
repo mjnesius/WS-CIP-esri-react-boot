@@ -43,30 +43,33 @@ const StyledProjectLabel = styled(FormControlLabel)`
     color: black;
     text-shadow: 0px 0px 2px white;
     font-weight: bolder;
+    margin: 0;
+    padding: 0;
     margin-left: 1;
-    width: 110px !important;
-    height: 65px;
+    margin-right: 2;
+    min-width: 100px !important;
+    max-width: 100px !important;
     text-align: left;
   `;
  const StyledFormControl = styled(FormControl)`
     width: 98%;
-    margin: 1;
-    margin-left: 2;
+    margin: 0;
+    padding: 0;
+    display: flex;
     align-items: center !important;
-    justify-content: between !important
-    height: 65px;
+    justify-content: space-between !important;
 `;
 const StyledSelect = styled(Select)`
     width: 98%;
+    margin: 0;
+    padding: 0;
     margin-left: 2;
-    height: 65px;
-    align-items: center !important;
 `;
 const StyledDatePicker = styled(DatePicker)`
-    width: 98%;
+    width: 95% !important;
+    margin: 0;
+    padding: 0;
     margin-left: 2;
-    height: 65px;
-    align-items: center !important;
 `;
 //import styled from 'styled-components';
 // const Container = styled.div`
@@ -183,9 +186,9 @@ class ProjectDetails extends React.Component {
             //console.log("_man: ", _man);
             return Object.keys(_dom)[0].indexOf( _field) > -1;
         });
-        //console.log("domain dropdown, match: ", match  );
+        console.log("domain dropdown, match: ", match ,"\t for field: ",  _field);
 
-        if (!(match === undefined || match === null)) {
+        if (!(match === undefined || match === null || match.length <1)) {
             //var codedVals = Object.keys(match)[0];
             var domainObj = match[0]
             //console.log("domain dropdown, \n\t  domainObj: ", domainObj);
@@ -208,18 +211,23 @@ class ProjectDetails extends React.Component {
 
     _returnValuesDropdowns(_type){
         let items = [];
-        if (_type.indexOf('manager') > -1){
+        if (_type.toLowerCase().indexOf('manager') > -1){
             this.props.optionsManagers.forEach(function(_man){
                 items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
             });   
-        } else if (_type.indexOf('inspector') > -1){
+        } else if (_type.toLowerCase().indexOf('inspector') > -1){
             this.props.optionsInspectors.forEach(function(_man){
                 items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
             });   
         }
-        else if (_type.indexOf('contact') > -1){
+        else if (_type.toLowerCase().indexOf('contact') > -1){
             this.props.optionsContacts.forEach(function(_man){
                 items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
+            });   
+        }
+        else if (_type.toLowerCase().indexOf('contract') > -1){
+            this.props.contractors.forEach(function(_man){
+                items.push( <MenuItem key ={_man.OBJECTID} value={_man.Contractor} >{ _man.Contractor}</MenuItem>)
             });   
         }
         return items;
@@ -228,17 +236,35 @@ class ProjectDetails extends React.Component {
     _getRelatedAttribute(_type, _getFld, _matchFld, _matchVal) {
         var val;
         var fld =_getFld;
+        var _match;
         //OfficeNumber, CellNumber
         console.log("_getRelatedAttribute, _type: ", _type, "  _getFld: ", _getFld, " _matchFld: ", _matchFld, "  _matchVal: ", _matchVal);
-        if (_type.indexOf('contact') > -1){
+        if (_type.toLowerCase().indexOf('contact') > -1){
             const match = this.props.optionsContacts.filter((_man) => {
                 //console.log("_man: ", _man);
                 return _man[_matchFld] === _matchVal;
             });
             console.log("related match: ", match);
-            var _match = match[0] ? match[0] : {};
+            _match = match[0] ? match[0] : {};
             val = _match[fld] ? _match[fld] : ''
-        } 
+        } else if (_type.toLowerCase().indexOf('contract') > -1){
+            const match = this.props.contractors.filter((_man) => {
+                //console.log("_man: ", _man);
+                return _man[_matchFld] === _matchVal;
+            });
+            console.log("related match: ", match);
+            _match = match[0] ? match[0] : {};
+            val = _match[fld] ? _match[fld] : ''
+        }
+        else if (_type.toLowerCase().indexOf('inspect') > -1){
+            const match = this.props.optionsInspectors.filter((_man) => {
+                //console.log("_man: ", _man);
+                return _man[_matchFld] === _matchVal;
+            });
+            console.log("related match: ", match);
+            _match = match[0] ? match[0] : {};
+            val = _match[fld] ? _match[fld] : ''
+        }
         return val;  
     }
 
@@ -255,242 +281,366 @@ class ProjectDetails extends React.Component {
             <div className="container-fluid" style={{ padding: "0px", backgroundColor: "transparent" }}>
                 <Row >
                     <Col lg="12">
-                        <FormControlLabel style={{ minWidth: '120px', fontWeight: "bolder", fontSize: "17px", textAlign: "left", color: CalciteTheme.palette.blue }}>
+                        <FormControlLabel style={{ minWidth: '120px', fontWeight: "bolder", fontSize: "18px", textAlign: "left", color: CalciteTheme.palette.blue }}>
                             Select a Project
                         </FormControlLabel>
                         <SearchComponent type='projects' />
                     </Col>
                 </Row>
                 <Row className="mt-2">
-                    <Col lg="8">
+                    <Col lg="4">
                         <Card bar="darkBlue" style={{ margin: '0px', flex: '1 1 20%', minHeight: '100%' }}>
                             <CardContent>
                                 <CardTitle style={{
-                                    minWidth: '120px', fontWeight: 'bolder', fontSize: '16px', textAlign: 'left',
+                                    minWidth: '120px', fontWeight: 'bolder', fontSize: '17px', textAlign: 'left',
                                     color: CalciteTheme.palette.darkBlue
                                 }}> Project Info</CardTitle>
-                                <Form horizontal style={{ backgroundColor: CalciteTheme.palette.lightBlue, paddingTop: '1px' }} >
-                                    <Col lg="8">
-                                    <StyledFormControl horizontal>
-                                        <StyledProjectLabel>Project Name</StyledProjectLabel>
-                                        <TextField fullWidth id='Project_Name' type="textarea"
-                                            style={{ resize: 'both', maxHeight: '100%', }}
-                                            value={!(Object.keys(this.props.selectedFeature).length > 0) ? 
-                                                " Search and Select a Project.       Use the Map to Create New Projects" : 
-                                                this._getAttribute('Project_Name')}
-                                            onChange={this._handleChangeEvent.bind(this)} 
-                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}/>
-                                    </StyledFormControl>
+                                <Form horizontal style={{ padding: '1px' }} >
+                                    <Col >
+                                        <StyledFormControl horizontal>
+                                            <StyledProjectLabel>Project Name</StyledProjectLabel>
+                                            <TextField fullWidth id='Project_Name' type="textarea"
+                                                style={{ resize: 'both', maxHeight: '100%', height: '65px' }}
+                                                value={!(Object.keys(this.props.selectedFeature).length > 0) ?
+                                                    " Search and Select a Project.       Use the Map to Create New Projects" :
+                                                    this._getAttribute('Project_Name')}
+                                                onChange={this._handleChangeEvent.bind(this)}
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)} />
+                                        </StyledFormControl>
 
-                                    <StyledFormControl horizontal error={validation.Status.isInvalid}>
-                                        <StyledProjectLabel>Status</StyledProjectLabel>
-                                        <StyledSelect fullWidth id='Status' selectedValue={this._getAttribute('Status')}
-                                            onChange={(e) => this._handleChangeEvent(e, 'Status')}
-                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                        <StyledFormControl horizontal error={validation.Status.isInvalid}>
+                                            <StyledProjectLabel>Status</StyledProjectLabel>
+                                            <StyledSelect fullWidth id='Status' selectedValue={this._getAttribute('Status')}
+                                                onChange={(e) => this._handleChangeEvent(e, 'Status')}
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                             /* onChange={this._handleChangeEvent.bind(this)} */ >
-                                            {this._returnDomainDropdowns('Status')}
-                                        </StyledSelect>
-                                    </StyledFormControl>
+                                                {this._returnDomainDropdowns('Status')}
+                                            </StyledSelect>
+                                        </StyledFormControl>
 
-                                    <StyledFormControl horizontal error={validation.Project_Manager.isInvalid}>
-                                        <StyledProjectLabel>Project Manager</StyledProjectLabel>
-                                        <Select className="d-flex align-items-center" fullWidth
-                                            id='Project_Manager' selectedValue={this._getAttribute('Project_Manager')}
-                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                            onChange={(e) => this._handleChangeEvent(e, 'Project_Manager')}>
-                                            {this._returnValuesDropdowns('manager')}
-                                        </Select>
-                                    </StyledFormControl>
-                                    <StyledFormControl horizontal error={validation.Project_Type.isInvalid}>
-                                        <StyledProjectLabel>Project Type</StyledProjectLabel>
-                                        <Select className="d-flex align-items-center" fullWidth
-                                            id='Project_Type' selectedValue={this._getAttribute('Project_Type')}
-                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                            onChange={(e) => this._handleChangeEvent(e, 'Project_Type')}>
-                                            {this._returnDomainDropdowns('Project_Type')}
-                                        </Select>
-                                    </StyledFormControl>
-                                    <StyledFormControl horizontal>
-                                        <StyledProjectLabel>Contact</StyledProjectLabel>
-                                        <Select fullWidth className="d-flex align-items-center"
-                                            id='Contact' selectedValue={this._getAttribute('Contact')}
-                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                            onChange={(e) => this._handleChangeEvent(e, 'Contact')}
+                                        <StyledFormControl horizontal error={validation.Project_Manager.isInvalid}>
+                                            <StyledProjectLabel>Project Manager</StyledProjectLabel>
+                                            <StyledSelect className="d-flex align-items-center" fullWidth
+                                                id='Project_Manager' selectedValue={this._getAttribute('Project_Manager')}
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                onChange={(e) => this._handleChangeEvent(e, 'Project_Manager')}>
+                                                {this._returnValuesDropdowns('manager')}
+                                            </StyledSelect>
+                                        </StyledFormControl>
+                                        <StyledFormControl horizontal error={validation.Project_Type.isInvalid}>
+                                            <StyledProjectLabel>Project Type</StyledProjectLabel>
+                                            <StyledSelect className="d-flex align-items-center" fullWidth
+                                                id='Project_Type' selectedValue={this._getAttribute('Project_Type')}
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                onChange={(e) => this._handleChangeEvent(e, 'Project_Type')}>
+                                                {this._returnDomainDropdowns('Project_Type')}
+                                            </StyledSelect>
+                                        </StyledFormControl>
+                                        <StyledFormControl horizontal>
+                                            <StyledProjectLabel>Project Originator</StyledProjectLabel>
+                                            <StyledSelect className="d-flex align-items-center" fullWidth
+                                                id='Project_Originator' selectedValue={this._getAttribute('Project_Originator')}
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                onChange={(e) => this._handleChangeEvent(e, 'Project_Originator')}>
+                                                {this._returnDomainDropdowns('Project_Originator')}
+                                            </StyledSelect>
+                                        </StyledFormControl>
+                                        <StyledFormControl horizontal>
+                                            <StyledProjectLabel>Project Location</StyledProjectLabel>
+                                            <TextField className="d-flex align-items-center" fullWidth
+                                                id='Project_Location' selectedValue={this._getAttribute('Project_Location')}
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                onChange={(e) => this._handleChangeEvent(e, 'Project_Location')} />
+
+                                        </StyledFormControl>
+                                        <StyledFormControl horizontal>
+                                            <StyledProjectLabel>WRE Project #</StyledProjectLabel>
+                                            <TextField className="d-flex align-items-center" fullWidth
+                                                id='WRE_ProjectNo' selectedValue={this._getAttribute('WRE_ProjectNo')}
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                onChange={(e) => this._handleChangeEvent(e, 'WRE_ProjectNo')} />
+                                        </StyledFormControl>
+                                        <StyledFormControl horizontal>
+                                            <StyledProjectLabel>Contact</StyledProjectLabel>
+                                            <StyledSelect fullWidth className="d-flex align-items-center"
+                                                id='Contact' selectedValue={this._getAttribute('Contact')}
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                onChange={(e) => this._handleChangeEvent(e, 'Contact')}
                                             /* onChange={this._activateSaveButton} */ >
-                                            {this._returnValuesDropdowns('contact')}
-                                        </Select>
-                                    </StyledFormControl>
-                                    <StyledFormControl horizontal  error={validation.Contact_Phone.isInvalid}  >
-                                        <StyledProjectLabel >Contact Phone #</StyledProjectLabel>
-                                        <TextField fullWidth id='Contact' type="text"
-                                            value={this._getRelatedAttribute('contact', 'CellNumber', 'Name', this._getAttribute('Contact'))} 
-                                            onChange={this._handleChangeEvent.bind(this)} 
-                                            disabled={true}/>
-                                        {validation.Contact_Phone.isInvalid ?  <FormHelperText className="d-flex align-items-center"> {validation.Contact_Phone.message}</FormHelperText>: null}
-                                    </StyledFormControl>
-                                    </Col>
-                                    <Col lg="4">
-                                    <StyledFormControl horizontal>
-                                        <StyledProjectLabel>Pre Bid Date</StyledProjectLabel>
-                                        <StyledDatePicker
-                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                            id="PreBid_DatePicker"
-                                            yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
-                                            date={this._getAttribute('PreBid_Date') ? new moment(new Date(this._getAttribute('PreBid_Date'))) : undefined}
-                                            onDateChange={(e) => this._onDateChange(e, "PreBid_Date")}
-                                            focused={this.state.PreBid_DatePicker}
-                                            onFocusChange={ (e) => this._onFocusChange(e, 'PreBid_DatePicker')}
-                                            numberOfMonths={1}
-                                            isOutsideRange={() => { }}
-                                            monthYearSelectionMode="MONTH_YEAR"
-                                        />
-                                    </StyledFormControl>
-                                    <StyledFormControl horizontal>
-                                        <StyledProjectLabel>Bid Opening Date</StyledProjectLabel>
-                                        <StyledDatePicker
-                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                            id="BidOpening_DatePicker"
-                                            yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
-                                            date={this._getAttribute('BidOpening_Date') ? new moment(new Date(this._getAttribute('BidOpening_Date'))) : undefined}
-                                            onDateChange={(e) => this._onDateChange(e, "BidOpening_Date")}
-                                            focused={this.state.BidOpening_DatePicker}
-                                            onFocusChange={(e) => this._onFocusChange(e, 'BidOpening_DatePicker')}
-                                            numberOfMonths={1}
-                                            isOutsideRange={() => { }}
-                                            monthYearSelectionMode="MONTH_YEAR"
-                                        />
-                                    </StyledFormControl>
-                                    <StyledFormControl horizontal>
-                                        <StyledProjectLabel>Pre Con Date</StyledProjectLabel>
-                                        <StyledDatePicker
-                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                            id="PreCon_DatePicker"
-                                            yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
-                                            date={this._getAttribute('PreCon_Date') ? new moment(new Date(this._getAttribute('PreCon_Date'))) : undefined}
-                                            onDateChange={(e) => this._onDateChange(e, "PreCon_Date")}
-                                            focused={this.state.PreCon_DatePicker}
-                                            onFocusChange={(e) => this._onFocusChange(e, 'PreCon_DatePicker')}
-                                            numberOfMonths={1}
-                                            isOutsideRange={() => { }}
-                                            monthYearSelectionMode="MONTH_YEAR"
-                                        />
-                                    </StyledFormControl>
-                                    <StyledFormControl horizontal>
-                                        <StyledProjectLabel>Let Date</StyledProjectLabel>
-                                        <StyledDatePicker
-                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                            id="Let_DatePicker"
-                                            yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
-                                            date={this._getAttribute('Let_Date') ? new moment(new Date(this._getAttribute('Let_Date'))) : undefined}
-                                            onDateChange={(e) => this._onDateChange(e, "Let_Date")}
-                                            focused={this.state.Let_DatePicker}
-                                            onFocusChange={(e) => this._onFocusChange(e, 'Let_DatePicker')}
-                                            numberOfMonths={1}
-                                            isOutsideRange={() => { }}
-                                            monthYearSelectionMode="MONTH_YEAR"
-                                        />
-                                    </StyledFormControl>
-                                    <StyledFormControl horizontal>
-                                        <StyledProjectLabel>Construction NTP</StyledProjectLabel>
-                                        <StyledDatePicker
-                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                            id="Const_Start_Date_NTPPicker"
-                                            yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
-                                            date={this._getAttribute('Const_Start_Date_NTP') ? new moment(new Date(this._getAttribute('Const_Start_Date_NTP'))) : undefined}
-                                            onDateChange={(e) => this._onDateChange(e, "Const_Start_Date_NTP")}
-                                            focused={this.state.Const_Start_Date_NTPPicker}
-                                            onFocusChange={(e) => this._onFocusChange(e, 'Const_Start_Date_NTPPicker')}
-                                            numberOfMonths={1}
-                                            isOutsideRange={() => { }}
-                                            monthYearSelectionMode="MONTH_YEAR"
-                                        />
-                                    </StyledFormControl>
-                                    <StyledFormControl horizontal>
-                                        <StyledProjectLabel>Const End Date</StyledProjectLabel>
-                                        <StyledDatePicker
-                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                            id="Const_End_DatePicker"
-                                            yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
-                                            date={this._getAttribute('Const_End_Date') ? new moment(new Date(this._getAttribute('Const_End_Date'))) : undefined}
-                                            onDateChange={(e) => this._onDateChange(e, "Const_End_Date")}
-                                            focused={this.state.Const_End_DatePicker}
-                                            onFocusChange={(e) => this._onFocusChange(e, 'Const_End_DatePicker')}
-                                            numberOfMonths={1}
-                                            isOutsideRange={() => { }}
-                                            monthYearSelectionMode="MONTH_YEAR"
-                                        />
-                                    </StyledFormControl>
+                                                {this._returnValuesDropdowns('contact')}
+                                            </StyledSelect>
+                                        </StyledFormControl>
+                                        <StyledFormControl horizontal error={validation.Contact_Phone.isInvalid}  >
+                                            <StyledProjectLabel >Contact Phone #</StyledProjectLabel>
+                                            <TextField fullWidth id='ContactPhone' type="text"
+                                                value={this._getRelatedAttribute('contact', 'CellNumber', 'Name', this._getAttribute('Contact'))}
+                                                onChange={this._handleChangeEvent.bind(this)}
+                                                disabled={true} />
+                                            {validation.Contact_Phone.isInvalid ? <FormHelperText className="d-flex align-items-center"> {validation.Contact_Phone.message}</FormHelperText> : null}
+                                        </StyledFormControl>
+
+                                        <StyledFormControl horizontal>
+                                            <StyledProjectLabel>Project Notes</StyledProjectLabel>
+                                            <TextField fullWidth id='Notes' type="textarea"
+                                                style={{ resize: 'both', maxHeight: '100%', height: '95px' }}
+                                                value={!(Object.keys(this.props.selectedFeature).length > 0) ?
+                                                    " " : this._getAttribute('Notes')}
+                                                onChange={this._handleChangeEvent.bind(this)}
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)} />
+                                        </StyledFormControl>
                                     </Col>
                                 </Form>
                             </CardContent>
                         </Card>
                     </Col>
-                    <Col lg="4">
-                        <Card bar="lightOrange" style={{ margin: '0px', flex: '1 1 20%'}}>
-                            <CardContent>
-                                <CardTitle style={{
-                                    minWidth: '120px', fontWeight: 'bolder', fontSize: '16px', textAlign: 'left',
-                                    color: CalciteTheme.palette.lightOrange
-                                }}> Utilities Involved</CardTitle>
-                                <Form vertical style={{ flex: 1, backgroundColor: CalciteTheme.palette.white }}>
-                                    <Row style={{ flex: 1 }} className="align-items-center m-0 p-0">
-                                        <Col sm="6" className="d-flex justify-content-center m-0 p-0">
-                                            <Checkbox id='WaterWork' labelStyle={{ fontWeight: 'bold' }}
-                                                value={this._getAttribute('WaterWork')}
-                                                checked={(this._getAttribute('WaterWork') === 1) ? true : false}
-                                                onChange={this._handleCheckboxEvent.bind(this)} 
-                                                fullWidth
-                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                            > Water Work
-                                            </Checkbox>
+                    <Col lg="8">
+                        <Row>
+                        <Col lg="6" >
+                            <Card bar="lightOrange" style={{ margin: '0px', flex: '1 1 20%', minHeight: '100%', paddingLeft: 0 }}>
+                                <CardContent>
+                                    <CardTitle style={{
+                                        minWidth: '120px', fontWeight: 'bolder', fontSize: '17px', textAlign: 'left',
+                                        color: CalciteTheme.palette.lightOrange
+                                    }}> Construction</CardTitle>
+                                    <Form horizontal style={{ padding: '1px' }} >
+                                            <Col >
+                                                <StyledFormControl horizontal>
+                                                    <StyledProjectLabel>Contractor</StyledProjectLabel>
+                                                    <StyledSelect fullWidth className="d-flex align-items-center"
+                                                        id='Contractor' selectedValue={this._getAttribute('Contractor')}
+                                                        disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                        onChange={(e) => this._handleChangeEvent(e, 'Contractor')}
+                                            /* onChange={this._activateSaveButton} */ >
+                                                        {this._returnValuesDropdowns('Contractor')}
+                                                    </StyledSelect>
+                                                </StyledFormControl>
+                                                <StyledFormControl horizontal error={validation.Contact_Phone.isInvalid}  >
+                                                    <StyledProjectLabel >Contractor Phone #</StyledProjectLabel>
+                                                    <TextField fullWidth id='ContractorPhone' type="text"
+                                                        value={this._getRelatedAttribute('Contractor', 'Contact_Number', 'Contractor', this._getAttribute('Contractor'))}
+                                                        onChange={this._handleChangeEvent.bind(this)}
+                                                        disabled={true} />
+                                                </StyledFormControl>
+                                                <StyledFormControl horizontal>
+                                                    <StyledProjectLabel>Inspector</StyledProjectLabel>
+                                                    <StyledSelect fullWidth className="d-flex align-items-center"
+                                                        id='Inspector' selectedValue={this._getAttribute('Inspector')}
+                                                        disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                        onChange={(e) => this._handleChangeEvent(e, 'Inspector')}
+                                            /* onChange={this._activateSaveButton} */ >
+                                                        {this._returnValuesDropdowns('Inspector')}
+                                                    </StyledSelect>
+                                                </StyledFormControl>
+                                                <StyledFormControl horizontal error={validation.Contact_Phone.isInvalid}  >
+                                                    <StyledProjectLabel >Inspector Phone #</StyledProjectLabel>
+                                                    <TextField fullWidth id='InspectorPhone' type="text"
+                                                        value={this._getRelatedAttribute('Inspector', 'CellNumber', 'Name', this._getAttribute('Inspector'))}
+                                                        onChange={this._handleChangeEvent.bind(this)}
+                                                        disabled={true} />
+                                                </StyledFormControl>
+                                                <CardTitle style={{
+                                                    minWidth: '120px', fontWeight: 'bolder', fontSize: '17px', textAlign: 'left', marginTop: '15px',
+                                                    color: CalciteTheme.palette.lightOrange
+                                                }}> Schedule</CardTitle>
+                                            </Col>
+                                    <Row >
+                                        <Col >
+                                            <StyledFormControl horizontal className='d-flex align-items-center'>
+                                                <StyledProjectLabel>Let Dates</StyledProjectLabel>
+                                                <StyledDatePicker
+                                                    disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                    id="Let_DatePicker"
+                                                    yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
+                                                    date={this._getAttribute('Let_Date') ? new moment(new Date(this._getAttribute('Let_Date'))) : undefined}
+                                                    onDateChange={(e) => this._onDateChange(e, "Let_Date")}
+                                                    focused={this.state.Let_DatePicker}
+                                                    onFocusChange={(e) => this._onFocusChange(e, 'Let_DatePicker')}
+                                                    numberOfMonths={1}
+                                                    isOutsideRange={() => { }}
+                                                    monthYearSelectionMode="MONTH_YEAR"
+                                                />
+                                            </StyledFormControl>
                                         </Col>
-                                        <Col sm="6" className="d-flex justify-content-center">
-                                            <Checkbox id='SewerWork' labelStyle={{ fontWeight: 'bold' }}
-                                                value={this._getAttribute('SewerWork')}
-                                                checked={(this._getAttribute('SewerWork') === 1) ? true : false}
-                                                onChange={this._handleCheckboxEvent.bind(this)} 
-                                                fullWidth
-                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                        <Col >
+                                            <StyledFormControl horizontal className='d-flex align-items-center'>
+                                                <StyledProjectLabel>Pre Bid Date</StyledProjectLabel>
+                                                <StyledDatePicker
+                                                    disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                    id="PreBid_DatePicker"
+                                                    yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
+                                                    date={this._getAttribute('PreBid_Date') ? new moment(new Date(this._getAttribute('PreBid_Date'))) : undefined}
+                                                    onDateChange={(e) => this._onDateChange(e, "PreBid_Date")}
+                                                    focused={this.state.PreBid_DatePicker}
+                                                    onFocusChange={(e) => this._onFocusChange(e, 'PreBid_DatePicker')}
+                                                    numberOfMonths={1}
+                                                    isOutsideRange={() => { }}
+                                                    monthYearSelectionMode="MONTH_YEAR"
+                                                />
+                                            </StyledFormControl>
+                                        </Col>
+                                    </Row>
+                                    <Row >
+                                        <Col>
+                                            <StyledFormControl horizontal>
+                                                <StyledProjectLabel>Bid Opening Date</StyledProjectLabel>
+                                                <StyledDatePicker
+                                                    disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                    id="BidOpening_DatePicker"
+                                                    yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
+                                                    date={this._getAttribute('BidOpening_Date') ? new moment(new Date(this._getAttribute('BidOpening_Date'))) : undefined}
+                                                    onDateChange={(e) => this._onDateChange(e, "BidOpening_Date")}
+                                                    focused={this.state.BidOpening_DatePicker}
+                                                    onFocusChange={(e) => this._onFocusChange(e, 'BidOpening_DatePicker')}
+                                                    numberOfMonths={1}
+                                                    isOutsideRange={() => { }}
+                                                    monthYearSelectionMode="MONTH_YEAR"
+                                                />
+                                            </StyledFormControl>
+                                        </Col>
+                                        <Col>
+                                            <StyledFormControl horizontal>
+                                                <StyledProjectLabel>Pre Con Date</StyledProjectLabel>
+                                                <StyledDatePicker
+                                                    disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                    id="PreCon_DatePicker"
+                                                    yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
+                                                    date={this._getAttribute('PreCon_Date') ? new moment(new Date(this._getAttribute('PreCon_Date'))) : undefined}
+                                                    onDateChange={(e) => this._onDateChange(e, "PreCon_Date")}
+                                                    focused={this.state.PreCon_DatePicker}
+                                                    onFocusChange={(e) => this._onFocusChange(e, 'PreCon_DatePicker')}
+                                                    numberOfMonths={1}
+                                                    isOutsideRange={() => { }}
+                                                    monthYearSelectionMode="MONTH_YEAR"
+                                                />
+                                            </StyledFormControl>
+                                        </Col>
+                                    </Row>
+                                    <Row >
+                                        <Col>
+                                            <StyledFormControl horizontal>
+                                                <StyledProjectLabel>Constr. NTP</StyledProjectLabel>
+                                                <StyledDatePicker
+                                                    disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                    id="Const_Start_Date_NTPPicker"
+                                                    yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
+                                                    date={this._getAttribute('Const_Start_Date_NTP') ? new moment(new Date(this._getAttribute('Const_Start_Date_NTP'))) : undefined}
+                                                    onDateChange={(e) => this._onDateChange(e, "Const_Start_Date_NTP")}
+                                                    focused={this.state.Const_Start_Date_NTPPicker}
+                                                    onFocusChange={(e) => this._onFocusChange(e, 'Const_Start_Date_NTPPicker')}
+                                                    numberOfMonths={1}
+                                                    isOutsideRange={() => { }}
+                                                    monthYearSelectionMode="MONTH_YEAR"
+                                                />
+                                            </StyledFormControl>
+                                        </Col>
+                                        <Col>
+                                            <StyledFormControl horizontal>
+                                                <StyledProjectLabel>Constr. End Date</StyledProjectLabel>
+                                                <StyledDatePicker
+                                                    disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                    id="Const_End_DatePicker"
+                                                    yearSelectDates={{ startYear: new moment().subtract('year', 10).year(), endYear: new moment().add('year', 10).year() }}
+                                                    date={this._getAttribute('Const_End_Date') ? new moment(new Date(this._getAttribute('Const_End_Date'))) : undefined}
+                                                    onDateChange={(e) => this._onDateChange(e, "Const_End_Date")}
+                                                    focused={this.state.Const_End_DatePicker}
+                                                    onFocusChange={(e) => this._onFocusChange(e, 'Const_End_DatePicker')}
+                                                    numberOfMonths={1}
+                                                    isOutsideRange={() => { }}
+                                                    monthYearSelectionMode="MONTH_YEAR"
+                                                />
+                                            </StyledFormControl>
+                                        </Col>
+                                    </Row>
+                                            <StyledFormControl >
+                                                <StyledProjectLabel >Constr. Duration</StyledProjectLabel>
+                                                <TextField fullWidth id='ConsDuration' type="text"
+                                                    value={(this._getAttribute('Const_End_Date') && this._getAttribute('Const_Start_Date_NTP')) ?
+                                                    moment.utc(new moment(new Date(this._getAttribute('Const_End_Date'))).diff(new moment(new Date(this._getAttribute('Const_Start_Date_NTP'))))).format("DD") : ""
+                                                }
+                                                    onChange={this._handleChangeEvent.bind(this)}
+                                                    disabled={true} />
+                                            </StyledFormControl>
+                                    </Form>
+                                </CardContent>
+                            </Card>
+                        </Col>
+                        <Col lg="6">
+                            <Card bar="lightOrange" style={{ margin: '0px', flex: '1 1 20%' }}>
+                                <CardContent>
+                                    <CardTitle style={{
+                                        minWidth: '120px', fontWeight: 'bolder', fontSize: '17px', textAlign: 'left',
+                                        color: CalciteTheme.palette.lightOrange
+                                    }}> Utilities Involved</CardTitle>
+                                    <Form vertical style={{ flex: 1, backgroundColor: CalciteTheme.palette.white }}>
+                                        <Row style={{ flex: 1 }} className="align-items-center m-0 p-0">
+                                            <Col sm="6" className="d-flex justify-content-center m-0 p-0">
+                                                <Checkbox id='WaterWork' labelStyle={{ fontWeight: 'bold', fontSize: '16px' }}
+                                                    value={this._getAttribute('WaterWork')}
+                                                    checked={(this._getAttribute('WaterWork') === 1) ? true : false}
+                                                    onChange={this._handleCheckboxEvent.bind(this)}
+                                                    fullWidth
+                                                    disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                > Water Work
+                                            </Checkbox>
+                                            </Col>
+                                            <Col sm="6" className="d-flex justify-content-center">
+                                                <Checkbox id='SewerWork' labelStyle={{ fontWeight: 'bold' }}
+                                                    value={this._getAttribute('SewerWork')}
+                                                    checked={(this._getAttribute('SewerWork') === 1) ? true : false}
+                                                    onChange={this._handleCheckboxEvent.bind(this)}
+                                                    fullWidth
+                                                    disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                 > Sewer Work
                                             </Checkbox>
-                                        </Col>
-                                    </Row>
-                                    <Row style={{ flex: 1 }} className="align-items-center m-0 p-0">
-                                        <Col sm="4" className="d-flex justify-content-center m-0 p-0">
-                                            <Checkbox id='StormWork' labelStyle={{ fontWeight: 'bold' }}
-                                                value={this._getAttribute('StormWork')}
-                                                checked={(this._getAttribute('StormWork') === 1) ? true : false}
-                                                onChange={this._handleCheckboxEvent.bind(this)} 
-                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                                fullWidth
+                                            </Col>
+                                        </Row>
+                                        <Row style={{ flex: 1 }} className="align-items-center m-0 p-0">
+                                            <Col sm="4" className="d-flex justify-content-center m-0 p-0">
+                                                <Checkbox id='StormWork' labelStyle={{ fontWeight: 'bold' }}
+                                                    value={this._getAttribute('StormWork')}
+                                                    checked={(this._getAttribute('StormWork') === 1) ? true : false}
+                                                    onChange={this._handleCheckboxEvent.bind(this)}
+                                                    disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                    fullWidth
                                                 > Storm Work
                                             </Checkbox>
-                                        </Col>
-                                        <Col sm="4" className="d-flex justify-content-center m-0 p-0">
-                                            <Checkbox id='RoadWork' labelStyle={{ fontWeight: 'bold' }}
-                                                value={this._getAttribute('RoadWork')}
-                                                checked={(this._getAttribute('RoadWork') === 1) ? true : false}
-                                                onChange={this._handleCheckboxEvent.bind(this)}  
-                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                                fullWidth
+                                            </Col>
+                                            <Col sm="4" className="d-flex justify-content-center m-0 p-0">
+                                                <Checkbox id='RoadWork' labelStyle={{ fontWeight: 'bold' }}
+                                                    value={this._getAttribute('RoadWork')}
+                                                    checked={(this._getAttribute('RoadWork') === 1) ? true : false}
+                                                    onChange={this._handleCheckboxEvent.bind(this)}
+                                                    disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                    fullWidth
                                                 > Road Work
                                             </Checkbox>
-                                        </Col>
-                                        <Col sm="4" className="d-flex justify-content-center m-0 p-0">
-                                            <Checkbox id='GasWork' labelStyle={{ fontWeight: 'bold' }}
-                                                value={this._getAttribute('GasWork')}
-                                                checked={(this._getAttribute('GasWork') === 1) ? true : false}
-                                                onChange={this._handleCheckboxEvent.bind(this)} 
-                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                                fullWidth
+                                            </Col>
+                                            <Col sm="4" className="d-flex justify-content-center m-0 p-0">
+                                                <Checkbox id='GasWork' labelStyle={{ fontWeight: 'bold' }}
+                                                    value={this._getAttribute('GasWork')}
+                                                    checked={(this._getAttribute('GasWork') === 1) ? true : false}
+                                                    onChange={this._handleCheckboxEvent.bind(this)}
+                                                    disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                    fullWidth
                                                 >
-                                                Gas Work
+                                                    Gas Work
                                             </Checkbox>
-                                        </Col>
-                                    </Row>
-                                </Form>
-                            </CardContent>
-                        </Card>
+                                            </Col>
+                                        </Row>
+                                            <CardTitle style={{
+                                                minWidth: '120px', fontWeight: 'bolder', fontSize: '17px', textAlign: 'left', marginTop: '15px',
+                                                color: CalciteTheme.palette.lightOrange
+                                            }}> Construction Notes</CardTitle>
+                                            <TextField fullWidth id='ConstructionNotes' type="textarea"
+                                            style={{ resize: 'both', maxHeight: '100%', height: '85px' }}
+                                            value={ this._getAttribute('Construction_Notes')}
+                                            onChange={this._handleChangeEvent.bind(this)}
+                                            disabled={true} />
+                                    </Form>
+                                </CardContent>
+                            </Card>
+                        </Col>
+                        </Row>
                     </Col>
                 </Row>
 
