@@ -48,13 +48,13 @@ export default (state = initialState, action) => {
         loaded: true
       };
     case types.SET_CONTRACTORS:
-      console.log("set contractors: " + JSON.stringify(action));
+      //console.log("set contractors: " + JSON.stringify(action));
       return {
         ...state,
         contractors: action.payload
       };
     case types.SET_EMPLOYEES:
-      console.log("set employees: " + JSON.stringify(action));
+      //console.log("set employees: " + JSON.stringify(action));
       return {
         ...state,
         employees: action.payload
@@ -76,7 +76,7 @@ export default (state = initialState, action) => {
         managers: _managers.sort()
       };
     case types.SET_FIELDS:
-      console.log("set FIELDS payload: " + JSON.stringify(action.payload));
+      //console.log("set FIELDS payload: " + JSON.stringify(action.payload));
       return {
         ...state,
         fields: action.payload.fields
@@ -94,8 +94,10 @@ export default (state = initialState, action) => {
         attributesComponent: !state.attributesComponent
       };
     case types.SELECT_FEATURE:
-      //console.log("SELECT_FEATURE: " + JSON.stringify(action.payload));
+      
       if (action.payload['feature'] !== undefined && action.payload['feature'] !== null){
+        console.log("SELECT_FEATURE: " + JSON.stringify(action.payload));
+        console.log("\tFEATURE: " + action.payload['feature']);
         return {
           ...state,
           selectedFeature: action.payload['feature']

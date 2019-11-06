@@ -47,10 +47,12 @@ export function updateFeatures(FeatureUrl, _data) {
   let tokenObj = credObj['token'];
   
   return new Promise ((resolve, reject) => {
+    //url: `${FeatureUrl}/0/updateFeatures?&token=${tokenObj}`,
     updateFeatureLayer({
-      url: `${FeatureUrl}/0/updateFeatures?&token=${tokenObj}`,
+      url: `${FeatureUrl}/0`,
       features: _data,
-      httpMethod: "POST"
+      httpMethod: "POST",
+      params: { f: "json", token: `${tokenObj}`}
     }).then(resp => resolve(resp), error => reject(error));
   })
 }

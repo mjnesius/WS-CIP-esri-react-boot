@@ -13,7 +13,7 @@ const parseFields = (state, _propName) => {
                 _fld['type'] = fld['type'];//state.map.fields[fld].type;
                 _fields.push(_fld);
             })
-            console.log("\nparseFields 'features'",JSON.stringify(_fields));
+            //console.log("\nparseFields 'features'",JSON.stringify(_fields));
             var visibleFields = ["Project_Name", "Project_Type", "Project_Location", "Project_Originator", "Status", "Proposed_Year", "WRE_ProjectNo", "Project_Manager",
                 "Total_Cost", "Inspector", "Contractor"]
             const _fieldsFiltered = _fields.filter(fld => visibleFields.indexOf(fld.name) > -1);
@@ -98,16 +98,16 @@ const parseEmployees = (state, _type ) => {
             _data.push(emp['attributes']);
         })
     }
-    console.log("parseEmployees _type: ", _type, "   data: ", _data);
+    //console.log("parseEmployees _type: ", _type, "   data: ", _data);
     return _data
 }
 
 const parseDomains = (state) => {
     var _fieldsWithDomains =[];
     state.map.fields.forEach((fld) => {
-        JSON.stringify("parseDomains: ", fld)
+        //JSON.stringify("parseDomains: ", fld)
         if (!(fld['domain'] === undefined || fld['domain'] === null)){
-            console.log("parseDomains: ",JSON.stringify( fld['domain']));
+            //console.log("parseDomains: ",JSON.stringify( fld['domain']));
           _fieldsWithDomains.push(fld['domain']);  
         }
         

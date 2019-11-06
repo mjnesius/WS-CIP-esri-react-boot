@@ -147,7 +147,33 @@ class ProjectDetails extends React.Component {
       }
 
     _handleChangeEvent(val, target) {
-        console.log("_handleChangeEvent val is: ",val, "\ttarget: ", target);
+        // console.log("1 _handleChangeEvent val is: ",val, "\tval.target: ", val.target);
+        //     console.log ("\tval.target.value: ", val.target.value);
+        //     let stateCopy ={...this.props.selectedFeature};
+        //     stateCopy[val.target.id] = val.target.value;
+        //     this.props.selectFeature(stateCopy);
+        //     let validation = this.validator.validate(stateCopy);
+        //     console.log("validation: ", validation, "\n\tthis.state.validation: ", this.state.validation);
+        //     this.setState({
+        //         validation: validation
+        //         }, () => { this._activateSaveButton(); }
+        //     );
+        //     return val;
+        //console.log(" _handleChangeEvent val is: ",val, "\t target:", target)
+        //console.log("\tval.target: ", val.target, "  val.target.id: ", val.target.id);
+        //console.log ("\tval.target.value: ", val.target.value);
+        if( val.target ){
+            let stateCopy ={...this.props.selectedFeature};
+            stateCopy[val.target.id] = val.target.value;
+            this.props.selectFeature(stateCopy);
+            let validation = this.validator.validate(stateCopy);
+            console.log("validation: ", validation, "\n\tthis.state.validation: ", this.state.validation);
+            this.setState({
+                validation: validation
+                }, () => { this._activateSaveButton(); }
+            );
+            return val;
+        }
         let stateCopy ={...this.props.selectedFeature};
         stateCopy[target] = val;
         // val['Contractor']
@@ -186,7 +212,7 @@ class ProjectDetails extends React.Component {
             //console.log("_man: ", _man);
             return Object.keys(_dom)[0].indexOf( _field) > -1;
         });
-        console.log("domain dropdown, match: ", match ,"\t for field: ",  _field);
+        //console.log("domain dropdown, match: ", match ,"\t for field: ",  _field);
 
         if (!(match === undefined || match === null || match.length <1)) {
             //var codedVals = Object.keys(match)[0];
@@ -238,13 +264,13 @@ class ProjectDetails extends React.Component {
         var fld =_getFld;
         var _match;
         //OfficeNumber, CellNumber
-        console.log("_getRelatedAttribute, _type: ", _type, "  _getFld: ", _getFld, " _matchFld: ", _matchFld, "  _matchVal: ", _matchVal);
+        //console.log("_getRelatedAttribute, _type: ", _type, "  _getFld: ", _getFld, " _matchFld: ", _matchFld, "  _matchVal: ", _matchVal);
         if (_type.toLowerCase().indexOf('contact') > -1){
             const match = this.props.optionsContacts.filter((_man) => {
                 //console.log("_man: ", _man);
                 return _man[_matchFld] === _matchVal;
             });
-            console.log("related match: ", match);
+            //console.log("related match: ", match);
             _match = match[0] ? match[0] : {};
             val = _match[fld] ? _match[fld] : ''
         } else if (_type.toLowerCase().indexOf('contract') > -1){
@@ -252,7 +278,7 @@ class ProjectDetails extends React.Component {
                 //console.log("_man: ", _man);
                 return _man[_matchFld] === _matchVal;
             });
-            console.log("related match: ", match);
+            //console.log("related match: ", match);
             _match = match[0] ? match[0] : {};
             val = _match[fld] ? _match[fld] : ''
         }
@@ -302,7 +328,7 @@ class ProjectDetails extends React.Component {
                                             <TextField fullWidth id='Project_Name' type="textarea"
                                                 style={{ resize: 'both', maxHeight: '100%', height: '65px' }}
                                                 value={!(Object.keys(this.props.selectedFeature).length > 0) ?
-                                                    " Search and Select a Project.       Use the Map to Create New Projects" :
+                                                    " Search and Select a Project.\n (Use the Map to Create New Projects)" :
                                                     this._getAttribute('Project_Name')}
                                                 onChange={this._handleChangeEvent.bind(this)}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)} />
@@ -348,7 +374,8 @@ class ProjectDetails extends React.Component {
                                         <StyledFormControl horizontal>
                                             <StyledProjectLabel>Project Location</StyledProjectLabel>
                                             <TextField className="d-flex align-items-center" fullWidth
-                                                id='Project_Location' selectedValue={this._getAttribute('Project_Location')}
+                                                id='Project_Location' 
+                                                value={!(Object.keys(this.props.selectedFeature).length > 0) ? " " : this._getAttribute('Project_Location')}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                 onChange={(e) => this._handleChangeEvent(e, 'Project_Location')} />
 
@@ -356,7 +383,8 @@ class ProjectDetails extends React.Component {
                                         <StyledFormControl horizontal>
                                             <StyledProjectLabel>WRE Project #</StyledProjectLabel>
                                             <TextField className="d-flex align-items-center" fullWidth
-                                                id='WRE_ProjectNo' selectedValue={this._getAttribute('WRE_ProjectNo')}
+                                                id='WRE_ProjectNo' 
+                                                value={!(Object.keys(this.props.selectedFeature).length > 0) ? " " : this._getAttribute('WRE_ProjectNo')}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                 onChange={(e) => this._handleChangeEvent(e, 'WRE_ProjectNo')} />
                                         </StyledFormControl>
@@ -383,8 +411,7 @@ class ProjectDetails extends React.Component {
                                             <StyledProjectLabel>Project Notes</StyledProjectLabel>
                                             <TextField fullWidth id='Notes' type="textarea"
                                                 style={{ resize: 'both', maxHeight: '100%', height: '95px' }}
-                                                value={!(Object.keys(this.props.selectedFeature).length > 0) ?
-                                                    " " : this._getAttribute('Notes')}
+                                                value={ this._getAttribute('Notes')}
                                                 onChange={this._handleChangeEvent.bind(this)}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)} />
                                         </StyledFormControl>
@@ -631,11 +658,11 @@ class ProjectDetails extends React.Component {
                                                 minWidth: '120px', fontWeight: 'bolder', fontSize: '17px', textAlign: 'left', marginTop: '15px',
                                                 color: CalciteTheme.palette.lightOrange
                                             }}> Construction Notes</CardTitle>
-                                            <TextField fullWidth id='ConstructionNotes' type="textarea"
+                                            <TextField fullWidth id='Construction_Notes' type="textarea"
                                             style={{ resize: 'both', maxHeight: '100%', height: '85px' }}
                                             value={ this._getAttribute('Construction_Notes')}
                                             onChange={this._handleChangeEvent.bind(this)}
-                                            disabled={true} />
+                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)} />
                                     </Form>
                                 </CardContent>
                             </Card>

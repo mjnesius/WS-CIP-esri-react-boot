@@ -46,7 +46,7 @@ export default (state = initialState, action) => {
     case types.SAVE_BUTTON:
       //console.log("set FIELDS: " + JSON.stringify(action.payload));
       if(action.payload.deactivate){
-        console.log("set save button to flase ");
+        console.log("set save button to disabled ");
         return {
           ...state,
           saveButton: true
@@ -85,11 +85,11 @@ export const actions = {
       card
     }
   }),
-  updateAttributes: (featureURL, data) => ({
+  updateAttributes: (featureUrl, updates) => ({
     type: types.UPDATE_ATTRIBUTES,
     payload: {
-      url: featureURL,
-      data: data
+      url: featureUrl,
+      data: updates
     }
   }),
   setSaveButton: deactivate => ({

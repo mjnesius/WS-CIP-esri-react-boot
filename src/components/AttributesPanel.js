@@ -49,10 +49,12 @@ class AttributesPanel extends Component {
     this.props.setSaveButton('deactivate');
   }
 
-  _handleSave(val) {
+  _handleSave() {
     switch (this.props.card){
       case 'project_details':
-        this.props.updateAttributes(this.props.featureURLs[0], this.props.selectedFeature)
+        var updatedFeature= [{"attributes" : this.props.selectedFeature}];
+        console.log("update: ", JSON.stringify(updatedFeature));
+        this.props.updateAttributes(this.props.featureURLs[0], updatedFeature);
         this.props.setSaveButton();
         break;
       case 'contractors':
@@ -135,7 +137,7 @@ class AttributesPanel extends Component {
                       </Tooltip>
                       <Tooltip title="Save Your Edits">
                         <Button clear disabled={this.props.saveButton} className="m-1 mx-3 p-1 px-2"
-                          onClick={() => this.props.updateAttributes(this.props.featureURLs[0], this.props.projects)}
+                          onClick={() => this._handleSave()}
                           icon={<SaveIcon size={16} />}
                           iconPosition="before"
                         > Save
