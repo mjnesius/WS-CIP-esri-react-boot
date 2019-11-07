@@ -360,7 +360,6 @@ class ProjectDetails extends React.Component {
                                                 value={!(Object.keys(this.props.selectedFeature).length > 0) ? " " : this._getAttribute('Project_Location')}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                 onChange={(e) => this._handleChangeEvent(e, 'Project_Location')} />
-
                                         </StyledFormControl>
                                         <StyledFormControl horizontal>
                                             <StyledProjectLabel>WRE Project #</StyledProjectLabel>
@@ -431,6 +430,17 @@ class ProjectDetails extends React.Component {
                                                         value={this._getRelatedAttribute('Contractor', 'Contact_Number', 'Contractor', this._getAttribute('Contractor'))}
                                                         onChange={this._handleChangeEvent.bind(this)}
                                                         disabled={true} />
+                                                </StyledFormControl>
+                                                <StyledFormControl horizontal>
+                                                    <StyledProjectLabel>Contractor On Site</StyledProjectLabel>
+                                                    <StyledSelect fullWidth className="d-flex align-items-center"
+                                                        id='Company_On_Site' selectedValue={this._getAttribute('Company_On_Site')}
+                                                        placeholder={this._getAttribute('Company_On_Site') ? this._getAttribute('Company_On_Site') : "Select..."}
+                                                        disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
+                                                        onChange={(e) => this._handleChangeEvent(e, 'Company_On_Site')}
+                                                    >
+                                                        {this._returnValuesDropdowns('Contractor')}
+                                                    </StyledSelect>
                                                 </StyledFormControl>
                                                 <StyledFormControl horizontal>
                                                     <StyledProjectLabel>Inspector</StyledProjectLabel>
