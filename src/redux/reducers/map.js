@@ -20,6 +20,8 @@ export const types = {
   SELECT_FEATURE: "SELECT_FEATURE",
   SET_CONTRACTORS: "SET_CONTRACTORS",
   SET_EMPLOYEES: "SET_EMPLOYEES",
+  UPDATE_CONTRACTORS: "SET_CONTRACTORS",
+  UPDATE_EMPLOYEES: "SET_EMPLOYEES",
   GET_CONTRACTORS : "GET_CONTRACTORS",
   GET_EMPLOYEES : "GET_EMPLOYEES",
 };
@@ -37,7 +39,7 @@ export const initialState = {
   domains: [{}],
   selectedFeature:{},
   contractors: [],
-  employees: []
+  employees: [{}]
 };
 
 export default (state = initialState, action) => {
@@ -55,6 +57,22 @@ export default (state = initialState, action) => {
       };
     case types.SET_EMPLOYEES:
       //console.log("set employees: " + JSON.stringify(action));
+      if (action.payload.adjust){
+        console.log("set employees action.payload.data: " + JSON.stringify(action.payload.employees));
+        var employees = action.payload.employees.map( (emp) => {
+          return {'attributes' : emp};
+        });
+        return {
+          ...state,
+          employees: {
+            'features': employees,
+            'fields': state.employees.fields,
+            'globalIdFieldName' : state.employees.globalIdFieldName,
+            'objectIdFieldName' : state.employees.objectIdFieldName,
+            'uniqueIdField' : state.employees.uniqueIdField,
+          }
+        }
+      }
       return {
         ...state,
         employees: action.payload
@@ -108,8 +126,7 @@ export default (state = initialState, action) => {
           ...state,
           selectedFeature: action.payload
         };
-      }
-        
+      }   
     default:
       return state;
   }
@@ -161,10 +178,17 @@ export const actions = {
       url: tableUrl
     }
   }),
-  getEmployeess: (tableUrl) => ({
+  getEmployees: (tableUrl) => ({
     type: types.GET_EMPLOYEES,
     payload: {
       url: tableUrl
+    }
+  }),
+  setEmployees: (_employees, _adjust=false) => ({
+    type: types.SET_EMPLOYEES,
+    payload: {
+      employees: _employees,
+      adjust: _adjust
     }
   })
 };

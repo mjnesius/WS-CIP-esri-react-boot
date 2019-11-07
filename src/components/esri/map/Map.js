@@ -323,7 +323,7 @@ class Map extends Component {
             console.log("getFeatures json: ", repObj)
             this.props.setFeatures(repObj.features);
             this.props.setFields(layer.fields);
-            this.props.getEmployeess(this.props.config.employeesURL);
+            this.props.getEmployees(this.props.config.employeesURL);
             this.props.getContractors(this.props.config.contractorsURL);
           }).then((res) => {
         });

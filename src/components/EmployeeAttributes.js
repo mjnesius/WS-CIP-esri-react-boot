@@ -1,4 +1,5 @@
 import React from "react";
+import Checkbox from 'calcite-react/Checkbox';
 
 //redux
 import { bindActionCreators } from 'redux';
@@ -20,8 +21,37 @@ class EmployeeAttributes extends React.Component {
     //   data: props.projects
     // }
     this.renderEditable = this.renderEditable.bind(this);
-  }
+  }//checked={(this._getAttribute('GasWork') === 1) ? true : false}
   renderEditable(cellInfo) {
+    
+    if (cellInfo.column.id.indexOf("IsWS") > -1){
+      //console.log("cellInfo: ", cellInfo);
+      //console.log("cellInfo.column.value: ", cellInfo.value);
+      console.log("cellInfo.value === '1' ||  cellInfo.value === 1 || cellInfo.value === true: ", (cellInfo.value === "1" ||  cellInfo.value === 1 || cellInfo.value === true) ? true: false);
+        
+      return (
+       <Checkbox 
+          id={cellInfo.column.id} style={{ fontWeight: 'bold', fontSize: '16px', justifyContent: 'center', textAlign: 'center' }}
+          //value={cellInfo.value}
+          checked={(cellInfo.value === "1" ||  cellInfo.value === 1 || cellInfo.value === true) ? true: false}
+
+          onChange={ e => { 
+            console.log("checkbox onChange event e.target: ", e.target) ;
+            const data = [...this.props.employees];
+            console.log("data[cellInfo.index][cellInfo.column.id]: ", data[cellInfo.index][cellInfo.column.id], "   e.target.checked: ", e.target.checked) ;
+            data[cellInfo.index][cellInfo.column.id] = e.target.checked ? "1" : "NULL";
+            //setEmployees: (_employees, _adjust=false) =>
+            this.props.setEmployees(data, true);
+
+            if (this.props.saveButton) {
+              console.log("setSaveButton")
+              this.props.setSaveButton()
+            }
+            console.log("data[cellInfo.index][cellInfo.column.id]: ", data[cellInfo.index][cellInfo.column.id]) ;
+          }} 
+        />
+      );
+    }
     return (
       <div
         style={{ backgroundColor: "#fafafa" }}
@@ -51,15 +81,16 @@ class EmployeeAttributes extends React.Component {
         return col.name !== "OBJECTID"
     })
     const columns = filterCol.map((fld) => {
-      console.log(fld.name);
+      //console.log(fld.name);
       var _filter =  fld.name.toUpperCase().indexOf("COST") > -1 ? false : true;
       return {Header: fld.alias,  Cell: this.renderEditable, id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: _filter}
     })
-
+    console.log("this.props.employees: ", this.props.employees);
     return (
+      
       <div className="overflow-y">
-          <ReactTable defaultPageSize={10} className="-striped -highlight" columns={columns} data={this.props.employees}
-          defaultFilterMethod = {(filter, row, column) => {
+          <ReactTable defaultPageSize={this.props.employees.length} className="-striped -highlight" columns={columns} data={this.props.employees}
+          defaultFilterMethod = {(filter, row) => {
             const id = filter.pivotId || filter.id
             return row[id] !== undefined ? String(row[id]).toUpperCase().indexOf(String(filter.value).toUpperCase()) > -1: true}
           }

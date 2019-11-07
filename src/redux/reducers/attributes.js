@@ -5,7 +5,7 @@ export const types = {
     UPDATE_SUCCESS: "UPDATE_SUCCESS",
     UPDATE_FAIL: "UPDATE_FAIL",
     SAVE_BUTTON: "SAVE_BUTTON",
-    SET_SELECTED: "SET_SELECTED"
+    SET_SELECTED: "SET_SELECTED",
   };
   
   // REDUCERS //
@@ -71,7 +71,8 @@ export default (state = initialState, action) => {
         selectedEmployee: action.payload.item
         }
       }
-       
+    
+      
     default:
       return state;
   }

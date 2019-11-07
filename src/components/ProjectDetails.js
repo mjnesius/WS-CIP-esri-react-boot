@@ -147,21 +147,6 @@ class ProjectDetails extends React.Component {
       }
 
     _handleChangeEvent(val, target) {
-        // console.log("1 _handleChangeEvent val is: ",val, "\tval.target: ", val.target);
-        //     console.log ("\tval.target.value: ", val.target.value);
-        //     let stateCopy ={...this.props.selectedFeature};
-        //     stateCopy[val.target.id] = val.target.value;
-        //     this.props.selectFeature(stateCopy);
-        //     let validation = this.validator.validate(stateCopy);
-        //     console.log("validation: ", validation, "\n\tthis.state.validation: ", this.state.validation);
-        //     this.setState({
-        //         validation: validation
-        //         }, () => { this._activateSaveButton(); }
-        //     );
-        //     return val;
-        //console.log(" _handleChangeEvent val is: ",val, "\t target:", target)
-        //console.log("\tval.target: ", val.target, "  val.target.id: ", val.target.id);
-        //console.log ("\tval.target.value: ", val.target.value);
         if( val.target ){
             let stateCopy ={...this.props.selectedFeature};
             stateCopy[val.target.id] = val.target.value;
@@ -176,12 +161,6 @@ class ProjectDetails extends React.Component {
         }
         let stateCopy ={...this.props.selectedFeature};
         stateCopy[target] = val;
-        // val['Contractor']
-        // this.setState({          
-        //     ..,
-        //     contractor: this.props.selectedContractor['Contractor'] ? this.props.selectedContractor['Contractor'] : ""
-        // });
-        //this.props.setSelected(stateCopy, 'projects')
         this.props.selectFeature(stateCopy);
         let validation = this.validator.validate(stateCopy);
         console.log("validation: ", validation, "\n\tthis.state.validation: ", this.state.validation);

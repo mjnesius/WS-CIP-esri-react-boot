@@ -72,6 +72,7 @@ const parseEmployees = (state, _type ) => {
     var _data = [];
     if (_type === undefined) _type = "all";
     if (_type.indexOf('manager') > -1){
+        //state.map.employees['features'].forEach((emp) => {
         state.map.employees['features'].forEach((emp) => {
             //console.log("emp.attributes.IsWSProjMgr: ", emp.attributes.IsWSProjMgr, "  emp.attributes.IsWSProjMgr: ", emp.attributes.IsWSProjMgr);
             //console.log("emp.attributes.IsWSProjMgr === 1: ", emp.attributes.IsWSProjMgr === 1, "  emp.attributes.IsWSProjMgr === true: ", emp.attributes.IsWSProjMgr === true);
@@ -93,6 +94,7 @@ const parseEmployees = (state, _type ) => {
         })
     }
     else{
+        console.log("parseEmployees state.map.employees: ", state.map.employees)
         state.map.employees['features'].forEach((emp) => {
             //console.log(emp);
             _data.push(emp['attributes']);
