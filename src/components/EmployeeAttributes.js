@@ -30,8 +30,9 @@ class EmployeeAttributes extends React.Component {
       console.log("cellInfo.value === '1' ||  cellInfo.value === 1 || cellInfo.value === true: ", (cellInfo.value === "1" ||  cellInfo.value === 1 || cellInfo.value === true) ? true: false);
         
       return (
-       <Checkbox 
-          id={cellInfo.column.id} style={{ fontWeight: 'bold', fontSize: '16px', justifyContent: 'center', textAlign: 'center' }}
+        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center !important', verticalAlign: 'middle'}}>
+          <Checkbox 
+          id={cellInfo.column.id} 
           //value={cellInfo.value}
           checked={(cellInfo.value === "1" ||  cellInfo.value === 1 || cellInfo.value === true) ? true: false}
 
@@ -50,6 +51,9 @@ class EmployeeAttributes extends React.Component {
             console.log("data[cellInfo.index][cellInfo.column.id]: ", data[cellInfo.index][cellInfo.column.id]) ;
           }} 
         />
+        </div>
+          
+       
       );
     }
     return (

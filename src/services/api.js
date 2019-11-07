@@ -49,7 +49,7 @@ export function updateFeatures(FeatureUrl, _data) {
   return new Promise ((resolve, reject) => {
     //url: `${FeatureUrl}/0/updateFeatures?&token=${tokenObj}`,
     updateFeatureLayer({
-      url: `${FeatureUrl}/0`,
+      url: `${FeatureUrl}`,
       features: _data,
       httpMethod: "POST",
       params: { f: "json", token: `${tokenObj}`}

@@ -186,6 +186,7 @@ class ProjectDetails extends React.Component {
     
     _returnDomainDropdowns(_field){
         let items = [];
+        items.push(<MenuItem key ={0} value={""} >{ ""}</MenuItem>);
         //var domainName = _field + '_Domain';
         const match = this.props.domains.filter((_dom) => {
             //console.log("_man: ", _man);
@@ -216,6 +217,7 @@ class ProjectDetails extends React.Component {
 
     _returnValuesDropdowns(_type){
         let items = [];
+        items.push(<MenuItem key ={0} value={""} >{ ""}</MenuItem>);
         if (_type.toLowerCase().indexOf('manager') > -1){
             this.props.optionsManagers.forEach(function(_man){
                 items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
@@ -327,6 +329,7 @@ class ProjectDetails extends React.Component {
                                             <StyledProjectLabel>Project Manager</StyledProjectLabel>
                                             <StyledSelect className="d-flex align-items-center" fullWidth
                                                 id='Project_Manager' selectedValue={this._getAttribute('Project_Manager')}
+                                                placeholder={this._getAttribute('Project_Manager') ? this._getAttribute('Project_Manager') : "Select..."}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                 onChange={(e) => this._handleChangeEvent(e, 'Project_Manager')}>
                                                 {this._returnValuesDropdowns('manager')}
@@ -371,13 +374,14 @@ class ProjectDetails extends React.Component {
                                             <StyledProjectLabel>Contact</StyledProjectLabel>
                                             <StyledSelect fullWidth className="d-flex align-items-center"
                                                 id='Contact' selectedValue={this._getAttribute('Contact')}
+                                                placeholder={this._getAttribute('Contact') ? this._getAttribute('Contact') : "Select..."}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                 onChange={(e) => this._handleChangeEvent(e, 'Contact')}
                                             /* onChange={this._activateSaveButton} */ >
                                                 {this._returnValuesDropdowns('contact')}
                                             </StyledSelect>
                                         </StyledFormControl>
-                                        <StyledFormControl horizontal error={validation.Contact_Phone.isInvalid}  >
+                                        <StyledFormControl horizontal /* error={validation.Contact_Phone.isInvalid} */  >
                                             <StyledProjectLabel >Contact Phone #</StyledProjectLabel>
                                             <TextField fullWidth id='ContactPhone' type="text"
                                                 value={this._getRelatedAttribute('contact', 'CellNumber', 'Name', this._getAttribute('Contact'))}
@@ -414,13 +418,14 @@ class ProjectDetails extends React.Component {
                                                     <StyledProjectLabel>Contractor</StyledProjectLabel>
                                                     <StyledSelect fullWidth className="d-flex align-items-center"
                                                         id='Contractor' selectedValue={this._getAttribute('Contractor')}
+                                                        placeholder={this._getAttribute('Contractor') ? this._getAttribute('Contractor') : "Select..."}
                                                         disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                         onChange={(e) => this._handleChangeEvent(e, 'Contractor')}
                                             /* onChange={this._activateSaveButton} */ >
                                                         {this._returnValuesDropdowns('Contractor')}
                                                     </StyledSelect>
                                                 </StyledFormControl>
-                                                <StyledFormControl horizontal error={validation.Contact_Phone.isInvalid}  >
+                                                <StyledFormControl horizontal /* error={validation.Contact_Phone.isInvalid} */  >
                                                     <StyledProjectLabel >Contractor Phone #</StyledProjectLabel>
                                                     <TextField fullWidth id='ContractorPhone' type="text"
                                                         value={this._getRelatedAttribute('Contractor', 'Contact_Number', 'Contractor', this._getAttribute('Contractor'))}
@@ -431,13 +436,14 @@ class ProjectDetails extends React.Component {
                                                     <StyledProjectLabel>Inspector</StyledProjectLabel>
                                                     <StyledSelect fullWidth className="d-flex align-items-center"
                                                         id='Inspector' selectedValue={this._getAttribute('Inspector')}
+                                                        placeholder={this._getAttribute('Inspector') ? this._getAttribute('Inspector') : "Select..."}
                                                         disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                         onChange={(e) => this._handleChangeEvent(e, 'Inspector')}
                                             /* onChange={this._activateSaveButton} */ >
                                                         {this._returnValuesDropdowns('Inspector')}
                                                     </StyledSelect>
                                                 </StyledFormControl>
-                                                <StyledFormControl horizontal error={validation.Contact_Phone.isInvalid}  >
+                                                <StyledFormControl horizontal /* error={validation.Contact_Phone.isInvalid} */  >
                                                     <StyledProjectLabel >Inspector Phone #</StyledProjectLabel>
                                                     <TextField fullWidth id='InspectorPhone' type="text"
                                                         value={this._getRelatedAttribute('Inspector', 'CellNumber', 'Name', this._getAttribute('Inspector'))}

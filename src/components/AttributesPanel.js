@@ -62,7 +62,7 @@ class AttributesPanel extends Component {
         this.props.setSaveButton();
         break;
       case 'employees':
-          this.props.updateAttributes(this.props.employeesURL[0], this.props.selectedEmployee)
+          this.props.updateAttributes(this.props.employeesURL[0], this.props.employees['features'])
           this.props.setSaveButton();
           break; 
       default:
@@ -184,7 +184,7 @@ const mapStateToProps = state => ({
   contractorsURL: state.config.contractorsURL,
   employeesURL: state.config.employeesURL,
   saveButton: state.attributes.saveButton,
-  selectedEmployee: state.attributes.selectedEmployee,
+  employees: state.map.employees,
   selectedContractor: state.attributes.selectedContractor,
   selectedFeature: state.map.selectedFeature,
 });
