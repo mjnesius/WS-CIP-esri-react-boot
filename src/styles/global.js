@@ -34,4 +34,7 @@ export const GlobalStyle = createGlobalStyle`
       left: 0;
     }
   }
+  .ReactTable .rt-thead {
+    overflow-y: scroll;
+  }
 `;

@@ -5,6 +5,7 @@ import { createSelector } from 'reselect';
 //reshape state for the table components
 const parseFields = (state, _propName) => {
     var _fields =[];
+    var _fieldsFiltered;
     switch (_propName){
         case "features":
             state.map.fields.forEach((fld) => {
@@ -16,7 +17,7 @@ const parseFields = (state, _propName) => {
             //console.log("\nparseFields 'features'",JSON.stringify(_fields));
             var visibleFields = ["Project_Name", "Project_Type", "Project_Location", "Project_Originator", "Status", "Proposed_Year", "WRE_ProjectNo", "Project_Manager",
                 "Total_Cost", "Inspector", "Contractor"]
-            const _fieldsFiltered = _fields.filter(fld => visibleFields.indexOf(fld.name) > -1);
+            _fieldsFiltered = _fields.filter(fld => visibleFields.indexOf(fld.name) > -1);
             //console.log(JSON.stringify(_fieldsFiltered));
             return _fieldsFiltered
         case "employees":
@@ -28,15 +29,15 @@ const parseFields = (state, _propName) => {
             })
             return _fields
         case "contractors":
-            state.map.contractors.forEach((emp) => {
+            state.map.contractors['fields'].forEach((fld) => {
                 var _fld = {};
-                emp['fields'].forEach((fld) => {
-                    _fld['name'] = fld['name'];//state.map.fields[fld].name;
+                _fld['name'] = fld['name'];//state.map.fields[fld].name;
                     _fld['type'] = fld['type'];//state.map.fields[fld].type;
                     _fields.push(_fld);
-                })
             })
-            return _fields
+            var hideFields = ['SSMA_TimeStamp', 'State', 'Zip', 'Suite','OBJECTID', 'Contact_NamePrefix']
+            _fieldsFiltered = _fields.filter(fld => hideFields.indexOf(fld.name) < 0);
+            return _fieldsFiltered
         default:
             return _fields
     }
