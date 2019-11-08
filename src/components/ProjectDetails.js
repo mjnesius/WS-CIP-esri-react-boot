@@ -1,3 +1,5 @@
+import _ from 'underscore';
+
 import React from "react";
 import moment from 'moment';
 import SearchComponent from './SearchComponent';
@@ -199,15 +201,27 @@ class ProjectDetails extends React.Component {
             var domainObj = match[0]
             //console.log("domain dropdown, \n\t  domainObj: ", domainObj);
             var domainName = Object.keys(domainObj)[0];
-            //console.log("domainName: ", domainName, " domainObj[domainName]");
-            if (!(domainObj === undefined || domainObj === null)) {
-                Object.keys(domainObj[domainName]).forEach(function (codedValObj) {
-                    var _key = Object.keys(domainObj[domainName][codedValObj])[0];
-                    var _val = domainObj[domainName][codedValObj][_key];
-                    //console.log("codedValObj: ", codedValObj, "  _key: ", _key, "  _val: ", _val);
-                    items.push(<MenuItem key={_key} value={_key} >{_val}</MenuItem>);
-                })
-            }
+
+            var sortedObjs = _.sortBy( domainObj[domainName], function(codedValObj) {
+                var _key = Object.keys(codedValObj)[0];
+                return codedValObj[_key]
+            } );
+            console.log("sortedObjs: ", sortedObjs);
+            sortedObjs.forEach(function(_dom){
+                var _key = Object.keys(_dom)[0];
+                items.push( <MenuItem key ={_dom[_key]} value={_dom[_key]} >{ _dom[_key]}</MenuItem>)
+            })
+            console.log("items: ", items);
+
+            // console.log("domainName: ", domainName, " \ndomainObj[domainName]: ", domainObj[domainName]);
+            // if (!(domainObj === undefined || domainObj === null)) {
+            //     Object.keys(domainObj[domainName]).forEach(function (codedValObj) {
+            //         var _key = Object.keys(domainObj[domainName][codedValObj])[0];
+            //         var _val = domainObj[domainName][codedValObj][_key];
+            //         //console.log("codedValObj: ", codedValObj, "  _key: ", _key, "  _val: ", _val);
+            //         items.push(<MenuItem key={_key} value={_key} >{_val}</MenuItem>);
+            //     })
+            // }
             return items;
         }
        
@@ -217,25 +231,33 @@ class ProjectDetails extends React.Component {
 
     _returnValuesDropdowns(_type){
         let items = [];
+        var sortedObjs ;
         items.push(<MenuItem key ={0} value={""} >{ ""}</MenuItem>);
         if (_type.toLowerCase().indexOf('manager') > -1){
-            this.props.optionsManagers.forEach(function(_man){
+            sortedObjs = _.sortBy( this.props.optionsManagers, 'Name' );
+            sortedObjs.forEach(function(_man){
                 items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
             });   
         } else if (_type.toLowerCase().indexOf('inspector') > -1){
-            this.props.optionsInspectors.forEach(function(_man){
+            sortedObjs = _.sortBy( this.props.optionsInspectors, 'Name' );
+            sortedObjs.forEach(function(_man){
                 items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
             });   
         }
         else if (_type.toLowerCase().indexOf('contact') > -1){
-            this.props.optionsContacts.forEach(function(_man){
+            sortedObjs = _.sortBy( this.props.optionsContacts, 'Name' );
+            sortedObjs.forEach(function(_man){
                 items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
             });   
         }
         else if (_type.toLowerCase().indexOf('contract') > -1){
-            this.props.contractors.forEach(function(_man){
+            sortedObjs = _.sortBy( this.props.contractors, 'Contractor' );
+            // this.props.contractors.forEach(function(_man){
+            //     items.push( <MenuItem key ={_man.OBJECTID} value={_man.Contractor} >{ _man.Contractor}</MenuItem>)
+            // });  
+            sortedObjs.forEach(function(_man){
                 items.push( <MenuItem key ={_man.OBJECTID} value={_man.Contractor} >{ _man.Contractor}</MenuItem>)
-            });   
+            });  
         }
         return items;
     }
