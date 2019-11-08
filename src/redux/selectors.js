@@ -13,7 +13,7 @@ const parseFields = (state, _propName) => {
                 _fld['type'] = fld['type'];//state.map.fields[fld].type;
                 _fields.push(_fld);
             })
-            console.log("\nparseFields 'features'",JSON.stringify(_fields));
+            //console.log("\nparseFields 'features'",JSON.stringify(_fields));
             var visibleFields = ["Project_Name", "Project_Type", "Project_Location", "Project_Originator", "Status", "Proposed_Year", "WRE_ProjectNo", "Project_Manager",
                 "Total_Cost", "Inspector", "Contractor"]
             const _fieldsFiltered = _fields.filter(fld => visibleFields.indexOf(fld.name) > -1);
@@ -68,19 +68,48 @@ const parseContractors = (state) => {
     return _data
 }
 
-const parseEmployeess = (state) => {
+const parseEmployees = (state, _type ) => {
     var _data = [];
-    state.map.employees['features'].forEach((emp) => {
-        //console.log(emp);
-        _data.push(emp['attributes']);
-    })
+    if (_type === undefined) _type = "all";
+    if (_type.indexOf('manager') > -1){
+        //state.map.employees['features'].forEach((emp) => {
+        state.map.employees['features'].forEach((emp) => {
+            //console.log("emp.attributes.IsWSProjMgr: ", emp.attributes.IsWSProjMgr, "  emp.attributes.IsWSProjMgr: ", emp.attributes.IsWSProjMgr);
+            //console.log("emp.attributes.IsWSProjMgr === 1: ", emp.attributes.IsWSProjMgr === 1, "  emp.attributes.IsWSProjMgr === true: ", emp.attributes.IsWSProjMgr === true);
+            if (Number(emp.attributes.IsWSProjMgr) === 1 ||  emp.attributes.IsWSProjMgr === true){
+                _data.push(emp['attributes']);
+            }
+        }) 
+    } else if (_type.indexOf('inspector') > -1) {
+        state.map.employees['features'].forEach((emp) => {
+            if (Number(emp.attributes.IsWSPMInspector) === 1 ||  emp.attributes.IsWSPMInspector === true){
+                _data.push(emp['attributes']);
+            }
+        })
+    } else if (_type.indexOf('contact') > -1){
+        state.map.employees['features'].forEach((emp) => {
+            if (Number(emp.attributes.IsWSPMContact) === 1 ||  emp.attributes.IsWSPMContact === true){
+                _data.push(emp['attributes']);
+            }
+        })
+    }
+    else{
+        console.log("parseEmployees state.map.employees: ", state.map.employees)
+        state.map.employees['features'].forEach((emp) => {
+            //console.log(emp);
+            _data.push(emp['attributes']);
+        })
+    }
+    //console.log("parseEmployees _type: ", _type, "   data: ", _data);
     return _data
 }
 
 const parseDomains = (state) => {
     var _fieldsWithDomains =[];
     state.map.fields.forEach((fld) => {
+        //JSON.stringify("parseDomains: ", fld)
         if (!(fld['domain'] === undefined || fld['domain'] === null)){
+            //console.log("parseDomains: ",JSON.stringify( fld['domain']));
           _fieldsWithDomains.push(fld['domain']);  
         }
         
@@ -134,8 +163,8 @@ export const parseProjectData = (state) => createSelector(
 )(state)
 
 export const parseDomainValues = (state) => createSelector(
-    [parseDomains], (fields) =>
-    fields || []
+    [parseDomains], (domains) =>
+    domains || []
 )(state)
 
 export const parseContractorData = (state) => createSelector(
@@ -143,7 +172,7 @@ export const parseContractorData = (state) => createSelector(
     contractor || []
 )(state)
 
-export const parseEmployeesData = (state) => createSelector(
-    [parseEmployeess], (contractor) =>
-    contractor || []
-)(state)
+export const parseEmployeesData = (state, _type) => createSelector(
+    [parseEmployees], (employee) =>
+    employee || []
+)(state, _type)

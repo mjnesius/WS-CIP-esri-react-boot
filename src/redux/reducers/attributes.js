@@ -5,7 +5,7 @@ export const types = {
     UPDATE_SUCCESS: "UPDATE_SUCCESS",
     UPDATE_FAIL: "UPDATE_FAIL",
     SAVE_BUTTON: "SAVE_BUTTON",
-    SET_SELECTED: "SET_SELECTED"
+    SET_SELECTED: "SET_SELECTED",
   };
   
   // REDUCERS //
@@ -45,13 +45,20 @@ export default (state = initialState, action) => {
       }
     case types.SAVE_BUTTON:
       //console.log("set FIELDS: " + JSON.stringify(action.payload));
+      if(action.payload.deactivate){
+        console.log("set save button to disabled ");
+        return {
+          ...state,
+          saveButton: true
+        } 
+      }
       return {
         ...state,
         saveButton: !state.saveButton
       }
     case types.SET_SELECTED:
       //console.log("set FIELDS: " + JSON.stringify(action.payload));
-      if (action.payload.type.includes('contractors')){
+      if (action.payload.type.includes('contract')){
         return {
           ...state,
           selectedContractor: action.payload.item
@@ -64,7 +71,8 @@ export default (state = initialState, action) => {
         selectedEmployee: action.payload.item
         }
       }
-       
+    
+      
     default:
       return state;
   }
@@ -78,15 +86,18 @@ export const actions = {
       card
     }
   }),
-  updateAttributes: (featureURL, data) => ({
+  updateAttributes: (featureUrl, updates) => ({
     type: types.UPDATE_ATTRIBUTES,
     payload: {
-      url: featureURL,
-      data: data
+      url: featureUrl,
+      data: updates
     }
   }),
-  setSaveButton: card => ({
+  setSaveButton: deactivate => ({
     type: types.SAVE_BUTTON,
+    payload:{
+      deactivate: deactivate
+    }
   }),
   setSelected: (_item, _type) => ({
     type: types.SET_SELECTED,

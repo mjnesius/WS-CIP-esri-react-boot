@@ -6,10 +6,11 @@ import React, { Component } from 'react';
 //import { actions } from '../redux/reducers/map';
 // import Dropdown from 'react-bootstrap/Dropdown'
 //import Button from 'react-bootstrap/Button'
-import Card from 'react-bootstrap/Card'
-import Nav from 'react-bootstrap/Nav'
+import Card from 'react-bootstrap/Card';
+import Nav from 'react-bootstrap/Nav';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import NavDropdown from'react-bootstrap/NavDropdown';
 
 // Redux
 import { connect } from 'react-redux';
@@ -25,7 +26,9 @@ import ProjectDetails from './ProjectDetails';
 import EmployeeAttributes from './EmployeeAttributes';
 import ContractorAttributes from './ContractorAttributes';
 import SaveIcon from 'calcite-ui-icons-react/SaveIcon';
+import ResetIcon from 'calcite-ui-icons-react/ResetIcon';
 import Button from 'calcite-react/Button';
+import Tooltip from 'calcite-react/Tooltip';
 
 import styled from 'styled-components';
 const Container = styled.div`
@@ -41,6 +44,42 @@ const Container = styled.div`
 
 
 class AttributesPanel extends Component {
+  _handleNavigation(val) {
+    this.props.setPanel(val);
+    this.props.setSaveButton('deactivate');
+  }
+
+  _handleSave() {
+    switch (this.props.card){
+      case 'project_details':
+        var updatedFeature= [{"attributes" : this.props.selectedFeature}];
+        console.log("update: ", JSON.stringify(updatedFeature));
+        this.props.updateAttributes(this.props.featureURLs[0], updatedFeature);
+        this.props.setSaveButton();
+        break;
+      case 'contractors':
+        this.props.updateAttributes(this.props.contractorsURL[0], this.props.selectedContractor)
+        this.props.setSaveButton();
+        break;
+      case 'employees':
+          this.props.updateAttributes(this.props.employeesURL[0], this.props.employees['features'])
+          this.props.setSaveButton();
+          break; 
+      default:
+        return
+    }
+       
+    
+  }
+  _clearEdits() {
+    console.log("clearEdits");
+
+    this.props.setSelected({}, 'contractors')
+    this.props.setSelected({}, 'employees')
+    this.props.selectFeature({}, 'projects')
+    this.props.setSaveButton();
+
+}
 
   render() {
 
@@ -56,34 +95,67 @@ class AttributesPanel extends Component {
                     <Col style={{ flex: 3 }}>
                       <Row>
                         <Nav variant="tabs" defaultActiveKey="projects_overview" style={{ justifycontent: 'right', textAlign: 'right' }}>
-                          <Nav.Item>
-                            <Nav.Link onClick={() => this.props.setPanel("projects_overview")}>Projects Overview</Nav.Link>
-                          </Nav.Item>
-                          <Nav.Item>
-                            <Nav.Link onClick={() => this.props.setPanel("project_details")}>Project Details</Nav.Link>
-                          </Nav.Item>
-                          <Nav.Item>
-                            <Nav.Link onClick={() => this.props.setPanel("contractors")}>Contractors</Nav.Link>
-                          </Nav.Item>
-                          <Nav.Item>
-                            <Nav.Link onClick={() => this.props.setPanel("employees")}>Employees</Nav.Link>
-                          </Nav.Item>
+                          <Tooltip title="Roster View of Projects">
+                            <Nav.Item style={{fontWeight: 'bolder'}}>
+                              <Nav.Link onClick={() => this._handleNavigation("projects_overview")}>Projects Overview</Nav.Link>
+                            </Nav.Item>
+                          </Tooltip>
+                          <Tooltip title="Select and Edit a Single Project">
+                           <Nav.Item style={{fontWeight: 'bolder'}}>
+                            <Nav.Link onClick={() => this._handleNavigation("project_details")}>Project Details</Nav.Link>
+                          </Nav.Item> 
+                          </Tooltip></Nav>
+                          <Nav>
+                          <NavDropdown  alignRight 
+                            title="Edit Contractor & Employee Lists" id="nav-dropdown" >
+                              
+                            <Tooltip title="Manage Contractor Info">
+                              <NavDropdown.Item >
+                                <Nav.Link onClick={() => this._handleNavigation("contractors")}>Contractor List</Nav.Link>
+                              </NavDropdown.Item>
+                            </Tooltip>
+                            <NavDropdown.Divider />
+                            <Tooltip title="Manage Employee Info">
+                              <NavDropdown.Item>
+                                <Nav.Link onClick={() => this._handleNavigation("employees")}>Employee List</Nav.Link>
+                              </NavDropdown.Item>
+                            </Tooltip>
+                          </NavDropdown>
+                          
+                          
                         </Nav>
                       </Row>
                     </Col>
                     <Col style={{ flex: 3, justifyContent: 'right', textAlign: 'right' }}>
-                      <Button clear disabled={this.props.saveButton} className="m-1 mx-3 p-1 px-2"
-                        onClick={() => this.props.updateAttributes(this.props.featureURLs[0], this.props.projects)}
-                        icon={<SaveIcon size={16} />}
-                        iconPosition="before"> Save
-                    </Button>
-                      <Button className="m-1 mr-n3 p-1 px-2" red style={{ fontSize: 20 }} onClick={() => this.props.toggleAttributes()}>X</Button>
+                      <Tooltip title="Discard Pending Edits">
+                        <Button clear disabled={this.props.saveButton} className="m-1 mx-3 p-1 px-2"
+                          onClick={() => this._clearEdits()}
+                          icon={<ResetIcon size={16} />}
+                          iconPosition="before"
+                        > Clear
+                      </Button>
+                      </Tooltip>
+                      <Tooltip title="Save Your Edits">
+                        <Button clear disabled={this.props.saveButton} className="m-1 mx-3 p-1 px-2"
+                          onClick={() => this._handleSave()}
+                          icon={<SaveIcon size={16} />}
+                          iconPosition="before"
+                        > Save
+                      </Button>
+                      </Tooltip>
+                      <Tooltip title="Close Panel and Return to Map">
+                        <Button className="m-1 mr-n3 p-1 px-2" red style={{ fontSize: 20 }}
+                          onClick={() => this.props.toggleAttributes()}
+                        >X
+                      </Button>
+                      </Tooltip>
+
                     </Col>
                   </Row>
                   
                 </Card.Header>
                 <Card.Body className="overflow-y" style={{ flex: 4 }}>
-                  <div className="overflow-y" style={{ flex: 5 }}>
+                  <div className="overflow-y" style={{flex: 5}}>
                     {this.props.card === "projects_overview" && <ProjectsTable />}
                     {this.props.card === "project_details" && <ProjectDetails />}
                     {this.props.card === "employees" && <EmployeeAttributes />}
@@ -109,7 +181,12 @@ const mapStateToProps = state => ({
   isVisible: state.map.attributesComponent,
   card: state.attributes.card,
   featureURLs: state.config.featureURLs,
-  saveButton: state.attributes.saveButton
+  contractorsURL: state.config.contractorsURL,
+  employeesURL: state.config.employeesURL,
+  saveButton: state.attributes.saveButton,
+  employees: state.map.employees,
+  selectedContractor: state.attributes.selectedContractor,
+  selectedFeature: state.map.selectedFeature,
 });
   
   const mapDispatchToProps = dispatch => {

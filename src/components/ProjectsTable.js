@@ -27,15 +27,11 @@ class ProjectsTable extends React.Component {
         contentEditable
         suppressContentEditableWarning
         onBlur={e => {
-          console.log("blur event")
-          
           const data = [...this.props.projects];
           data[cellInfo.index][cellInfo.column.id] = e.target.innerHTML;
           if (this.props.saveButton){
-            console.log("setSaveButton")
             this.props.setSaveButton()
           }
-          //this.setState({ data });
         }}
         dangerouslySetInnerHTML={{
           __html: this.props.projects[cellInfo.index][cellInfo.column.id]
@@ -45,41 +41,46 @@ class ProjectsTable extends React.Component {
   }
 
   render() {
-    //const { data } = this.state;
+    //Create column properties object for each field
     const columns = this.props.fields.map((fld) => {
-      //console.log(fld.name.length);
+      
       var _filter =  fld.name.toUpperCase().indexOf("COST") > -1 ? false : true;
-      return {Header: fld.name,  Cell: this.renderEditable, id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: _filter}
+      // Cell: this.renderEditable
+      return {Header: fld.name, id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: _filter}
     })
 
     return (
       <div className="overflow-y">
-          <ReactTable defaultPageSize={10} className="-striped -highlight" columns={columns} data={this.props.projects}
-          defaultFilterMethod = {(filter, row, column) => {
-            const id = filter.pivotId || filter.id
-            return row[id] !== undefined ? String(row[id]).toUpperCase().indexOf(String(filter.value).toUpperCase()) > -1: true}
-          }
-          getTdProps={(state, rowInfo, column, instance) => {
-            return {
-              onDoubleClick: (e, handleOriginal) => {
-                console.log('A Td Element was double clicked!')
-                //console.log('it produced this event:', e)
-                //console.log('It was in this column:', column)
-                console.log('It was in this row:', rowInfo)
-                //console.log('It was in this table instance:', instance)
-                this.props.selectFeature(rowInfo.original);
-                this.props.setPanel("project_details")
-                // IMPORTANT! React-Table uses onClick internally to trigger
-                // events like expanding SubComponents and pivots.
-                // By default a custom 'onClick' handler will override this functionality.
-                // If you want to fire the original onClick handler, call the
-                // 'handleOriginal' function.
-                if (handleOriginal) {
-                  handleOriginal()
+        <span>* Use the Map to Create New Projects</span>
+          <ReactTable defaultPageSize={this.props.projects.length} className="-striped -highlight" 
+            columns={columns} data={this.props.projects}
+            defaultFilterMethod = {(filter, row, column) => {
+              const id = filter.pivotId || filter.id
+              return row[id] !== undefined ? String(row[id]).toUpperCase().indexOf(String(filter.value).toUpperCase()) > -1: true}
+            }
+            showPagination={false} showPageSizeOptions={false} showPaginationBottom={false} 
+            minRows="0"
+            getTdProps={(state, rowInfo, column, instance) => {
+              return {
+                onDoubleClick: (e, handleOriginal) => {
+                  console.log('A Td Element was double clicked!')
+                  //console.log('it produced this event:', e)
+                  //console.log('It was in this column:', column)
+                  console.log('It was in this row:', rowInfo)
+                  //console.log('It was in this table instance:', instance)
+                  this.props.selectFeature(rowInfo.original);
+                  this.props.setPanel("project_details")
+                  // IMPORTANT! React-Table uses onClick internally to trigger
+                  // events like expanding SubComponents and pivots.
+                  // By default a custom 'onClick' handler will override this functionality.
+                  // If you want to fire the original onClick handler, call the
+                  // 'handleOriginal' function.
+                  if (handleOriginal) {
+                    handleOriginal()
+                  }
                 }
               }
-            }
-          }}
+            }}
           />
       </div>
     );

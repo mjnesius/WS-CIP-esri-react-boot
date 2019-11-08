@@ -131,7 +131,6 @@ class Map extends Component {
   editGeom = () => {
     console.log("editGeom()");
     //startUpdateWorkflowAtFeatureEdit(feature) of the esri-widgets-Editor-EditorViewModel
-  
   }
 
   editDetails = () =>{
@@ -147,12 +146,11 @@ class Map extends Component {
       response => {
         this.init(response);
         this.setupWidgetsAndLayers();
-        console.log("this.setupEventHandlers(this.map)");
-        console.log("this.view: ", typeof(this.view));
-
-        this.setupEventHandlers(this.view);
-        console.log("this.finishedLoading();");
+        //console.log("this.setupEventHandlers(this.map)");
+        //console.log("this.view: ", typeof(this.view));
+        //.log("this.finishedLoading();");
         this.finishedLoading();
+        this.setupEventHandlers(this.view, this.map);
       },
       error => {
         console.error("map err in createView/startup", error);
@@ -172,8 +170,6 @@ class Map extends Component {
     this.view = response.view
     this.map = response.view.map;
   }
-
-
 
   setupWidgetsAndLayers = () => {
     loadModules(['esri/layers/FeatureLayer','esri/widgets/Editor', 'esri/widgets/Expand',
@@ -274,6 +270,24 @@ class Map extends Component {
         zoomToLayer(featureLayer);
         getFeatures(featureLayer);
         this.featureLayer = featureLayer;
+        
+        
+      });
+      featureLayer.on("edits",  function(event) {
+
+        const extractObjectId = function(result) {
+          return result.objectId;
+        };
+      
+        const adds = event.addedFeatures.map(extractObjectId);
+        console.log("addedFeatures: ", adds.length, adds);
+      
+        const updates = event.updatedFeatures.map(extractObjectId);
+        console.log("updatedFeatures: ", updates.length, updates);
+      
+        const deletes = event.deletedFeatures.map(extractObjectId);
+        console.log("deletedFeatures: ", deletes.length, deletes);
+        getFeatures(featureLayer);
       });
 
       // function createDefinitionExpression(subExpression) {
@@ -309,7 +323,7 @@ class Map extends Component {
             console.log("getFeatures json: ", repObj)
             this.props.setFeatures(repObj.features);
             this.props.setFields(layer.fields);
-            this.props.getEmployeess(this.props.config.employeesURL);
+            this.props.getEmployees(this.props.config.employeesURL);
             this.props.getContractors(this.props.config.contractorsURL);
           }).then((res) => {
         });
@@ -322,10 +336,12 @@ class Map extends Component {
     });
   }
 
-  setupEventHandlers = (view) => {
+  setupEventHandlers = (view, map) => {
     console.log("setupEventHandlers()\tprops\t", this.props);
-    
+    //console.log("setupEventHandlers()\view\t", view);
     //this popup.on function is messing up the "this" context
+    
+
     view.popup.on("trigger-action",  (event) => {
       // If the zoom-out action is clicked, fire the zoomOut() function
       console.log(event);

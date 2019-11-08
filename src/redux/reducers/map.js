@@ -13,13 +13,15 @@
 export const types = {
   MAP_LOADED: "MAP_LOADED",
   SET_FEATURES: "SET_FEATURES",
-  SET_FILTER: "SET_FILTER",
-  APPLY_FILTER: "APPLY_FILTER",
+  /* SET_FILTER: "SET_FILTER",
+  APPLY_FILTER: "APPLY_FILTER", */
   TOGGLE_ATTRIBUTES: "TOGGLE_ATTRIBUTES",
   SET_FIELDS: "SET_FIELDS",
   SELECT_FEATURE: "SELECT_FEATURE",
   SET_CONTRACTORS: "SET_CONTRACTORS",
   SET_EMPLOYEES: "SET_EMPLOYEES",
+  UPDATE_CONTRACTORS: "SET_CONTRACTORS",
+  UPDATE_EMPLOYEES: "SET_EMPLOYEES",
   GET_CONTRACTORS : "GET_CONTRACTORS",
   GET_EMPLOYEES : "GET_EMPLOYEES",
 };
@@ -37,7 +39,7 @@ export const initialState = {
   domains: [{}],
   selectedFeature:{},
   contractors: [],
-  employees: []
+  employees: [{}]
 };
 
 export default (state = initialState, action) => {
@@ -48,19 +50,35 @@ export default (state = initialState, action) => {
         loaded: true
       };
     case types.SET_CONTRACTORS:
-      console.log("set contractors: " + JSON.stringify(action));
+      //console.log("set contractors: " + JSON.stringify(action));
       return {
         ...state,
         contractors: action.payload
       };
     case types.SET_EMPLOYEES:
-      console.log("set employees: " + JSON.stringify(action));
+      //console.log("set employees: " + JSON.stringify(action));
+      if (action.payload.adjust){
+        console.log("set employees action.payload.data: " + JSON.stringify(action.payload.employees));
+        var employees = action.payload.employees.map( (emp) => {
+          return {'attributes' : emp};
+        });
+        return {
+          ...state,
+          employees: {
+            'features': employees,
+            'fields': state.employees.fields,
+            'globalIdFieldName' : state.employees.globalIdFieldName,
+            'objectIdFieldName' : state.employees.objectIdFieldName,
+            'uniqueIdField' : state.employees.uniqueIdField,
+          }
+        }
+      }
       return {
         ...state,
         employees: action.payload
       };
     case types.SET_FEATURES:
-      console.log("set features: " + JSON.stringify(action));
+      //console.log("set features: " + JSON.stringify(action));
       var _stat = [...new Set(action.payload.features.map(feature => feature.attributes.Status ||"null"))];
       //console.log("set features _stat: " + JSON.stringify(_stat));
       _stat.push("All Statuses");
@@ -76,7 +94,7 @@ export default (state = initialState, action) => {
         managers: _managers.sort()
       };
     case types.SET_FIELDS:
-      //console.log("set FIELDS: " + JSON.stringify(action.payload));
+      //console.log("set FIELDS payload: " + JSON.stringify(action.payload));
       return {
         ...state,
         fields: action.payload.fields
@@ -88,14 +106,16 @@ export default (state = initialState, action) => {
         //filter: "OBJECTID > 0 & " + action.payload
       };
     case types.TOGGLE_ATTRIBUTES:
-      console.log("TOGGLE_ATTRIBUTES: " + JSON.stringify(action));
+      //console.log("TOGGLE_ATTRIBUTES: " + JSON.stringify(action));
       return {
         ...state,
         attributesComponent: !state.attributesComponent
       };
     case types.SELECT_FEATURE:
-      console.log("SELECT_FEATURE: " + JSON.stringify(action.payload));
+      
       if (action.payload['feature'] !== undefined && action.payload['feature'] !== null){
+        console.log("SELECT_FEATURE: " + JSON.stringify(action.payload));
+        console.log("\tFEATURE: " + action.payload['feature']);
         return {
           ...state,
           selectedFeature: action.payload['feature']
@@ -106,8 +126,7 @@ export default (state = initialState, action) => {
           ...state,
           selectedFeature: action.payload
         };
-      }
-        
+      }   
     default:
       return state;
   }
@@ -159,10 +178,17 @@ export const actions = {
       url: tableUrl
     }
   }),
-  getEmployeess: (tableUrl) => ({
+  getEmployees: (tableUrl) => ({
     type: types.GET_EMPLOYEES,
     payload: {
       url: tableUrl
+    }
+  }),
+  setEmployees: (_employees, _adjust=false) => ({
+    type: types.SET_EMPLOYEES,
+    payload: {
+      employees: _employees,
+      adjust: _adjust
     }
   })
 };

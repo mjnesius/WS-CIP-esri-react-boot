@@ -1,6 +1,14 @@
-import React, { Component } from 'react';
+// COT navy cmyk: 100, 57, 0, 40
+import React from 'react'; //, { Component }
 import Search from 'calcite-react/Search';
-import moment from 'moment';
+import { CalciteTheme } from 'calcite-react/CalciteThemeProvider';
+import MagnifyingGlassIcon from 'calcite-ui-icons-react/MagnifyingGlassIcon';
+import XCircleIcon from 'calcite-ui-icons-react/XCircleIcon';
+
+//import { useContext } from 'react';
+//import { ThemeContext } from 'styled-components';
+
+//import moment from 'moment';
 
 //redux
 import { bindActionCreators } from 'redux';
@@ -12,46 +20,37 @@ import { parseContractorData, parseEmployeesData, parseDomainValues, parseProjec
 import{StoreContext} from "./StoreContext";
 import { connect } from 'react-redux';
 
-import Panel, {
-    PanelTitle,
-    PanelText
-  } from 'calcite-react/Panel';
+// ,{ PanelTitle, PanelText }
+import Panel from 'calcite-react/Panel';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col'
+import Col from 'react-bootstrap/Col';
 
-import DatePicker from 'calcite-react/DatePicker'
-import Form, {
-    FormControl,
-    FormControlLabel
-} from 'calcite-react/Form';
-import { MenuItem } from 'calcite-react/Menu';
-import TextField from 'calcite-react/TextField';
-import Select from 'calcite-react/Select';
-import styled from 'styled-components';
-// const Container = styled.div`
-//   display: inline-flex;
-//   width: 100%;
-//   height: 100%;
-//   text-align: center;
-//   flex-grow: 2;
-//   justify-content: center;
-//   overflow-y: auto;
-// `;
+ import styled from 'styled-components';
+ const StyledSearch = styled(Search)`
+    color: white;
+    ::placeholder,
+    ::-webkit-input-placeholder {
+        color: white;
+    }
+    :-ms-input-placeholder {
+        color: white;
+    }
+ `;
 
-  
 class SearchComponent extends React.Component {
     constructor(props) {
         super(props)
         
         this.state = {
             inputValue: '',
-            selectedItem: '',
+            selectedItem: this.setSelectedItem ? this.setSelectedItem : '',
             type:''
         }
 
-        this.searchChanged = this.searchChanged.bind(this)
-        this.clearSearch = this.clearSearch.bind(this)
-        this.onUserAction = this.onUserAction.bind(this)
+        this.searchChanged = this.searchChanged.bind(this);
+        this.clearSearch = this.clearSearch.bind(this);
+        this.onUserAction = this.onUserAction.bind(this);
+        this.setSelectedItem = this.setSelectedItem.bind(this);
     }
 
     searchChanged(e) {
@@ -68,7 +67,7 @@ class SearchComponent extends React.Component {
             console.log("employees obj: ", employees);
             this.props.setSelected(employees[0], 'employees')
         } else if (this.props.type.includes('projects')){
-            const projects = this.props.projects.filter(item => item['Project_Name'].toUpperCase().includes(e.toUpperCase()))
+            const projects = this.props.projects.filter(item => item['Project_Name'] ? item['Project_Name'].toUpperCase().includes(e.toUpperCase()): '')
             console.log("projects obj: ", projects);
             this.props.selectFeature(projects[0], 'projects')
         }
@@ -81,7 +80,14 @@ class SearchComponent extends React.Component {
             inputValue: '',
             selectedItem: '',
         })
-        this.props.setSelected({}, 'contractors')
+        if (this.props.type.includes('contractor')){
+            this.props.setSelected({}, 'contractors')
+        } else if (this.props.type.includes('employees')){
+            this.props.setSelected({}, 'employees')
+        } else if (this.props.type.includes('projects')){
+            this.props.selectFeature({}, 'projects')
+        }
+
     }
 
     onUserAction(inputValue, selectedItemVal) {
@@ -90,19 +96,6 @@ class SearchComponent extends React.Component {
             inputValue: inputValue,
             selectedItem: selectedItemVal,
         });
-        // if (this.props.type.includes('contractor')){
-        //     const contractor = this.props.contractors.filter(item => item['Contractor'].toUpperCase().includes(selectedItemVal.toUpperCase()))
-        //     console.log("contractor obj: ", contractor);
-        //     this.props.setSelected(contractor[0], 'contractors')
-        // } else if (this.props.type.includes('employees')){
-        //     const employees = this.props.employees.filter(item => item['Name'].toUpperCase().includes(selectedItemVal.toUpperCase()))
-        //     console.log("employees obj: ", employees);
-        //     this.props.setSelected(employees[0], 'employees')
-        // } else if (this.props.type.includes('projects')){
-        //     const projects = this.props.projects.filter(item => item['Project_Name'].toUpperCase().includes(selectedItemVal.toUpperCase()))
-        //     console.log("projects obj: ", projects);
-        //     this.props.setSelected(projects[0], 'projects')
-        // }
     }
     setItems() {
         console.log("set items");
@@ -115,25 +108,32 @@ class SearchComponent extends React.Component {
         }
         
     }
-    setSelectItem() {
-        console.log("set items");
+    setSelectedItem() {
         if (this.props.type.includes('contractor')){
-            return this.props.selectedContractor;
+            console.log("setSelectedItem() , ",this.props.selectedContractor['Contractor'] );
+            return this.props.selectedContractor['Contractor'] ? this.props.selectedContractor['Contractor'] : '';
         } else if (this.props.type.includes('employees')){
-            return this.props.selectedEmployee;
+            
+            console.log("setSelectedItem() , ",this.props.selectedEmployee['Name'] );
+            return this.props.selectedEmployee['Name'] ? this.props.selectedEmployee['Name'] : '';
         } else if (this.props.type.includes('projects')){
-            return this.props.selectedProject;
+            
+            console.log("setSelectedItem() , ",this.props.selectedProject['Project_Name'] );
+            return this.props.selectedProject['Project_Name'] ? this.props.selectedProject['Project_Name']: '';
         }
         
     }
 
     componentDidMount() {
-        var item = ''
-        if (this.props.type.includes('contractors')){
-            item = this.props.selectedContractor['Contractor'] ? this.props.selectedContractor['Contractor'] : '';
-        } else{
-            item = this.props.selectedEmployee['Name'] ? this.props.selectedEmployee['Name'] : '';
-        }
+        var item = this.setSelectedItem()//''
+        // if (this.props.type.includes('contractors')){
+        //     item = this.props.selectedContractor['Contractor'] ? this.props.selectedContractor['Contractor'] : '';
+        // } else if (this.props.type.includes('employees')) {
+        //     item = this.props.selectedEmployee['Name'] ? this.props.selectedEmployee['Name'] : '';
+        // } else if (this.props.type.includes('projects')) {
+        //     item = this.props.selectedProject['Project_Name'] ? this.props.selectedProject['Project_Name'] : '';
+        // }
+
         this.setState({
             selectedItem: item,
         });
@@ -141,19 +141,43 @@ class SearchComponent extends React.Component {
 
     render() {
         var items = this.setItems();
-        var selectedItem = this.setSelectItem();
+        var selectedItem = this.setSelectedItem();
+        //props.theme.palette.COTblue
         return (
-            <div className="container-fluid">
-                <Row > 
-                    <Panel style={{flex: 1}}>
-                        <Col lg="12">
-                            <Search
+            <div className="container-fluid" style={{padding: "0px", backgroundColor: "transparent"}} >
+                <Row className="m-0 p-0"> 
+                    <Panel noBorder noPadding style={{flex: 1}}>
+                        <Col lg="12" className="m-0 p-0">
+                            <StyledSearch style={{color: CalciteTheme.palette.white}}
+                                fullWidth
+                                minimal
+                                placement = "bottom"
                                 inputValue={this.state.inputValue}
                                 selectedItem= {selectedItem}/*{this.props.selectedContractor}*/
                                 items={items} /* {this.props.contractors.map(con => con['Contractor'])} */
                                 onChange={this.searchChanged}
                                 onUserAction={this.onUserAction}
                                 onRequestClear={this.clearSearch}
+                                searchIcon={
+                                    <MagnifyingGlassIcon
+                                      filled
+                                      size={16}
+                                      color={CalciteTheme.palette.white}
+                                    />
+                                  }
+                                  clearIcon={
+                                    <XCircleIcon
+                                      filled
+                                      size={16}
+                                      color={CalciteTheme.palette.white}
+                                    />
+                                  }
+                                  containerStyle ={{backgroundColor: CalciteTheme.palette.lightBlue,
+                                    color: 'white'
+                                }}
+                                menuStyle ={{backgroundColor: CalciteTheme.palette.lightBlue,
+                                    color: CalciteTheme.palette.blue
+                                }}
                             />
                         </Col>
                     </Panel>
@@ -163,6 +187,8 @@ class SearchComponent extends React.Component {
         )
     }
 }
+
+//SearchComponent.contextType = ThemeContext;
 
 const mapStateToProps = state => ({
     employees: parseEmployeesData(state),
