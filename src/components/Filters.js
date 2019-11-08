@@ -44,11 +44,11 @@ class FilterComponent extends Component {
     
     if(option){
       console.log('You selected', option.target.value, " \t", option.target);
-      if (this.props.optionsStatus.indexOf(option.target.value) > -1 ||  option.target.value.indexOf("Statuses") >-1){
+      if (option.target.id.indexOf("status") > -1 ){
         this.props.setStatus(option.target.value.split('_')[0] );
         this.props.setDefExp();
       }
-      else if (this.props.optionsManagers.indexOf(option.target.value) > -1 || option.target.value.indexOf("Managers")>-1) {
+      else if (option.target.id.indexOf("manag") > -1 ) {
 
         this.props.setManager(option.target.value.split('_')[0] );
         this.props.setDefExp();
@@ -83,6 +83,7 @@ class FilterComponent extends Component {
             <Col >
               <Form inline>
                 <Form.Control as="select" onChange={this._onSelect}
+                  id="status"
                   value={(this.props.selectedStatus === "%") ? "%_Statuses": this.props.selectedStatus }>
                   {/* <option key={"All Statuses"} value={"%_Statuses"}>All Statuses</option>
                   {this.props.optionsStatus.map((e, key) => {
@@ -97,6 +98,7 @@ class FilterComponent extends Component {
                   })}
                 </Form.Control>
                 <Form.Control as="select" onChange={this._onSelect}
+                  id="year"
                   value={(this.props.selectedYear.indexOf("%") > -1) ? "%_Years" : this.props.selectedYear }>
                   {this.props.optionsYears.map((e, key) => {
                     if (String(e).indexOf("All Years") > -1) {
@@ -107,6 +109,7 @@ class FilterComponent extends Component {
                   })}
                 </Form.Control>
                 <Form.Control as="select" onChange={this._onSelect} 
+                  id="manager"
                   value={!(this.props.selectedManager === "%") ? this.props.selectedManager : "%_Managers"}>
                   {/* <option key={"All Managers"} value={"%_Managers"}>All Mangers</option> */}
                   {this.props.optionsManagers.map((e, key) => {

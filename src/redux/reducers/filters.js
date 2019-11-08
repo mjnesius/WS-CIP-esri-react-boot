@@ -43,8 +43,12 @@ export default (state = initialState, action) => {
       };
     case types.SET_DEF_EXPRESSION:
       var defExp = "Status Like '%" + state.selectedStatus
-      + "%' AND Project_Manager Like '%" + state.selectedManager
-      + "%' AND Proposed_Year Like '%" + state.selectedYear +"%'";
+      + "%'" 
+        + (state.selectedStatus === "null" || state.selectedStatus === "%"? " OR Status IS NULL" : "") +
+      + ") AND (Project_Manager Like '%" + state.selectedManager 
+        + (state.selectedManager === "null" || state.selectedManager === "%"? " OR Project_Manager IS NULL" : "") + ")"
+      + "%' AND (Proposed_Year Like '%" + state.selectedYear +"%'" 
+        + (state.selectedYear === "null" || state.selectedYear === "%"? " OR Proposed_Year IS NULL" : "") + ")";
       return {
         ...state,
         defExp: defExp

@@ -136,7 +136,7 @@ class ProjectDetails extends React.Component {
         console.log("_handleCheckboxEvent val.target.id is: ",val.target.id, "\tval.target.value: ", val.target.value);
         let stateCopy ={...this.props.selectedFeature};
         console.log("old: ", stateCopy[val.target.id] ,"  new ",val.target.id, " is: ", (stateCopy[val.target.id] > 0) ? 0 : 1);
-        stateCopy[val.target.id] = (stateCopy[val.target.id] > 0) ? 0 : 1;
+        stateCopy[val.target.id] = (stateCopy[val.target.id] > 0) ? '0' : '1';
         this.props.selectFeature(stateCopy);
         let validation = this.validator.validate(stateCopy);
         console.log("validation: ", validation, "\n\tthis.state.validation: ", this.state.validation);
@@ -619,8 +619,8 @@ class ProjectDetails extends React.Component {
                                         <Row style={{ flex: 1 }} className="align-items-center m-0 p-0">
                                             <Col sm="6" className="d-flex justify-content-center m-0 p-0">
                                                 <Checkbox id='WaterWork' labelStyle={{ fontWeight: 'bold', fontSize: '16px' }}
-                                                    value={this._getAttribute('WaterWork')}
-                                                    checked={(this._getAttribute('WaterWork') === 1) ? true : false}
+                                                    value={this._getAttribute('WaterWork').toString()}
+                                                    checked={(this._getAttribute('WaterWork') === '1') ? true : false}
                                                     onChange={this._handleCheckboxEvent.bind(this)}
                                                     fullWidth
                                                     disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
@@ -629,8 +629,8 @@ class ProjectDetails extends React.Component {
                                             </Col>
                                             <Col sm="6" className="d-flex justify-content-center">
                                                 <Checkbox id='SewerWork' labelStyle={{ fontWeight: 'bold' }}
-                                                    value={this._getAttribute('SewerWork')}
-                                                    checked={(this._getAttribute('SewerWork') === 1) ? true : false}
+                                                    value={this._getAttribute('SewerWork').toString()}
+                                                    checked={(this._getAttribute('SewerWork') === '1') ? true : false}
                                                     onChange={this._handleCheckboxEvent.bind(this)}
                                                     fullWidth
                                                     disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
@@ -641,8 +641,8 @@ class ProjectDetails extends React.Component {
                                         <Row style={{ flex: 1 }} className="align-items-center m-0 p-0">
                                             <Col sm="4" className="d-flex justify-content-center m-0 p-0">
                                                 <Checkbox id='StormWork' labelStyle={{ fontWeight: 'bold' }}
-                                                    value={this._getAttribute('StormWork')}
-                                                    checked={(this._getAttribute('StormWork') === 1) ? true : false}
+                                                    value={this._getAttribute('StormWork').toString()}
+                                                    checked={(this._getAttribute('StormWork') === '1') ? true : false}
                                                     onChange={this._handleCheckboxEvent.bind(this)}
                                                     disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                     fullWidth
@@ -651,8 +651,8 @@ class ProjectDetails extends React.Component {
                                             </Col>
                                             <Col sm="4" className="d-flex justify-content-center m-0 p-0">
                                                 <Checkbox id='RoadWork' labelStyle={{ fontWeight: 'bold' }}
-                                                    value={this._getAttribute('RoadWork')}
-                                                    checked={(this._getAttribute('RoadWork') === 1) ? true : false}
+                                                    value={this._getAttribute('RoadWork').toString()}
+                                                    checked={(this._getAttribute('RoadWork') === '1') ? true : false}
                                                     onChange={this._handleCheckboxEvent.bind(this)}
                                                     disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                     fullWidth
@@ -661,8 +661,8 @@ class ProjectDetails extends React.Component {
                                             </Col>
                                             <Col sm="4" className="d-flex justify-content-center m-0 p-0">
                                                 <Checkbox id='GasWork' labelStyle={{ fontWeight: 'bold' }}
-                                                    value={this._getAttribute('GasWork')}
-                                                    checked={(this._getAttribute('GasWork') === 1) ? true : false}
+                                                    value={this._getAttribute('GasWork').toString()}
+                                                    checked={(this._getAttribute('GasWork') === '1') ? true : false}
                                                     onChange={this._handleCheckboxEvent.bind(this)}
                                                     disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                     fullWidth
