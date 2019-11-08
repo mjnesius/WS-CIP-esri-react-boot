@@ -262,6 +262,26 @@ class ProjectDetails extends React.Component {
         return items;
     }
 
+    _navToRelatedItem(_type, _matchVal) {
+        if (_type.toLowerCase().indexOf('contract') < 0 && _matchVal){
+            const match = this.props.employees.filter((_emp) => {
+                return _emp['Name'] === _matchVal;
+            });
+            new Promise(() => {
+                this.props.setSelected (match[0], 'employees')
+            }).then(this.props.setPanel('employees'))
+
+        } else if (_type.toLowerCase().indexOf('contract') > -1 && _matchVal){
+            const match = this.props.contractors.filter((_con) => {
+                return _con['Contractor'] === _matchVal;
+            });
+            new Promise(() => {
+                this.props.setSelected (match[0], 'contractor')
+            }).then(this.props.setPanel('contractors'))
+
+        } 
+    }
+
     _getRelatedAttribute(_type, _getFld, _matchFld, _matchVal) {
         var val;
         var fld =_getFld;
@@ -353,7 +373,11 @@ class ProjectDetails extends React.Component {
                                                 id='Project_Manager' selectedValue={this._getAttribute('Project_Manager')}
                                                 placeholder={this._getAttribute('Project_Manager') ? this._getAttribute('Project_Manager') : "Select..."}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                                onChange={(e) => this._handleChangeEvent(e, 'Project_Manager')}>
+                                                onChange={(e) => this._handleChangeEvent(e, 'Project_Manager')}
+                                                onDoubleClick={ (e) => {
+                                                    this._navToRelatedItem('employee', this._getAttribute('Project_Manager') )
+                                                } }
+                                            >
                                                 {this._returnValuesDropdowns('manager')}
                                             </StyledSelect>
                                         </StyledFormControl>
@@ -362,7 +386,8 @@ class ProjectDetails extends React.Component {
                                             <StyledSelect className="d-flex align-items-center" fullWidth
                                                 id='Project_Type' selectedValue={this._getAttribute('Project_Type')}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                                onChange={(e) => this._handleChangeEvent(e, 'Project_Type')}>
+                                                onChange={(e) => this._handleChangeEvent(e, 'Project_Type')}
+                                            >
                                                 {this._returnDomainDropdowns('Project_Type')}
                                             </StyledSelect>
                                         </StyledFormControl>
@@ -371,7 +396,8 @@ class ProjectDetails extends React.Component {
                                             <StyledSelect className="d-flex align-items-center" fullWidth
                                                 id='Project_Originator' selectedValue={this._getAttribute('Project_Originator')}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                                onChange={(e) => this._handleChangeEvent(e, 'Project_Originator')}>
+                                                onChange={(e) => this._handleChangeEvent(e, 'Project_Originator')}
+                                            >
                                                 {this._returnDomainDropdowns('Project_Originator')}
                                             </StyledSelect>
                                         </StyledFormControl>
@@ -381,7 +407,8 @@ class ProjectDetails extends React.Component {
                                                 id='Project_Location' 
                                                 value={!(Object.keys(this.props.selectedFeature).length > 0) ? " " : this._getAttribute('Project_Location')}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                                onChange={(e) => this._handleChangeEvent(e, 'Project_Location')} />
+                                                onChange={(e) => this._handleChangeEvent(e, 'Project_Location')} 
+                                            />
                                         </StyledFormControl>
                                         <StyledFormControl horizontal>
                                             <StyledProjectLabel>WRE Project #</StyledProjectLabel>
@@ -389,7 +416,8 @@ class ProjectDetails extends React.Component {
                                                 id='WRE_ProjectNo' 
                                                 value={!(Object.keys(this.props.selectedFeature).length > 0) ? " " : this._getAttribute('WRE_ProjectNo')}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
-                                                onChange={(e) => this._handleChangeEvent(e, 'WRE_ProjectNo')} />
+                                                onChange={(e) => this._handleChangeEvent(e, 'WRE_ProjectNo')} 
+                                            />
                                         </StyledFormControl>
                                         <StyledFormControl horizontal>
                                             <StyledProjectLabel>Contact</StyledProjectLabel>
@@ -398,7 +426,11 @@ class ProjectDetails extends React.Component {
                                                 placeholder={this._getAttribute('Contact') ? this._getAttribute('Contact') : "Select..."}
                                                 disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                 onChange={(e) => this._handleChangeEvent(e, 'Contact')}
-                                            /* onChange={this._activateSaveButton} */ >
+                                                onDoubleClick={ (e) => {
+                                                    console.log("double click event: ", e)
+                                                    this._navToRelatedItem('employee', this._getAttribute('Contact') )
+                                                } }
+                                            >
                                                 {this._returnValuesDropdowns('contact')}
                                             </StyledSelect>
                                         </StyledFormControl>
@@ -407,8 +439,12 @@ class ProjectDetails extends React.Component {
                                             <TextField fullWidth id='ContactPhone' type="text"
                                                 value={this._getRelatedAttribute('contact', 'CellNumber', 'Name', this._getAttribute('Contact'))}
                                                 onChange={this._handleChangeEvent.bind(this)}
-                                                disabled={true} />
-                                            {validation.Contact_Phone.isInvalid ? <FormHelperText className="d-flex align-items-center"> {validation.Contact_Phone.message}</FormHelperText> : null}
+                                                disabled={true} 
+                                                onDoubleClick={ (e) => {
+                                                    this._navToRelatedItem('employee', this._getAttribute('Contact') )
+                                                } }
+                                            />
+                                            {/* {validation.Contact_Phone.isInvalid ? <FormHelperText className="d-flex align-items-center"> {validation.Contact_Phone.message}</FormHelperText> : null} */}
                                         </StyledFormControl>
 
                                         <StyledFormControl horizontal>
@@ -417,7 +453,8 @@ class ProjectDetails extends React.Component {
                                                 style={{ resize: 'both', maxHeight: '100%', height: '95px' }}
                                                 value={ this._getAttribute('Notes')}
                                                 onChange={this._handleChangeEvent.bind(this)}
-                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)} />
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)} 
+                                            />
                                         </StyledFormControl>
                                     </Col>
                                 </Form>
@@ -442,7 +479,11 @@ class ProjectDetails extends React.Component {
                                                         placeholder={this._getAttribute('Contractor') ? this._getAttribute('Contractor') : "Select..."}
                                                         disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                         onChange={(e) => this._handleChangeEvent(e, 'Contractor')}
-                                            /* onChange={this._activateSaveButton} */ >
+                                                        onDoubleClick={ (e) => {
+                                                            console.log('double click event: ', e)
+                                                            this._navToRelatedItem('contractor', this._getAttribute('Contractor') )
+                                                        } } 
+                                                    >
                                                         {this._returnValuesDropdowns('Contractor')}
                                                     </StyledSelect>
                                                 </StyledFormControl>
@@ -451,7 +492,11 @@ class ProjectDetails extends React.Component {
                                                     <TextField fullWidth id='ContractorPhone' type="text"
                                                         value={this._getRelatedAttribute('Contractor', 'Contact_Number', 'Contractor', this._getAttribute('Contractor'))}
                                                         onChange={this._handleChangeEvent.bind(this)}
-                                                        disabled={true} />
+                                                        onDoubleClick={ (e) => {
+                                                            this._navToRelatedItem('contractor', this._getAttribute('Contractor') )
+                                                        } } 
+                                                        disabled={true} 
+                                                    />
                                                 </StyledFormControl>
                                                 <StyledFormControl horizontal>
                                                     <StyledProjectLabel>Contractor On Site</StyledProjectLabel>
@@ -460,6 +505,9 @@ class ProjectDetails extends React.Component {
                                                         placeholder={this._getAttribute('Company_On_Site') ? this._getAttribute('Company_On_Site') : "Select..."}
                                                         disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                         onChange={(e) => this._handleChangeEvent(e, 'Company_On_Site')}
+                                                        onDoubleClick={ (e) => {
+                                                            this._navToRelatedItem('contractor', this._getAttribute('Company_On_Site') )
+                                                        } } 
                                                     >
                                                         {this._returnValuesDropdowns('Contractor')}
                                                     </StyledSelect>
@@ -471,7 +519,10 @@ class ProjectDetails extends React.Component {
                                                         placeholder={this._getAttribute('Inspector') ? this._getAttribute('Inspector') : "Select..."}
                                                         disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                         onChange={(e) => this._handleChangeEvent(e, 'Inspector')}
-                                            /* onChange={this._activateSaveButton} */ >
+                                                        onDoubleClick={ (e) => {
+                                                            this._navToRelatedItem('employee', this._getAttribute('Inspector') )
+                                                        } } 
+                                                    >
                                                         {this._returnValuesDropdowns('Inspector')}
                                                     </StyledSelect>
                                                 </StyledFormControl>
@@ -480,7 +531,11 @@ class ProjectDetails extends React.Component {
                                                     <TextField fullWidth id='InspectorPhone' type="text"
                                                         value={this._getRelatedAttribute('Inspector', 'CellNumber', 'Name', this._getAttribute('Inspector'))}
                                                         onChange={this._handleChangeEvent.bind(this)}
-                                                        disabled={true} />
+                                                        onDoubleClick={ (e) => {
+                                                            this._navToRelatedItem('employee', this._getAttribute('Inspector') )
+                                                        } }
+                                                        disabled={true} 
+                                                    />
                                                 </StyledFormControl>
                                                 <CardTitle style={{
                                                     minWidth: '120px', fontWeight: 'bolder', fontSize: '17px', textAlign: 'left', marginTop: '15px',
@@ -599,10 +654,12 @@ class ProjectDetails extends React.Component {
                                                 <StyledProjectLabel >Constr. Duration</StyledProjectLabel>
                                                 <TextField fullWidth id='ConsDuration' type="text"
                                                     value={(this._getAttribute('Const_End_Date') && this._getAttribute('Const_Start_Date_NTP')) ?
-                                                    moment.utc(new moment(new Date(this._getAttribute('Const_End_Date'))).diff(new moment(new Date(this._getAttribute('Const_Start_Date_NTP'))))).format("DD") : ""
-                                                }
+                                                        moment.utc(new moment(new Date(this._getAttribute('Const_End_Date'))).diff(new moment(new Date(this._getAttribute('Const_Start_Date_NTP'))))).format("DD") 
+                                                        : ""
+                                                    }
                                                     onChange={this._handleChangeEvent.bind(this)}
-                                                    disabled={true} />
+                                                    disabled={true} 
+                                                />
                                             </StyledFormControl>
                                     </Form>
                                 </CardContent>
@@ -666,20 +723,22 @@ class ProjectDetails extends React.Component {
                                                     onChange={this._handleCheckboxEvent.bind(this)}
                                                     disabled={!(Object.keys(this.props.selectedFeature).length > 0)}
                                                     fullWidth
-                                                >
-                                                    Gas Work
+                                                > Gas Work
                                             </Checkbox>
                                             </Col>
                                         </Row>
                                             <CardTitle style={{
                                                 minWidth: '120px', fontWeight: 'bolder', fontSize: '17px', textAlign: 'left', marginTop: '15px',
                                                 color: CalciteTheme.palette.lightOrange
-                                            }}> Construction Notes</CardTitle>
+                                                }}
+                                            > Construction Notes
+                                            </CardTitle>
                                             <TextField fullWidth id='Construction_Notes' type="textarea"
-                                            style={{ resize: 'both', maxHeight: '100%', height: '85px' }}
-                                            value={ this._getAttribute('Construction_Notes')}
-                                            onChange={this._handleChangeEvent.bind(this)}
-                                            disabled={!(Object.keys(this.props.selectedFeature).length > 0)} />
+                                                style={{ resize: 'both', maxHeight: '100%', height: '85px' }}
+                                                value={ this._getAttribute('Construction_Notes')}
+                                                onChange={this._handleChangeEvent.bind(this)}
+                                                disabled={!(Object.keys(this.props.selectedFeature).length > 0)} 
+                                            />
                                     </Form>
                                 </CardContent>
                             </Card>

@@ -58,7 +58,7 @@ export default (state = initialState, action) => {
       }
     case types.SET_SELECTED:
       //console.log("set FIELDS: " + JSON.stringify(action.payload));
-      if (action.payload.type.includes('contractors')){
+      if (action.payload.type.includes('contract')){
         return {
           ...state,
           selectedContractor: action.payload.item
