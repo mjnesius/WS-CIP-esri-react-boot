@@ -14,7 +14,7 @@
  */
 
 import { makeRequest } from "./request";
-import { updateFeatures as updateFeatureLayer } from "@esri/arcgis-rest-feature-layer";
+import { updateFeatures as updateFeatureLayer, addFeatures  } from "@esri/arcgis-rest-feature-layer";
 //import { queryFeatures } from '@esri/arcgis-rest-feature-layer';
 import { request } from '@esri/arcgis-rest-request';
 
@@ -46,15 +46,30 @@ export function updateFeatures(FeatureUrl, _data) {
   let credObj = persistObj['credentials'][0];
   let tokenObj = credObj['token'];
   
-  return new Promise ((resolve, reject) => {
-    //url: `${FeatureUrl}/0/updateFeatures?&token=${tokenObj}`,
-    updateFeatureLayer({
-      url: `${FeatureUrl}`,
-      features: _data,
-      httpMethod: "POST",
-      params: { f: "json", token: `${tokenObj}`}
-    }).then(resp => resolve(resp), error => reject(error));
-  })
+  if (_data[0].attributes['OBJECTID']) {
+    console.log("updating ", _data[0].attributes['OBJECTID']);
+    return new Promise((resolve, reject) => {
+      //url: `${FeatureUrl}/0/updateFeatures?&token=${tokenObj}`,
+      updateFeatureLayer({
+        url: `${FeatureUrl}`,
+        features: _data,
+        httpMethod: "POST",
+        params: { f: "json", token: `${tokenObj}` }
+      }).then(resp => resolve(resp), error => reject(error));
+    })
+  }
+  else{
+    return new Promise((resolve, reject) => {
+      //url: `${FeatureUrl}/0/updateFeatures?&token=${tokenObj}`,
+      addFeatures({
+        url: `${FeatureUrl}`,
+        features: _data,
+        httpMethod: "POST",
+        params: { f: "json", token: `${tokenObj}` }
+      }).then(resp => resolve(resp), error => reject(error));
+    })
+  }
+  
 }
 
 export function getTables(tableUrl) {

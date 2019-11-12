@@ -58,14 +58,17 @@ class ContractorAttributes extends Component{
      }
      _handleChangeEvent(val) {
         console.log("_handleChangeEvent val is: ", val.target);
-        let stateCopy ={...this.props.selectedContractor, filter:[]};
+        let stateCopy ={...this.props.selectedContractor};
         stateCopy[val.target.id] = val.target.value;
         // val['Contractor']
         // this.setState({          
         //     ..,
         //     contractor: this.props.selectedContractor['Contractor'] ? this.props.selectedContractor['Contractor'] : ""
         // });
-        this.props.setSelected(stateCopy, 'contractors')
+        this.props.setSelected(stateCopy, 'contractors');
+        this.setState({ 
+            filtered: []
+        });
         this.activateSaveButton();
         return val.target.value;
       }
@@ -256,8 +259,6 @@ class ContractorAttributes extends Component{
                     </Form>
                 </Row>
                 <Row style={{ flex: '1 1 100%' }}>
-
-
                     <ReactTable
                         defaultPageSize={this.props.contractors.length} 
                         className="-striped -highlight mt-5" 

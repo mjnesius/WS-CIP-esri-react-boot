@@ -57,13 +57,21 @@ class AttributesPanel extends Component {
         this.props.setSaveButton();
         break;
       case 'contractors':
-        this.props.updateAttributes(this.props.contractorsURL[0], this.props.selectedContractor)
+        var updatedContractor= [{"attributes" : this.props.selectedContractor}];
+        new Promise(() => {
+          this.props.updateAttributes(this.props.contractorsURL[0], updatedContractor)
+        }).then(this.props.getContractors(this.props.contractorsURL[0]))
+        
         this.props.setSaveButton();
+        
         break;
       case 'employees':
+        new Promise(() => {
           this.props.updateAttributes(this.props.employeesURL[0], this.props.employees['features'])
-          this.props.setSaveButton();
-          break; 
+        }).then(this.props.getEmployees(this.props.employeesURL[0]))
+        this.props.setSaveButton();
+
+        break; 
       default:
         return
     }
