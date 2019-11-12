@@ -150,8 +150,9 @@ class ProjectDetails extends React.Component {
 
     _handleChangeEvent(val, target) {
         if( val.target ){
+            console.log("val.target: ", val.target);
             let stateCopy ={...this.props.selectedFeature};
-            stateCopy[val.target.id] = val.target.value;
+            stateCopy[val.target.id] = (val.target.value === '' || val.target.value.length === 0) ? null : val.target.value;
             this.props.selectFeature(stateCopy);
             let validation = this.validator.validate(stateCopy);
             console.log("validation: ", validation, "\n\tthis.state.validation: ", this.state.validation);
@@ -161,8 +162,9 @@ class ProjectDetails extends React.Component {
             );
             return val;
         }
+        console.log("val.target: ", val.target);
         let stateCopy ={...this.props.selectedFeature};
-        stateCopy[target] = val;
+        stateCopy[target] = (val === '' || val === 0) ? null : val;
         this.props.selectFeature(stateCopy);
         let validation = this.validator.validate(stateCopy);
         console.log("validation: ", validation, "\n\tthis.state.validation: ", this.state.validation);

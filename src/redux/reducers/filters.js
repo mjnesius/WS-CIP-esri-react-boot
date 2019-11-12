@@ -42,13 +42,12 @@ export default (state = initialState, action) => {
         filterButton: !state.filterButton
       };
     case types.SET_DEF_EXPRESSION:
-      var defExp = "Status Like '%" + state.selectedStatus
-      + "%'" 
-        + (state.selectedStatus === "null" || state.selectedStatus === "%"? " OR Status IS NULL" : "") +
-      + ") AND (Project_Manager Like '%" + state.selectedManager 
-        + (state.selectedManager === "null" || state.selectedManager === "%"? " OR Project_Manager IS NULL" : "") + ")"
-      + "%' AND (Proposed_Year Like '%" + state.selectedYear +"%'" 
-        + (state.selectedYear === "null" || state.selectedYear === "%"? " OR Proposed_Year IS NULL" : "") + ")";
+      var defExp = "(Status Like '%" + state.selectedStatus + "%'" 
+        +  ((state.selectedStatus === "null" || state.selectedStatus === "%" || state.selectedStatus === "") ? " OR Status IS NULL  OR Status = '')" : ")") 
+        + " AND (Project_Manager Like '%" + state.selectedManager  + "%'" 
+        + ((state.selectedManager === "null" || state.selectedManager === "%" || state.selectedManager === "") ? " OR Project_Manager IS NULL OR Project_Manager = '')" : ")") 
+        + " AND (Proposed_Year Like '%" + state.selectedYear + "%'" 
+        + ((state.selectedYear === "null" || state.selectedYear === "%" || state.selectedYear === "") ? " OR Proposed_Year IS NULL OR Proposed_Year = '')" : ")") 
       return {
         ...state,
         defExp: defExp

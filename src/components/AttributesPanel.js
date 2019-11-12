@@ -32,14 +32,13 @@ import Tooltip from 'calcite-react/Tooltip';
 
 import styled from 'styled-components';
 const Container = styled.div`
-  display: inline-flex;
-  flex-direction: rtl;
+  display: flex;
   width: 100%;
+  max-width: 100%;
   height: 100%;
   text-align: center;
-  flex-grow: 2;
   justify-content: center;
-  overflow-y: auto;
+  overflow: scroll;
 `;
 
 
@@ -58,13 +57,21 @@ class AttributesPanel extends Component {
         this.props.setSaveButton();
         break;
       case 'contractors':
-        this.props.updateAttributes(this.props.contractorsURL[0], this.props.selectedContractor)
+        var updatedContractor= [{"attributes" : this.props.selectedContractor}];
+        new Promise(() => {
+          this.props.updateAttributes(this.props.contractorsURL[0], updatedContractor)
+        }).then(this.props.getContractors(this.props.contractorsURL[0]))
+        
         this.props.setSaveButton();
+        
         break;
       case 'employees':
+        new Promise(() => {
           this.props.updateAttributes(this.props.employeesURL[0], this.props.employees['features'])
-          this.props.setSaveButton();
-          break; 
+        }).then(this.props.getEmployees(this.props.employeesURL[0]))
+        this.props.setSaveButton();
+
+        break; 
       default:
         return
     }
@@ -87,7 +94,7 @@ class AttributesPanel extends Component {
       //console.log("project attributes component")
       return (
         <Container>
-          <Row style={{ flex: 1 }}>
+          <Row style={{ flex: 1, maxWidth: '100%'}}>
             <Col style={{ flex: 3 }}>
               <Card style={{ flex: 4 }}>
                 <Card.Header className="bg-light m-1 p-1" style={{ flex: 4 }}>
@@ -154,7 +161,7 @@ class AttributesPanel extends Component {
                   </Row>
                   
                 </Card.Header>
-                <Card.Body className="overflow-y" style={{ flex: 4 }}>
+                <Card.Body className="overflow-y" style={{ flex: 4 , width: '100%'}}>
                   <div className="overflow-y" style={{flex: 5}}>
                     {this.props.card === "projects_overview" && <ProjectsTable />}
                     {this.props.card === "project_details" && <ProjectDetails />}
@@ -164,7 +171,6 @@ class AttributesPanel extends Component {
                 </Card.Body>
               </Card>
             </Col>
-
           </Row>
         </Container>
       );

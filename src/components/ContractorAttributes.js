@@ -7,12 +7,17 @@ import { actions as attributeActions } from '../redux/reducers/attributes';
 import { actions as mapActions } from '../redux/reducers/map';
 
 import { actions as filterActions } from '../redux/reducers/filters';
-import { parseContractorData, parseDomainValues } from '../redux/selectors';
+import { getColumnsFromFields, parseContractorData, parseDomainValues } from '../redux/selectors';
 import{StoreContext} from "./StoreContext";
 import { connect } from 'react-redux';
 
 //, {PanelTitle,PanelText } 
-import Panel from 'calcite-react/Panel';
+import Panel, {
+    PanelTitle,
+    PanelText
+  } from 'calcite-react/Panel'
+import { CalciteTheme } from 'calcite-react/CalciteThemeProvider';
+
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col'
 
@@ -22,25 +27,34 @@ import Form, {
 } from 'calcite-react/Form';
 import { MenuItem } from 'calcite-react/Menu';
 import TextField from 'calcite-react/TextField';
+
+// Import React Table
+import ReactTable from "react-table";
+import "react-table/react-table.css";
 //import Select from 'calcite-react/Select';
-//import styled from 'styled-components';
-// const Container = styled.div`
-//   display: inline-flex;
-//   width: 100%;
-//   height: 100%;
-//   text-align: center;
-//   flex-grow: 2;
-//   justify-content: center;
-//   overflow-y: auto;
-// `;
- 
+import styled from 'styled-components';
+const Container = styled.div`
+   max-width: 100%;
+   height: 100%;
+   overflow: scroll;
+   display: flex;
+   flex-direction: column;
+`;
+
+const makeDefaultState = (selected) => ({
+    selectedContractor: selected,
+    filtered: []
+  });
 
 class ContractorAttributes extends Component{
      constructor(props){
          super(props);
-         this.state = {
-             selectedContractor: this.props.selectedContractor,
-         }
+         this.state =  makeDefaultState(this.props.selectedContractor);
+     }
+
+     _handleSelectionEvent(val){
+         console.log(val);
+        this.props.setSelected (val, 'contractor')
      }
      _handleChangeEvent(val) {
         console.log("_handleChangeEvent val is: ", val.target);
@@ -51,7 +65,10 @@ class ContractorAttributes extends Component{
         //     ..,
         //     contractor: this.props.selectedContractor['Contractor'] ? this.props.selectedContractor['Contractor'] : ""
         // });
-        this.props.setSelected(stateCopy, 'contractors')
+        this.props.setSelected(stateCopy, 'contractors');
+        this.setState({ 
+            filtered: []
+        });
         this.activateSaveButton();
         return val.target.value;
       }
@@ -89,14 +106,24 @@ class ContractorAttributes extends Component{
         if(prevProps.selectedContractor !== this.props.selectedContractor){
             console.log("setting component's state")
             this.setState({          
-                selectedContractor: this.props.selectedContractor
+                selectedContractor: this.props.selectedContractor, 
+                filtered: []
             });
         }
     }
 
     render() {
+        const filterCol = this.props.fields.filter (col => {
+            return col.name !== "OBJECTID"
+        })
+        const columns = filterCol.map((fld) => {
+          //console.log(fld.name);
+          var _filter =  fld.name.toUpperCase().indexOf("COST") > -1 ? false : true;
+          return {Header: fld.name,  id: fld.name, accessor: fld.name, resizable: true, sortable: true, filterable: _filter, width: 155}
+        })
+        console.log("this.props.contractors: ", this.props.contractors);
         return (
-            <div className="container-fluid" style={{padding: "0px", backgroundColor: "transparent"}}>
+            <Container/*  className="container-fluid, overflow-y overflow-x" */ style={{padding: "15px", backgroundColor: "transparent"}}>
                 <Row >
                     <Col lg="12">
                         <FormControlLabel style={{ minWidth: '120px' }}>Select a Contractor</FormControlLabel>
@@ -104,45 +131,178 @@ class ContractorAttributes extends Component{
                     </Col>
                 </Row>
                 <Row className=" mt-2">
-                    <Form horizontal style={{ flex: 1 }}>
-                        <Row style={{ flex: 1 }}>
-                            <Col sm="4">
-                                <FormControl required>
-                                    <FormControlLabel style={{ minWidth: '160px' }}>Contractor</FormControlLabel>
-                                    <input type="textarea" id="Contractor" style={{ maxWidth: '100%', resize: "both" }}
-                                        onChange={this._handleChangeEvent.bind(this)}
-                                        value={this._getAttribute('Contractor')}
-                                         />
-                                </FormControl>
-                            </Col>
-                            <Col sm="4">
-                                <FormControl>
-                                    <FormControlLabel style={{ minWidth: '120px' }}>Main Number</FormControlLabel>
-                                    <TextField id="Main_Number" value={this._getAttribute('Main_Number')} 
-                                        onChange={this._handleChangeEvent.bind(this)} fullWidth>
-                                    </TextField>
-                                </FormControl>
-                            </Col>
-                            <Col sm="4">
-                                <FormControl >
-                                    <FormControlLabel style={{ minWidth: '140px' }}>Contact Email</FormControlLabel>
-                                    <TextField label="Email:" id="Contact_Email" value={this._getAttribute('Contact_Email')} 
-                                        onChange={this._handleChangeEvent.bind(this)} fullWidth>
-                                    </TextField>
-                                </FormControl>
-                            </Col>
-                            <Col sm="4">
-                                <FormControl required>
-                                    <FormControlLabel style={{ minWidth: '120px' }}>Contact</FormControlLabel>
-                                    <TextField id="Contact_LastName" value={this._getAttribute('Contact_LastName')} 
-                                        onChange={this._handleChangeEvent.bind(this)} fullWidth>
-                                    </TextField>
-                                </FormControl>
-                            </Col>
+                    <Form horizontal style={{ flex: '1 1 100%' }}>
+                        <Row style={{ flex: '1 1 100%' }}> 
+                            <Panel style={{ flex: '1 1 100%', color: CalciteTheme.palette.darkBlue }}>
+                                <PanelTitle style={{ textAlign: 'left' }}>Company Info.</PanelTitle>
+                                <PanelText className="mx-2">
+                                    <Row >
+                                        <Col sm="4" md="2" className="d-flex align-items-left" >
+                                            <FormControl fullWidth>
+                                                <FormControlLabel style={{ minWidth: '160px', textAlign: 'left', paddingLeft: '5' }}>Company Name</FormControlLabel>
+                                                <TextField id="Contractor" value={this._getAttribute('Contractor')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth type="textarea"
+                                                    style={{ resize: 'both', maxHeight: '100%', height: '36px' }}
+                                                >
+                                                </TextField>
+                                            </FormControl>
+                                        </Col>
+                                        <Col sm="4" md="2" className="d-flex align-items-left">
+                                            <FormControl >
+                                                <FormControlLabel style={{ minWidth: '160px', textAlign: 'left', paddingLeft: '5' }}>Contractor ID</FormControlLabel>
+                                                <TextField id="Contractor_ID" value={this._getAttribute('Contractor_ID')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                        </Col>
+                                    </Row>
+                                    <Row className="mt-3">
+                                        <Col sm="2" className="d-flex align-items-left">
+                                            <FormControl >
+                                                <FormControlLabel style={{ width: '120px', textAlign: 'left', paddingLeft: '3' }} >Main Number</FormControlLabel>
+                                                <TextField id="Main_Number" value={this._getAttribute('Main_Number')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                        </Col>
+                                        <Col sm="10" className="d-flex align-items-left">
+                                            <FormControl >
+                                                <FormControlLabel style={{ width: '160px', textAlign: 'left', paddingLeft: '3' }}>Address</FormControlLabel>
+                                                <TextField id="Address" value={this._getAttribute('Address')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                            <FormControl >
+                                                <FormControlLabel style={{ width: '80px', textAlign: 'left', paddingLeft: '1' }}>Suite</FormControlLabel>
+                                                <TextField id="Suite" value={this._getAttribute('Suite')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                            <FormControl >
+                                                <FormControlLabel style={{ width: '80px', textAlign: 'left', paddingLeft: '1' }}>City</FormControlLabel>
+                                                <TextField id="City" value={this._getAttribute('City')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                            <FormControl >
+                                                <FormControlLabel style={{ width: '80px', textAlign: 'left', paddingLeft: '1' }}>State</FormControlLabel>
+                                                <TextField id="State" value={this._getAttribute('State')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                            <FormControl >
+                                                <FormControlLabel style={{ wdth: '80px', textAlign: 'left', paddingLeft: '1' }}>Zip</FormControlLabel>
+                                                <TextField id="Zip" value={this._getAttribute('Zip')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                        </Col>
+                                    </Row>
+                                </PanelText>
+                            </Panel>
+                        </Row>
+                        <Row style={{ flex: '1 1 100%' }}>
+                            <Panel style={{ flex: '1 1 100%' , color: CalciteTheme.palette.lightOrange}}>
+                                <PanelTitle style={{ textAlign: 'left' }}>Contact Info.</PanelTitle>
+                                <PanelText className="mx-2">
+                                    <Row >
+                                        <Col sm="6" md="4" className="d-flex align-items-left">
+                                            <FormControl style={{ width: '70px'}}>
+                                                <FormControlLabel style={{ minWidth: '100px', textAlign: 'left', paddingLeft: '1' }}>Honorific</FormControlLabel>
+                                                <TextField id="Contact_NamePrefix" value={this._getAttribute('Contact_NamePrefix')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                            <FormControl required>
+                                                <FormControlLabel style={{ minWidth: '120px', textAlign: 'left', paddingLeft: '1' }}>First Name</FormControlLabel>
+                                                <TextField id="Contact_FirstName" value={this._getAttribute('Contact_FirstName')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                            <FormControl required>
+                                                <FormControlLabel style={{ minWidth: '120px', textAlign: 'left', paddingLeft: '1' }}>Last Name</FormControlLabel>
+                                                <TextField id="Contact_LastName" value={this._getAttribute('Contact_LastName')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                        </Col>
+                                        <Col sm="6" md="8" className="d-flex align-items-left">
+                                            <FormControl >
+                                                <FormControlLabel style={{ minWidth: '120px', textAlign: 'left', paddingLeft: '1' }}>Email</FormControlLabel>
+                                                <TextField label="Email:" id="Contact_Email" value={this._getAttribute('Contact_Email')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                            <FormControl >
+                                                <FormControlLabel style={{ minWidth: '110px', textAlign: 'left', paddingLeft: '1' }}>Office Number</FormControlLabel>
+                                                <TextField label="Email:" id="Contact_Number" value={this._getAttribute('Contact_Number')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                            <FormControl >
+                                                <FormControlLabel style={{ minWidth: '110px', textAlign: 'left', paddingLeft: '1' }}>Extension</FormControlLabel>
+                                                <TextField label="Email:" id="Contact_Extension" value={this._getAttribute('Contact_Extension')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                             <FormControl >
+                                                <FormControlLabel style={{ minWidth: '110px', textAlign: 'left', paddingLeft: '1' }}>Cell</FormControlLabel>
+                                                <TextField label="Email:" id="Contact_Cell" value={this._getAttribute('Contact_Cell')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth>
+                                                </TextField>
+                                            </FormControl>
+                                        </Col>
+                                    </Row>
+                                </PanelText>
+                            </Panel>
                         </Row>
                     </Form>
                 </Row>
-            </div>
+                <Row style={{ flex: '1 1 100%' }}>
+                    <ReactTable
+                        defaultPageSize={this.props.contractors.length} 
+                        className="-striped -highlight mt-5" 
+                        columns={columns} data={this.props.contractors}
+                        defaultFilterMethod={(filter, row) => {
+                            const id = filter.pivotId || filter.id
+                            return row[id] !== undefined ? String(row[id]).toUpperCase().indexOf(String(filter.value).toUpperCase()) > -1 : true
+                        } }
+                        showPagination={false} showPageSizeOptions={false} showPaginationBottom={false} 
+                        minRows="0"
+                        filterable
+                        filtered={this.state.filtered}
+                        
+                        onFilteredChange={filtered => {
+                            console.log("filtered: ", filtered)
+                            this.setState({ filtered })
+                        }}
+
+                    getTdProps={(state, rowInfo, column, instance) => {
+                        return {
+                            onDoubleClick: (e, handleOriginal) => {
+                                console.log('A Td Element was double clicked!')
+                                //console.log('it produced this event:', e)
+                                //console.log('It was in this column:', column)
+                                console.log('It was in this row:', rowInfo)
+                                //console.log('It was in this table instance:', instance)
+                                this._handleSelectionEvent(rowInfo.original);
+                                //this.props.selectFeature(rowInfo.original);
+                                //this.props.setPanel("project_details")
+                                // IMPORTANT! React-Table uses onClick internally to trigger
+                                // events like expanding SubComponents and pivots.
+                                // By default a custom 'onClick' handler will override this functionality.
+                                // If you want to fire the original onClick handler, call the
+                                // 'handleOriginal' function.
+                                if (handleOriginal) {
+                                    handleOriginal()
+                                }
+                            }
+                        }
+                    }}
+                />
+                </Row>
+                
+            </Container>
         )
     }
 }
@@ -156,6 +316,7 @@ const mapStateToProps = state => ({
     saveButton: state.attributes.saveButton,
     domains: parseDomainValues(state),
     optionsManagers: state.map.managers,
+    fields: getColumnsFromFields(state, "contractors"),
 });
 
 const mapDispatchToProps = dispatch => {
