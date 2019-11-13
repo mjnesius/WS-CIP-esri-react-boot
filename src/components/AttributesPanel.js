@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _ from 'underscore';
 //import {Tabs, Tab, Card} from 'react-bootstrap'
 
 //import Container from 'react-bootstrap/Container';
@@ -19,6 +20,7 @@ import { actions as filterActions } from '../redux/reducers/filters';
 import { actions as attributeActions } from '../redux/reducers/attributes';
 import { actions as mapActions } from '../redux/reducers/map';
 import {StoreContext} from "./StoreContext";
+import {parseProjectData, parseEmployeesData, parseContractorData} from '../redux/selectors';
 
 //  Components
 import ProjectsTable from './ProjectsTable';
@@ -47,6 +49,36 @@ class AttributesPanel extends Component {
     this.props.setPanel(val);
     this.props.setSaveButton('deactivate');
   }
+  _createDomainObj(_type){
+    let codedValues = [];
+    var sortedObjs ;
+    if (_type.toLowerCase().indexOf('manager') > -1) {
+      
+    } else if (_type.toLowerCase().indexOf('inspector') > -1) {
+     
+    }
+    else if (_type.toLowerCase().indexOf('contact') > -1) {
+      
+    }
+    else if (_type.toLowerCase().indexOf('contract') > -1) {
+      sortedObjs = _.sortBy(this.props.contractors, 'Contractor');
+      // this.props.contractors.forEach(function(_man){
+      //     items.push( <MenuItem key ={_man.OBJECTID} value={_man.Contractor} >{ _man.Contractor}</MenuItem>)
+      // });  
+      sortedObjs.forEach(function (_contract) {
+        codedValues.push({
+          "name": `${_contract.Contractor}`,
+          "code": `${_contract.Contractor}`
+        });
+      });
+      return {
+        "type" : "codedValue", 
+        "name" : "Contractor_Domain", 
+        "codedValues" : codedValues
+      }
+    }
+
+  }
 
   _handleSave() {
     switch (this.props.card){
@@ -57,11 +89,35 @@ class AttributesPanel extends Component {
         this.props.setSaveButton();
         break;
       case 'contractors':
+        var domains = this._createDomainObj('contractors');
+        console.log('NEW domains: ', domains);
+        console.log('fields: ', this.props.fields);
+
+        const newFields = this.props.fields.map((fld) => {
+          console.log('contractors fld JSON:', fld.toJSON());
+          var jsonFld = fld.toJSON();
+          if(fld.name === 'Contractor'){
+            jsonFld['domain'] = domains;
+            console.log('\t new fld:', jsonFld);
+          }
+          return jsonFld;
+        });
+        console.log('new fields: ', newFields);
+        var newFieldsObj = {'fields': newFields}
+
         var updatedContractor= [{"attributes" : this.props.selectedContractor}];
         new Promise(() => {
           this.props.updateAttributes(this.props.contractorsURL[0], updatedContractor)
-        }).then(this.props.getContractors(this.props.contractorsURL[0]))
+        }).then(
+          new Promise(() => {
+            this.props.getContractors(this.props.contractorsURL[0])
+        })
+        ).then(
+            // /updateDomains: (featureUrl, domainObj)
+          this.props.updateDomains(this.props.adminURL[0], JSON.stringify(newFieldsObj))
+        )
         
+        // updateDomains(serviceUrl, fieldsObj)
         this.props.setSaveButton();
         
         break;
@@ -184,8 +240,10 @@ class AttributesPanel extends Component {
 
 const mapStateToProps = state => ({
   projects: state.map.features,
+  fields: state.map.fields, // an array of field objects
   isVisible: state.map.attributesComponent,
   card: state.attributes.card,
+  adminURL: state.config.adminURL,
   featureURLs: state.config.featureURLs,
   contractorsURL: state.config.contractorsURL,
   employeesURL: state.config.employeesURL,
@@ -193,6 +251,10 @@ const mapStateToProps = state => ({
   employees: state.map.employees,
   selectedContractor: state.attributes.selectedContractor,
   selectedFeature: state.map.selectedFeature,
+  contractors: parseContractorData(state),
+  optionsManagers: parseEmployeesData(state, 'managers'),
+  optionsContacts: parseEmployeesData(state, 'contacts'),
+  optionsInspectors: parseEmployeesData(state, 'inspectors'),
 });
   
   const mapDispatchToProps = dispatch => {

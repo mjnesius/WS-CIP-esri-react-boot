@@ -2,6 +2,7 @@
 export const types = {
     SET_PANEL: "SET_PANEL",
     UPDATE_ATTRIBUTES: "UPDATE_ATTRIBUTES",
+    UPDATE_DOMAINS: "UPDATE_DOMAINS",
     UPDATE_SUCCESS: "UPDATE_SUCCESS",
     UPDATE_FAIL: "UPDATE_FAIL",
     SAVE_BUTTON: "SAVE_BUTTON",
@@ -27,6 +28,11 @@ export default (state = initialState, action) => {
       }
     case types.UPDATE_ATTRIBUTES:
       //console.log("set UPDATE_ATTRIBUTES: " + JSON.stringify(action.payload));
+      return {
+        ...state,
+      }
+    case types.UPDATE_DOMAINS:
+      console.log("set UPDATE_DOMAINS: " + JSON.stringify(action.payload));
       return {
         ...state,
       }
@@ -91,6 +97,13 @@ export const actions = {
     payload: {
       url: featureUrl,
       data: updates
+    }
+  }),
+  updateDomains: (featureUrl, domainObj) => ({
+    type: types.UPDATE_DOMAINS,
+    payload: {
+      url: featureUrl,
+      data: domainObj
     }
   }),
   setSaveButton: deactivate => ({

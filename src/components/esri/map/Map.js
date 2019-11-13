@@ -175,7 +175,35 @@ class Map extends Component {
     ], containerNode) => {
       var popTemplate = {
         title: "Water-Sewer CIP",
-        content: "{Project_Name}",
+        content: [{
+          type: "fields",
+          fieldInfos: [{
+            fieldName: "Project_Name",
+            label: "Project Name"
+          }, {
+            fieldName: "Project_Type",
+            label: "Project Type"
+          },{
+            fieldName: "Status",
+            label: "Status"
+          },{
+            fieldName: "Project_Manager",
+            label: "Project Manager"
+          },{
+            fieldName: "Proposed_Year",
+            label: "Proposed Year"
+          },{
+            fieldName: "Contractor",
+            label: "Contractor"
+          },{
+            fieldName: "Inspector",
+            label: "Inspector"
+          },{
+            fieldName: "Contact",
+            label: "Contact"
+          }
+          ]
+        }],
         actions: actionsButtons
       }
       const featureLayer = new FeatureLayer({
@@ -215,7 +243,40 @@ class Map extends Component {
       const editor = new Editor({
         view: this.view,
         container: containerNode,
-        id: "editor"
+        id: "editor",
+        layerInfos: [{
+          layer: featureLayer,
+          fieldConfig: [{
+              name: "Project_Name",
+              label: "Project Name"
+            }, {
+              name: "Project_Type",
+              label: "Project Type"
+            }, {
+              name: "Status",
+              label: "Status"
+            }, {
+              name: "Project_Manager",
+              label: "Project Manager"
+            }, {
+              name: "Proposed_Year",
+              label: "Proposed Year"
+            }, {
+              name: "Contractor",
+              label: "Contractor"
+            }, {
+              name: "Inspector",
+              label: "Inspector"
+            }, {
+              name: "Contact",
+              label: "Contact"
+            }
+          ],
+          enabled:true,
+          addEnabled: true,
+          updateEnabled: true,
+          deleteEnabled: true
+        }]
       });
       this.editor = editor;
 

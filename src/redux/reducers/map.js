@@ -39,7 +39,8 @@ export const initialState = {
   domains: [{}],
   selectedFeature:{},
   contractors: [],
-  employees: [{}]
+  employees: [{}],
+  attributesComponent: false
 };
 
 export default (state = initialState, action) => {

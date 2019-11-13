@@ -120,7 +120,7 @@ class Main extends Component {
           </Col>
           
         </Row>
-        <AttributesPanel/>
+        {this.props.attributesComponent && <AttributesPanel/>}
         <MapWrapper>
           <Map onMapLoaded={this.props.mapLoaded} onSetFeatures={this.props.setFeatures} onSetFilters={this.props.setFilter}
             mapConfig={this.props.config.mapConfig}
@@ -136,6 +136,7 @@ const mapStateToProps = state => ({
   map: state.map,
   auth: state.auth,
   config: state.config,
+  attributesComponent: state.map.attributesComponent
 })
 
 const mapDispatchToProps = function (dispatch) {

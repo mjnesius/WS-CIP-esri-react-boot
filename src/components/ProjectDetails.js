@@ -242,14 +242,14 @@ class ProjectDetails extends React.Component {
             });   
         } else if (_type.toLowerCase().indexOf('inspector') > -1){
             sortedObjs = _.sortBy( this.props.optionsInspectors, 'Name' );
-            sortedObjs.forEach(function(_man){
-                items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
+            sortedObjs.forEach(function(_insp){
+                items.push( <MenuItem key ={_insp.OBJECTID} value={_insp.Name} >{ _insp.Name}</MenuItem>)
             });   
         }
         else if (_type.toLowerCase().indexOf('contact') > -1){
             sortedObjs = _.sortBy( this.props.optionsContacts, 'Name' );
-            sortedObjs.forEach(function(_man){
-                items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
+            sortedObjs.forEach(function(_contact){
+                items.push( <MenuItem key ={_contact.OBJECTID} value={_contact.Name} >{ _contact.Name}</MenuItem>)
             });   
         }
         else if (_type.toLowerCase().indexOf('contract') > -1){
@@ -257,8 +257,8 @@ class ProjectDetails extends React.Component {
             // this.props.contractors.forEach(function(_man){
             //     items.push( <MenuItem key ={_man.OBJECTID} value={_man.Contractor} >{ _man.Contractor}</MenuItem>)
             // });  
-            sortedObjs.forEach(function(_man){
-                items.push( <MenuItem key ={_man.OBJECTID} value={_man.Contractor} >{ _man.Contractor}</MenuItem>)
+            sortedObjs.forEach(function(_contract){
+                items.push( <MenuItem key ={_contract.OBJECTID} value={_contract.Contractor} >{ _contract.Contractor}</MenuItem>)
             });  
         }
         return items;
