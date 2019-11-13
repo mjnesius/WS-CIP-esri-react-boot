@@ -4,13 +4,12 @@
   "apiUrl": "api",
   "loginUrl": "api/auth/arcgis",
   "logoutUrl": "api/logout",
-  "jsapiUrl": "https://js.arcgis.com/4.12/",
+  "jsapiUrl": "https://js.arcgis.com/4.13/",
   "jsapiV4": true,
   "loginWithPopup": false,
 
   "portalUrl": "https://tlcgis.maps.arcgis.com",
   "appId": "hkdtqXBMmZ8JJ5tD",
-
 
   "mapConfig": {
     "basemap": "gray-vector",
@@ -18,24 +17,16 @@
     "center": [40, -80]
   },
 
-  "webMapConfig": {
-    "id": "298570bdb8e946a1b7969bdebc3f4e6e",
-    "extent": {
-      "xmin":-9393366,
-      "ymin":3550322,
-      "xmax":-9354817,
-      "ymax":3579250,
-      "spatialReference": 102100
-    }
-  },
-
   "featureURLs": [
-    "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/arcgis/rest/services/WaterSewerPM/FeatureServer/0"
+    "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/arcgis/rest/services/WaterSewerPM/FeatureServer/0",
+    "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParnal_D_WM/MapServer",
+    "http://cotuuagsp.city.talgov.com:6080/arcgis/rest/services/Public/COT_Inter_CityworksSewer/MapServer"
   ],
   "contractorsURL": [
     "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/ArcGIS/rest/services/WaterSewerPM/FeatureServer/1"
   ],
   "employeesURL": [
     "https://services.arcgis.com/ptvDyBs1KkcwzQNJ/ArcGIS/rest/services/WaterSewerPM/FeatureServer/2"
-  ]
+  ],
+  "geomServiceURL": ["https://interraster.leoncountyfl.gov/interraster/rest/services/Utilities/Geometry/GeometryServer"]
 }
