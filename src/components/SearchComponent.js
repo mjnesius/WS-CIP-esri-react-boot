@@ -87,6 +87,7 @@ class SearchComponent extends React.Component {
         } else if (this.props.type.includes('projects')){
             this.props.selectFeature({}, 'projects')
         }
+        this.props.setSaveButton("deactivate");
 
     }
 
@@ -102,7 +103,7 @@ class SearchComponent extends React.Component {
         if (this.props.type.includes('contractor')){
             return this.props.contractors.map(con => con['Contractor'])
         } else if (this.props.type.includes('employees')){
-            return this.props.employess.map(emp => emp['Name'])
+            return this.props.employees.map(emp => emp['Name'])
         } else if (this.props.type.includes('projects')){
             return this.props.projects.map(proj => proj['Project_Name'])
         }

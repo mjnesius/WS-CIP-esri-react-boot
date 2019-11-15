@@ -53,12 +53,51 @@ class AttributesPanel extends Component {
     let codedValues = [];
     var sortedObjs ;
     if (_type.toLowerCase().indexOf('manager') > -1) {
-      
+      sortedObjs = _.sortBy(this.props.optionsManagers, 'Name');
+      sortedObjs.forEach(function (_man) {
+        if (_man.IsWSProjMgr === '1'){
+          codedValues.push({
+            "name": `${_man.Name}`,
+            "code": `${_man.Name}`
+          });
+        }
+      });
+      return {
+        "type" : "codedValue", 
+        "name" : "Project_Manager_Domain", 
+        "codedValues" : codedValues
+      }
     } else if (_type.toLowerCase().indexOf('inspector') > -1) {
-     
+      sortedObjs = _.sortBy(this.props.optionsInspectors, 'Name');
+      sortedObjs.forEach(function (_insp) {
+        if (_insp.IsWSPMInspector === '1'){
+          codedValues.push({
+            "name": `${_insp.Name}`,
+            "code": `${_insp.Name}`
+          });
+        }
+      });
+      return {
+        "type" : "codedValue", 
+        "name" : "Inspector_Domain", 
+        "codedValues" : codedValues
+      }
     }
     else if (_type.toLowerCase().indexOf('contact') > -1) {
-      
+      sortedObjs = _.sortBy(this.props.optionsContacts, 'Name');
+      sortedObjs.forEach(function (_contact) {
+        if (_contact.IsWSPMContact === '1'){
+          codedValues.push({
+            "name": `${_contact.Name}`,
+            "code": `${_contact.Name}`
+          });
+        }
+      });
+      return {
+        "type" : "codedValue", 
+        "name" : "Contact_Domain", 
+        "codedValues" : codedValues
+      }
     }
     else if (_type.toLowerCase().indexOf('contract') > -1) {
       sortedObjs = _.sortBy(this.props.contractors, 'Contractor');
@@ -77,55 +116,80 @@ class AttributesPanel extends Component {
         "codedValues" : codedValues
       }
     }
-
   }
 
   _handleSave() {
     switch (this.props.card){
       case 'project_details':
-        var updatedFeature= [{"attributes" : this.props.selectedFeature}];
+        var updatedFeature = [{ "attributes": this.props.selectedFeature }];
         console.log("update: ", JSON.stringify(updatedFeature));
         this.props.updateAttributes(this.props.featureURLs[0], updatedFeature);
         this.props.setSaveButton();
         break;
       case 'contractors':
-        var domains = this._createDomainObj('contractors');
-        console.log('NEW domains: ', domains);
-        console.log('fields: ', this.props.fields);
-
-        const newFields = this.props.fields.map((fld) => {
-          console.log('contractors fld JSON:', fld.toJSON());
-          var jsonFld = fld.toJSON();
-          if(fld.name === 'Contractor'){
-            jsonFld['domain'] = domains;
-            console.log('\t new fld:', jsonFld);
-          }
-          return jsonFld;
-        });
-        console.log('new fields: ', newFields);
-        var newFieldsObj = {'fields': newFields}
-
-        var updatedContractor= [{"attributes" : this.props.selectedContractor}];
+        var updatedContractor = [{ "attributes": this.props.selectedContractor }];
         new Promise(() => {
           this.props.updateAttributes(this.props.contractorsURL[0], updatedContractor)
-        }).then(
-          new Promise(() => {
+        }).then(setTimeout( () =>  {
+
             this.props.getContractors(this.props.contractorsURL[0])
-        })
-        ).then(
-            // /updateDomains: (featureUrl, domainObj)
+
+          }, 2000)
+        ).then(setTimeout( () =>  {
+          var domains = this._createDomainObj('contractors');
+
+          const newFields = this.props.fields.map((fld) => {
+            var jsonFld = fld.toJSON();
+            if (fld.name === 'Contractor') {
+              jsonFld['domain'] = domains;
+            }
+            return jsonFld;
+          });
+          var newFieldsObj = { 'fields': newFields }
           this.props.updateDomains(this.props.adminURL[0], JSON.stringify(newFieldsObj))
+        }, 3000)
         )
-        
-        // updateDomains(serviceUrl, fieldsObj)
+
         this.props.setSaveButton();
-        
+
         break;
       case 'employees':
+        //_createDomainObj(_type)
+        
+        var updatedEmployee= [{"attributes" : this.props.selectedEmployee}];
         new Promise(() => {
-          this.props.updateAttributes(this.props.employeesURL[0], this.props.employees['features'])
-        }).then(this.props.getEmployees(this.props.employeesURL[0]))
-        this.props.setSaveButton();
+          this.props.updateAttributes(this.props.employeesURL[0], updatedEmployee)
+        }).then( setTimeout( () =>  {
+            this.props.getEmployees(this.props.employeesURL[0])
+        }, 2000)
+        ).then( setTimeout( () =>  {
+          var domainsInsp = this._createDomainObj('inspector');
+          var domainsMan = this._createDomainObj('manager');
+          var domainsCon = this._createDomainObj('contact');
+          const newField = this.props.fields.map((fld) => {
+            var jsonFld = fld.toJSON();
+            if (fld.name === 'Inspector') {
+              jsonFld['domain'] = domainsInsp;
+            }
+            else if (fld.name === 'Project_Manager') {
+              jsonFld['domain'] = domainsMan;
+            }
+            else if (fld.name === 'Contact') {
+              jsonFld['domain'] = domainsCon;
+            }
+            return jsonFld;
+          });
+          var newFieldObj = { 'fields': newField };
+          // /updateDomains: (featureUrl, domainObj)
+          this.props.updateDomains(this.props.adminURL[0], JSON.stringify(newFieldObj))
+          this.props.setSaveButton();
+          }, 3000)
+      )
+        // new Promise(() => {
+        //   this.props.updateAttributes(this.props.employeesURL[0], this.props.employees['features'])
+        // }).then(this.props.getEmployees(this.props.employeesURL[0]))
+        
+          
 
         break; 
       default:
@@ -251,6 +315,7 @@ const mapStateToProps = state => ({
   employees: state.map.employees,
   selectedContractor: state.attributes.selectedContractor,
   selectedFeature: state.map.selectedFeature,
+  selectedEmployee: state.attributes.selectedEmployee,
   contractors: parseContractorData(state),
   optionsManagers: parseEmployeesData(state, 'managers'),
   optionsContacts: parseEmployeesData(state, 'contacts'),

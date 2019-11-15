@@ -25,7 +25,6 @@ import Form, {
     FormControl,
     FormControlLabel
 } from 'calcite-react/Form';
-import { MenuItem } from 'calcite-react/Menu';
 import TextField from 'calcite-react/TextField';
 
 // Import React Table
@@ -69,11 +68,11 @@ class ContractorAttributes extends Component{
         this.setState({ 
             filtered: []
         });
-        this.activateSaveButton();
+        this._activateSaveButton();
         return val.target.value;
       }
 
-      activateSaveButton = (event) => {
+      _activateSaveButton = (event) => {
         if (this.props.saveButton) {
             console.log("setSaveButton: ", this.props.saveButton, " \t event: ", event);
             this.props.setSaveButton();
@@ -81,21 +80,6 @@ class ContractorAttributes extends Component{
         }
     }
 
-    _returnDomainDropdowns(domainName){
-        let items = [];
-        this.props.domains.forEach(function(_domain){
-            if (!(_domain[domainName] === undefined || _domain[domainName] === null)){
-                Object.keys(_domain[domainName]).forEach(function(key){
-                    var _key = Object.keys(_domain[domainName][key])[0];
-                    var _val = _domain[domainName][key][_key];
-                    items.push( <MenuItem key ={_key} value={_key} >{ _val}</MenuItem>);
-                })
-                
-            } else {
-            }
-        });
-        return items;
-    }
 
     _getAttribute(fld) {
         return this.props.selectedContractor[fld] ? this.props.selectedContractor[fld]: ''

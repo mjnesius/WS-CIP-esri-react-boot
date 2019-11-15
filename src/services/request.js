@@ -78,7 +78,6 @@ export function makeRequest(params) {
     const headers = getHeaders(params.isFormData);
     console.log("headers\t", JSON.stringify(headers));
     
-    console.log("\t2. headers\t", JSON.stringify(headers));
     const options = {
       method: params.method || "get",
       headers

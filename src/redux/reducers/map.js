@@ -179,7 +179,7 @@ export const actions = {
       url: tableUrl
     }
   }),
-  getEmployees: (tableUrl) => ({
+  getEmployees: (tableUrl) => ({ //triggers a saga, then SET_EMPLOYEES action
     type: types.GET_EMPLOYEES,
     payload: {
       url: tableUrl
