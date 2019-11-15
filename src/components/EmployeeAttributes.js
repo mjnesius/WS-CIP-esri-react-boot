@@ -248,12 +248,22 @@ class EmployeeAttributes extends React.Component {
           </Form>
         </Row>
         <Row style={{ flex: '1 1 100%' }}>
-          <ReactTable defaultPageSize={this.props.employees.length} className="-striped -highlight" columns={columns} data={this.props.employees}
+          <ReactTable defaultPageSize={this.props.employees.length} 
+            className="-striped -highlight" 
+            columns={columns} data={this.props.employees}
             defaultFilterMethod={(filter, row) => {
               const id = filter.pivotId || filter.id
               return row[id] !== undefined ? String(row[id]).toUpperCase().indexOf(String(filter.value).toUpperCase()) > -1 : true
-            }
-            }
+            }}
+            showPagination={false} showPageSizeOptions={false} showPaginationBottom={false}
+            minRows="0"
+            filterable
+            filtered={this.state.filtered}
+
+            onFilteredChange={filtered => {
+              console.log("filtered: ", filtered)
+              this.setState({ filtered })
+            }}
             getTdProps={(state, rowInfo, column, instance) => {
               return {
                 onDoubleClick: (e, handleOriginal) => {

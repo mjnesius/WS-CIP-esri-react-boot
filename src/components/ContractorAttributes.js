@@ -97,9 +97,12 @@ class ContractorAttributes extends Component{
     }
 
     render() {
+        var skipFields = [ "OBJECTID", "Comments", "Contractor_ID"];
         const filterCol = this.props.fields.filter (col => {
-            return col.name !== "OBJECTID"
+            return skipFields.indexOf(col.name) === -1;
+        
         })
+        
         const columns = filterCol.map((fld) => {
           //console.log(fld.name);
           var _filter =  fld.name.toUpperCase().indexOf("COST") > -1 ? false : true;
@@ -237,6 +240,18 @@ class ContractorAttributes extends Component{
                                             </FormControl>
                                         </Col>
                                     </Row>
+                                    <Row >
+                                        <Col sm="4" md="2" className="d-flex align-items-left" >
+                                            <FormControl fullWidth>
+                                                <FormControlLabel style={{ minWidth: '160px', textAlign: 'left', paddingLeft: '5' }}>Comments</FormControlLabel>
+                                                <TextField id="Comments" value={this._getAttribute('Comments')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth type="textarea"
+                                                    style={{ resize: 'both', maxHeight: '100%', height: '36px' }}
+                                                >
+                                                </TextField>
+                                            </FormControl>
+                                        </Col>
+                                        </Row>
                                 </PanelText>
                             </Panel>
                         </Row>

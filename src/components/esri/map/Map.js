@@ -44,6 +44,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 //import PencilSquareIcon from 'calcite-ui-icons-react/PencilSquareIcon';
 //import FilterComponent from '../../Filters';
 import TableIcon from 'calcite-ui-icons-react/TableIcon';
+import { truncate } from 'fs';
 const Container = styled.div`
   height: 100%;
   width: 100%;
@@ -82,7 +83,8 @@ class Map extends Component {
      super(props);
      //set this binding to the class; note: arrow functions do not have their own context
      this.setupEventHandlers = this.setupEventHandlers.bind(this);//executeIdentifyTask
-     this.executeIdentifyTask = this.executeIdentifyTask.bind(this);
+     this.executeIdentifyTask = this.executeIdentifyTask.bind(this);//showPopup
+     this.showPopup = this.showPopup.bind(this);
      //this.toggleAttributes = this.props.toggleAttributes.bind(this);
      //this.editDetails = this.editDetails.bind(this);
      //this.editGeom = this.editGeom.bind(this);
@@ -379,6 +381,24 @@ class Map extends Component {
 
     });
   }
+
+   showPopup = (response) => {
+    // features: response,
+    //     location: event.mapPoint
+    console.log("showPopup(response): ", response);
+
+
+    if (response.length > 0) {
+      this.view.popup.open({
+        features : response,
+        featureNavigationEnabled : true,
+        defaultPopupTemplateEnabled: true,
+        dockEnabled : true
+      })
+    } 
+    document.getElementById("map-view-container").style.cursor = "default";
+  }
+
   executeIdentifyTask = (event) => {
     loadModules([ 'esri/tasks/IdentifyTask',
     'esri/tasks/support/IdentifyParameters', 'esri/tasks/GeometryService', 
@@ -400,17 +420,17 @@ class Map extends Component {
         75,76,77,78,79,80,81,82,83];
       idParams.width = this.view.width;
       idParams.height = this.view.height;
-      idParams.returnGeometry = true;
+      //idParams.returnGeometry = true;
       // Set the geometry to the location of the view click
       console.log("event: ", event, " url: ", this.props.config.identifyURL[0])
       console.log("mapPoint: ", event.mapPoint);
-      const cs1 = new SpatialReference({
-        wkid: 3857 //web mercator
-      });
+      // const cs1 = new SpatialReference({
+      //   wkid: 3857 //web mercator
+      // });
       
-      const cs2 = new SpatialReference({
-        wkid: 2883 // state plane
-      });
+      // const cs2 = new SpatialReference({
+      //   wkid: 2883 // state plane
+      // });
 
       //params.geometry = event.mapPoint;
       
@@ -425,104 +445,26 @@ class Map extends Component {
               return results.map(function(result) {
                 var feature = result.feature;
                 var layerName = result.layerName;
-
+                console.log("result.layername: ", result.layerName)
+                console.log("feature: ", feature)
+                console.log("feature.attributes: ", feature.attributes)
                 feature.attributes.layerName = layerName;
                 feature.popupTemplate = {
                   // autocasts as new PopupTemplate()
                   title: layerName,
-                  outFields: ["*"]
+                  content: '<p>' + JSON.stringify(feature.attributes) + "</p>"
                 }
                 
                 return feature;
               });
-            })
-            .then(showPopup); // Send the array of features to showPopup()
+            }).then(this.showPopup);
 
-          // Shows the results of the Identify in a popup once the promise is resolved
-          function showPopup(response) {
-            // features: response,
-            //     location: event.mapPoint
-            console.log("showPopup(response): ", response);
-            if (response.length > 0) {
-              this.view.popup.location = event.mapPoint;
-              this.view.popup.features = response;
-              this.view.popup.featureNavigationEnabled = true;
-              this.view.popup.autoOpenEnabled = true;
-              this.view.popup.autoOpenEnabled = true;
-              this.view.popup.visible = true;
-            }
-            document.getElementById("map-view-container").style.cursor = "auto";
-          }
-      // var geomSer = new GeometryService();
-      // geomSer.url = this.props.config.geomServiceURL[0];
-      // var pparamsExtent = new ProjectParameters({
-      //   geometries: [this.view.extent],
-      //   outSpatialReference: cs2
-      // });
-      
-      // geomSer.project(pparamsExtent).then( (resp) => {
-      //   console.log("extent: ", this.view.extent);
-      //   console.log("projected extent: ", resp);
-      //   var pparamsPoint = new ProjectParameters({
-      //     geometries: [event.mapPoint],
-      //     outSpatialReference: cs2
-      //   });
-      //   idParams.mapExtent = resp[0];
-
-      //   geomSer.project(pparamsPoint).then((resp) => {
-      //     console.log("projected point resp: ", resp);
-      //     idParams.geometry = resp[0];
-      //     identifyTask
-      //       .execute(idParams)
-      //       .then(function (response) {
-      //         var results = response.results;
-      //         console.log("results: ", results);
-
-      //         return results.map(function (result) {
-      //           var feature = result.feature;
-      //           var layerName = result.layerName;
-      //           console.log("ID'd layer name: ", layerName)
-
-      //           feature.attributes.layerName = layerName;
-      //           feature.popupTemplate = {
-      //             // autocasts as new PopupTemplate()
-      //             title: layerName,
-      //             outFields: ["*"]
-      //           };
-
-      //           return feature;
-      //         });
-      //       })
-      //       .then(showPopup); // Send the array of features to showPopup()
-
-      //     // Shows the results of the Identify in a popup once the promise is resolved
-      //     function showPopup(response) {
-      //       console.log("popup for feature: ", response)
-      //       // highlightEnabled: true,
-      //       //     view: this.view,
-      //       //     autoCloseEnabled: true,
-      //       //     container: document.getElementById("map-view-container"),
-      //       //     featureNavigationEnabled: true,
-      //       //     visible: true
-      //       if (response.length > 0) {
-      //         this.view.popup.open({
-      //           features: response,
-      //           location: event.mapPoint,
-      //           fetchFeatures: true
-                
-
-      //         });
-      //       }
-      //       document.getElementById("map-view-container").style.cursor = "auto";
-      //     }
-      //   }
-
-      // );
-      //});
-      
+            
   })}
 
   setupEventHandlers = (view, map) => {
+    // Shows the results of the Identify in a popup once the promise is resolved
+    
     console.log("setupEventHandlers()\tprops\t", this.props);
     view.on("click", this.executeIdentifyTask);
 
