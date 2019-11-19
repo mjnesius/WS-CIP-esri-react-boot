@@ -1,13 +1,4 @@
-// Copyright 2019 Esri
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//     http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.​
+// Based on Esri's esri-react-boot template: https://github.com/Esri/esri-react-boot
 
 // React
 import React, { Component } from 'react';
@@ -51,7 +42,7 @@ class App extends Component {
   }
 
   render() {
-    // We'll use these to determine what state the app is in
+    // The various startup functions set Redux state props
     const configLoaded = this.props.config.loaded;
     const authTried = this.props.auth.loaded;
     // We don't need to authenticate if there is no portalUrl

@@ -102,7 +102,7 @@ class ContractorAttributes extends Component{
             return skipFields.indexOf(col.name) === -1;
         
         })
-        
+
         const columns = filterCol.map((fld) => {
           //console.log(fld.name);
           var _filter =  fld.name.toUpperCase().indexOf("COST") > -1 ? false : true;
@@ -124,7 +124,7 @@ class ContractorAttributes extends Component{
                                 <PanelTitle style={{ textAlign: 'left' }}>Company Info.</PanelTitle>
                                 <PanelText className="mx-2">
                                     <Row >
-                                        <Col sm="4" md="2" className="d-flex align-items-left" >
+                                        <Col sm="4"  className="d-flex align-items-left" >
                                             <FormControl fullWidth>
                                                 <FormControlLabel style={{ minWidth: '160px', textAlign: 'left', paddingLeft: '5' }}>Company Name</FormControlLabel>
                                                 <TextField id="Contractor" value={this._getAttribute('Contractor')}

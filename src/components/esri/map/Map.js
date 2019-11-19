@@ -1,13 +1,4 @@
-// Copyright 2019 Esri
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//     http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.​
+// Based on Esri's esri-react-boot template.​
 
 // NOTE
 // This is a "special" react component that does not strictly play by
@@ -44,7 +35,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 //import PencilSquareIcon from 'calcite-ui-icons-react/PencilSquareIcon';
 //import FilterComponent from '../../Filters';
 import TableIcon from 'calcite-ui-icons-react/TableIcon';
-import { truncate } from 'fs';
+//import { truncate } from 'fs';
 const Container = styled.div`
   height: 100%;
   width: 100%;
@@ -85,11 +76,8 @@ class Map extends Component {
      this.setupEventHandlers = this.setupEventHandlers.bind(this);//executeIdentifyTask
      this.executeIdentifyTask = this.executeIdentifyTask.bind(this);//showPopup
      this.showPopup = this.showPopup.bind(this);
-     //this.toggleAttributes = this.props.toggleAttributes.bind(this);
-     //this.editDetails = this.editDetails.bind(this);
-     //this.editGeom = this.editGeom.bind(this);
      console.log(this.props);
-     }
+  }
 
   componentDidMount() {
     this.startup(
@@ -106,7 +94,7 @@ class Map extends Component {
   componentDidUpdate(){
     console.log(" this.props.defExp:   ", this.props.defExp);
     
-
+    // refactor to set the filter using a Saga that calls a Map action creator
     if (this.props.fields > 0) {
       var lyr = this.map.layers.getItemAt(0);
       console.log(lyr.definitionExpression, " vs ", this.props.defExp)
@@ -124,17 +112,6 @@ class Map extends Component {
       }
      }
   }
-
-  editGeom = () => {
-    console.log("editGeom()");
-    //startUpdateWorkflowAtFeatureEdit(feature) of the esri-widgets-Editor-EditorViewModel
-  }
-
-  editDetails = () =>{
-    console.log("editDetails"); 
-    this.toggleAttributes();
-  };
-  
   
 
   // ESRI JSAPI
@@ -143,9 +120,6 @@ class Map extends Component {
       response => {
         this.init(response);
         this.setupWidgetsAndLayers();
-        //console.log("this.setupEventHandlers(this.map)");
-        //console.log("this.view: ", typeof(this.view));
-        //.log("this.finishedLoading();");
         this.finishedLoading();
         this.setupEventHandlers(this.view, this.map);
       },
@@ -170,10 +144,9 @@ class Map extends Component {
 
   setupWidgetsAndLayers = () => {
     loadModules(['esri/layers/FeatureLayer','esri/widgets/Editor', 'esri/widgets/Expand',
-    'esri/widgets/BasemapGallery', 'esri/widgets/LayerList', 'esri/tasks/IdentifyTask',
-    'esri/tasks/support/IdentifyParameters'
+    'esri/widgets/BasemapGallery', 'esri/widgets/LayerList'
     ])
-    .then( ([ FeatureLayer, Editor, Expand, BasemapGallery, LayerList, IdentifyTask, IdentifyParameters
+    .then( ([ FeatureLayer, Editor, Expand, BasemapGallery, LayerList
     ], containerNode) => {
       var popTemplate = {
         title: "Water-Sewer CIP",
@@ -215,6 +188,8 @@ class Map extends Component {
         id: "projects",
         popupTemplate: popTemplate
       });
+
+      //map and view are saved as a component reference during init, so use 'this'
       this.map.add(featureLayer);
 
       var basemapGallery  = new BasemapGallery({
@@ -229,7 +204,6 @@ class Map extends Component {
       });
 
       this.view.ui.add(expandBasemap, {position :"top-right"});
-
 
       var expandLegend = new Expand({
         expandIconClass: "esri-icon-layers",
@@ -333,8 +307,8 @@ class Map extends Component {
         this.featureLayer = featureLayer;  
         
       });
-      featureLayer.on("edits",  function(event) {
 
+      featureLayer.on("edits",  function(event) {
         const extractObjectId = function(result) {
           return result.objectId;
         };
@@ -349,8 +323,6 @@ class Map extends Component {
         console.log("deletedFeatures: ", deletes.length, deletes);
         getFeatures(featureLayer);
       });
-      
-
       
       const zoomToLayer = (layer) => {
         return layer.queryExtent()
@@ -463,7 +435,6 @@ class Map extends Component {
   })}
 
   setupEventHandlers = (view, map) => {
-    // Shows the results of the Identify in a popup once the promise is resolved
     
     console.log("setupEventHandlers()\tprops\t", this.props);
     view.on("click", this.executeIdentifyTask);
