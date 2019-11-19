@@ -183,9 +183,9 @@ class ProjectDetails extends React.Component {
             console.log("setSaveButton: ", this.props.saveButton, " \t event: ", event, "\n\tvalidation: ", this.state.validation);
             this.props.setSaveButton();
             console.log("\t new prop: ", this.props.saveButton)
-        } else {
-            this.props.setSaveButton("deactivate");
-        }
+         } //else {
+        //     this.props.setSaveButton("deactivate");
+        // }
     }
     
     _returnDomainDropdowns(_field){
@@ -242,14 +242,14 @@ class ProjectDetails extends React.Component {
             });   
         } else if (_type.toLowerCase().indexOf('inspector') > -1){
             sortedObjs = _.sortBy( this.props.optionsInspectors, 'Name' );
-            sortedObjs.forEach(function(_man){
-                items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
+            sortedObjs.forEach(function(_insp){
+                items.push( <MenuItem key ={_insp.OBJECTID} value={_insp.Name} >{ _insp.Name}</MenuItem>)
             });   
         }
         else if (_type.toLowerCase().indexOf('contact') > -1){
             sortedObjs = _.sortBy( this.props.optionsContacts, 'Name' );
-            sortedObjs.forEach(function(_man){
-                items.push( <MenuItem key ={_man.OBJECTID} value={_man.Name} >{ _man.Name}</MenuItem>)
+            sortedObjs.forEach(function(_contact){
+                items.push( <MenuItem key ={_contact.OBJECTID} value={_contact.Name} >{ _contact.Name}</MenuItem>)
             });   
         }
         else if (_type.toLowerCase().indexOf('contract') > -1){
@@ -257,8 +257,8 @@ class ProjectDetails extends React.Component {
             // this.props.contractors.forEach(function(_man){
             //     items.push( <MenuItem key ={_man.OBJECTID} value={_man.Contractor} >{ _man.Contractor}</MenuItem>)
             // });  
-            sortedObjs.forEach(function(_man){
-                items.push( <MenuItem key ={_man.OBJECTID} value={_man.Contractor} >{ _man.Contractor}</MenuItem>)
+            sortedObjs.forEach(function(_contract){
+                items.push( <MenuItem key ={_contract.OBJECTID} value={_contract.Contractor} >{ _contract.Contractor}</MenuItem>)
             });  
         }
         return items;
@@ -439,7 +439,10 @@ class ProjectDetails extends React.Component {
                                         <StyledFormControl horizontal /* error={validation.Contact_Phone.isInvalid} */  >
                                             <StyledProjectLabel >Contact Phone #</StyledProjectLabel>
                                             <TextField fullWidth id='ContactPhone' type="text"
-                                                value={this._getRelatedAttribute('contact', 'CellNumber', 'Name', this._getAttribute('Contact'))}
+                                                value={this._getRelatedAttribute('contact', 'CellNumber', 'Name', this._getAttribute('Contact')) ?
+                                                    this._getRelatedAttribute('contact', 'CellNumber', 'Name', this._getAttribute('Contact')) :
+                                                    this._getRelatedAttribute('contact', 'OfficeNumber', 'Name', this._getAttribute('Contact'))
+                                                }
                                                 onChange={this._handleChangeEvent.bind(this)}
                                                 disabled={true} 
                                                 onDoubleClick={ (e) => {
@@ -492,7 +495,10 @@ class ProjectDetails extends React.Component {
                                                 <StyledFormControl horizontal /* error={validation.Contact_Phone.isInvalid} */  >
                                                     <StyledProjectLabel >Contractor Phone #</StyledProjectLabel>
                                                     <TextField fullWidth id='ContractorPhone' type="text"
-                                                        value={this._getRelatedAttribute('Contractor', 'Contact_Number', 'Contractor', this._getAttribute('Contractor'))}
+                                                        value={this._getRelatedAttribute('Contractor', 'Contact_Number', 'Contractor', this._getAttribute('Contractor')) ? 
+                                                            this._getRelatedAttribute('Contractor', 'Contact_Number', 'Contractor', this._getAttribute('Contractor')) :
+                                                            this._getRelatedAttribute('Contractor', 'Contact_Cell', 'Contractor', this._getAttribute('Contractor'))
+                                                        }
                                                         onChange={this._handleChangeEvent.bind(this)}
                                                         onDoubleClick={ (e) => {
                                                             this._navToRelatedItem('contractor', this._getAttribute('Contractor') )
@@ -531,7 +537,10 @@ class ProjectDetails extends React.Component {
                                                 <StyledFormControl horizontal /* error={validation.Contact_Phone.isInvalid} */  >
                                                     <StyledProjectLabel >Inspector Phone #</StyledProjectLabel>
                                                     <TextField fullWidth id='InspectorPhone' type="text"
-                                                        value={this._getRelatedAttribute('Inspector', 'CellNumber', 'Name', this._getAttribute('Inspector'))}
+                                                        value={this._getRelatedAttribute('Inspector', 'CellNumber', 'Name', this._getAttribute('Inspector'))?
+                                                            this._getRelatedAttribute('Inspector', 'CellNumber', 'Name', this._getAttribute('Inspector')) :
+                                                            this._getRelatedAttribute('Inspector', 'OfficeNumber', 'Name', this._getAttribute('Inspector'))
+                                                        }
                                                         onChange={this._handleChangeEvent.bind(this)}
                                                         onDoubleClick={ (e) => {
                                                             this._navToRelatedItem('employee', this._getAttribute('Inspector') )

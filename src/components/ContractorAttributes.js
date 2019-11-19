@@ -25,7 +25,6 @@ import Form, {
     FormControl,
     FormControlLabel
 } from 'calcite-react/Form';
-import { MenuItem } from 'calcite-react/Menu';
 import TextField from 'calcite-react/TextField';
 
 // Import React Table
@@ -69,11 +68,11 @@ class ContractorAttributes extends Component{
         this.setState({ 
             filtered: []
         });
-        this.activateSaveButton();
+        this._activateSaveButton();
         return val.target.value;
       }
 
-      activateSaveButton = (event) => {
+      _activateSaveButton = (event) => {
         if (this.props.saveButton) {
             console.log("setSaveButton: ", this.props.saveButton, " \t event: ", event);
             this.props.setSaveButton();
@@ -81,21 +80,6 @@ class ContractorAttributes extends Component{
         }
     }
 
-    _returnDomainDropdowns(domainName){
-        let items = [];
-        this.props.domains.forEach(function(_domain){
-            if (!(_domain[domainName] === undefined || _domain[domainName] === null)){
-                Object.keys(_domain[domainName]).forEach(function(key){
-                    var _key = Object.keys(_domain[domainName][key])[0];
-                    var _val = _domain[domainName][key][_key];
-                    items.push( <MenuItem key ={_key} value={_key} >{ _val}</MenuItem>);
-                })
-                
-            } else {
-            }
-        });
-        return items;
-    }
 
     _getAttribute(fld) {
         return this.props.selectedContractor[fld] ? this.props.selectedContractor[fld]: ''
@@ -113,9 +97,12 @@ class ContractorAttributes extends Component{
     }
 
     render() {
+        var skipFields = [ "OBJECTID", "Comments", "Contractor_ID"];
         const filterCol = this.props.fields.filter (col => {
-            return col.name !== "OBJECTID"
+            return skipFields.indexOf(col.name) === -1;
+        
         })
+
         const columns = filterCol.map((fld) => {
           //console.log(fld.name);
           var _filter =  fld.name.toUpperCase().indexOf("COST") > -1 ? false : true;
@@ -137,7 +124,7 @@ class ContractorAttributes extends Component{
                                 <PanelTitle style={{ textAlign: 'left' }}>Company Info.</PanelTitle>
                                 <PanelText className="mx-2">
                                     <Row >
-                                        <Col sm="4" md="2" className="d-flex align-items-left" >
+                                        <Col sm="4"  className="d-flex align-items-left" >
                                             <FormControl fullWidth>
                                                 <FormControlLabel style={{ minWidth: '160px', textAlign: 'left', paddingLeft: '5' }}>Company Name</FormControlLabel>
                                                 <TextField id="Contractor" value={this._getAttribute('Contractor')}
@@ -253,6 +240,18 @@ class ContractorAttributes extends Component{
                                             </FormControl>
                                         </Col>
                                     </Row>
+                                    <Row >
+                                        <Col sm="4" md="2" className="d-flex align-items-left" >
+                                            <FormControl fullWidth>
+                                                <FormControlLabel style={{ minWidth: '160px', textAlign: 'left', paddingLeft: '5' }}>Comments</FormControlLabel>
+                                                <TextField id="Comments" value={this._getAttribute('Comments')}
+                                                    onChange={this._handleChangeEvent.bind(this)} fullWidth type="textarea"
+                                                    style={{ resize: 'both', maxHeight: '100%', height: '36px' }}
+                                                >
+                                                </TextField>
+                                            </FormControl>
+                                        </Col>
+                                        </Row>
                                 </PanelText>
                             </Panel>
                         </Row>

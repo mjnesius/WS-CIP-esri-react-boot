@@ -1,13 +1,4 @@
-// Copyright 2019 Esri
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//     http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.​
+// Based on Esri's esri-react-boot template.​
 
 // NOTE
 // This is a "special" react component that does not strictly play by
@@ -44,7 +35,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 //import PencilSquareIcon from 'calcite-ui-icons-react/PencilSquareIcon';
 //import FilterComponent from '../../Filters';
 import TableIcon from 'calcite-ui-icons-react/TableIcon';
-
+//import { truncate } from 'fs';
 const Container = styled.div`
   height: 100%;
   width: 100%;
@@ -73,12 +64,7 @@ var popupEditorAction = {
   className: "esri-icon-edit"
 };
 
-var geometryEditorAction = {
-  title: "Edit Geometry",
-  id: "edit-geometry",
-  className: "esri-icon-polyline"
-};
-var actionsButtons = [openDetailsAction, popupEditorAction, geometryEditorAction]
+var actionsButtons = [openDetailsAction, popupEditorAction]
 
 
 
@@ -87,12 +73,11 @@ class Map extends Component {
    constructor (props) {
      super(props);
      //set this binding to the class; note: arrow functions do not have their own context
-     this.setupEventHandlers = this.setupEventHandlers.bind(this);
-     //this.toggleAttributes = this.props.toggleAttributes.bind(this);
-     //this.editDetails = this.editDetails.bind(this);
-     //this.editGeom = this.editGeom.bind(this);
+     this.setupEventHandlers = this.setupEventHandlers.bind(this);//executeIdentifyTask
+     this.executeIdentifyTask = this.executeIdentifyTask.bind(this);//showPopup
+     this.showPopup = this.showPopup.bind(this);
      console.log(this.props);
-     }
+  }
 
   componentDidMount() {
     this.startup(
@@ -109,8 +94,8 @@ class Map extends Component {
   componentDidUpdate(){
     console.log(" this.props.defExp:   ", this.props.defExp);
     
-
-    if (this.map.layers.length > 0) {
+    // refactor to set the filter using a Saga that calls a Map action creator
+    if (this.props.fields > 0) {
       var lyr = this.map.layers.getItemAt(0);
       console.log(lyr.definitionExpression, " vs ", this.props.defExp)
       if (!(lyr.definitionExpression === this.props.defExp)) {
@@ -127,17 +112,6 @@ class Map extends Component {
       }
      }
   }
-
-  editGeom = () => {
-    console.log("editGeom()");
-    //startUpdateWorkflowAtFeatureEdit(feature) of the esri-widgets-Editor-EditorViewModel
-  }
-
-  editDetails = () =>{
-    console.log("editDetails"); 
-    this.toggleAttributes();
-  };
-  
   
 
   // ESRI JSAPI
@@ -146,9 +120,6 @@ class Map extends Component {
       response => {
         this.init(response);
         this.setupWidgetsAndLayers();
-        //console.log("this.setupEventHandlers(this.map)");
-        //console.log("this.view: ", typeof(this.view));
-        //.log("this.finishedLoading();");
         this.finishedLoading();
         this.setupEventHandlers(this.view, this.map);
       },
@@ -173,36 +144,53 @@ class Map extends Component {
 
   setupWidgetsAndLayers = () => {
     loadModules(['esri/layers/FeatureLayer','esri/widgets/Editor', 'esri/widgets/Expand',
-    'esri/widgets/BasemapGallery'
+    'esri/widgets/BasemapGallery', 'esri/widgets/LayerList'
     ])
-    .then( ([ FeatureLayer, Editor, Expand, BasemapGallery
+    .then( ([ FeatureLayer, Editor, Expand, BasemapGallery, LayerList
     ], containerNode) => {
       var popTemplate = {
         title: "Water-Sewer CIP",
-        content: "{Project_Name}",
+        content: [{
+          type: "fields",
+          fieldInfos: [{
+            fieldName: "Project_Name",
+            label: "Project Name"
+          }, {
+            fieldName: "Project_Type",
+            label: "Project Type"
+          },{
+            fieldName: "Status",
+            label: "Status"
+          },{
+            fieldName: "Project_Manager",
+            label: "Project Manager"
+          },{
+            fieldName: "Proposed_Year",
+            label: "Proposed Year"
+          },{
+            fieldName: "Contractor",
+            label: "Contractor"
+          },{
+            fieldName: "Inspector",
+            label: "Inspector"
+          },{
+            fieldName: "Contact",
+            label: "Contact"
+          }
+          ]
+        }],
         actions: actionsButtons
       }
       const featureLayer = new FeatureLayer({
         outFields: ["*"],
-        portalItem: { // autocasts as new PortalItem()
-          id: "10c79e631ce84ca19e5cdb7bb118262b"
-        },
+        url: this.props.config.featureURLs[0],
         title: "WaterSewerPM",
         id: "projects",
         popupTemplate: popTemplate
       });
+
+      //map and view are saved as a component reference during init, so use 'this'
       this.map.add(featureLayer);
-      // featureLayer.when(function () {
-      //   console.log("layer relationships", featureLayer.relationships.length);
-      
-      //   featureLayer.relationships.forEach(function (relationship) {
-      //     console.log("relationship id:", relationship.id)
-      //     console.log("relationship cardinality:", relationship.cardinality)
-      //     console.log("relationship key field:", relationship.keyField)
-      //     console.log("relationship name:", relationship.name)
-      //     console.log("relationship relatedTableId:", relationship.relatedTableId)
-      //   });
-      // });
 
       var basemapGallery  = new BasemapGallery({
         view: this.view
@@ -217,18 +205,65 @@ class Map extends Component {
 
       this.view.ui.add(expandBasemap, {position :"top-right"});
 
+      var expandLegend = new Expand({
+        expandIconClass: "esri-icon-layers",
+        view: this.view,
+        content: new LayerList({
+            view: this.view
+          }),
+        expandTooltip: "Expand Legend"
+      });
+
+      this.view.ui.add(expandLegend, {position :"top-right"});
+
       const editor = new Editor({
         view: this.view,
         container: containerNode,
-
+        id: "editor",
+        layerInfos: [{
+          layer: featureLayer,
+          fieldConfig: [{
+              name: "Project_Name",
+              label: "Project Name"
+            }, {
+              name: "Project_Type",
+              label: "Project Type"
+            }, {
+              name: "Status",
+              label: "Status"
+            }, {
+              name: "Project_Manager",
+              label: "Project Manager"
+            }, {
+              name: "Proposed_Year",
+              label: "Proposed Year"
+            }, {
+              name: "Contractor",
+              label: "Contractor"
+            }, {
+              name: "Inspector",
+              label: "Inspector"
+            }, {
+              name: "Contact",
+              label: "Contact"
+            }
+          ],
+          enabled:true,
+          addEnabled: true,
+          updateEnabled: true,
+          deleteEnabled: true
+        }]
       });
+      this.editor = editor;
 
       var expandEditor = new Expand({
         expandIconClass: "esri-icon-edit",
         view: this.view,
         content: editor,
-        expandTooltip: "Expand Edit Widget"
+        expandTooltip: "Expand Edit Widget",
+        id: "editorExpand"
       });
+      this.expandEditor = expandEditor;
       
       this.view.ui.add(expandEditor, "top-right"); 
       const renderTooltip = props => (
@@ -264,17 +299,16 @@ class Map extends Component {
       btn.setAttribute("id", "projectAttributes");
       this.view.ui.add(btn, "top-right");
       ReactDOM.render(butt, document.getElementById("projectAttributes"));
-
+      
       featureLayer.when(function() {
         //featureLayer.definitionExpression = createDefinitionExpression("");
         zoomToLayer(featureLayer);
         getFeatures(featureLayer);
-        this.featureLayer = featureLayer;
-        
+        this.featureLayer = featureLayer;  
         
       });
-      featureLayer.on("edits",  function(event) {
 
+      featureLayer.on("edits",  function(event) {
         const extractObjectId = function(result) {
           return result.objectId;
         };
@@ -289,23 +323,7 @@ class Map extends Component {
         console.log("deletedFeatures: ", deletes.length, deletes);
         getFeatures(featureLayer);
       });
-
-      // function createDefinitionExpression(subExpression) {
-      //    const baseExpression =
-      //      "( 1=1 )";
-      //    var _stat = typeof store.statuses !== 'undefined' ? store.selectedStatus : "";
-         
-      //    var _yr =  store.selectedYear ? store.selectedYear : "";
-      //    var _man = store.selectedManager ? store.selectedManager : "";
-      //    subExpression = "Status Like '%" + _stat
-      //        + "%' AND Project_Manager Like '%" +_man
-      //        + "%' AND Proposed_Year Like '%" + _yr +"%'";
-        
-      //   //console.log("def expression ", baseExpression + " AND (" + subExpression +")")
-      //   return subExpression ? baseExpression + " AND (" + subExpression +
-      //     ")" : baseExpression;
-      // }
-
+      
       const zoomToLayer = (layer) => {
         return layer.queryExtent()
           .then((response) => {
@@ -336,51 +354,112 @@ class Map extends Component {
     });
   }
 
+   showPopup = (response) => {
+    // features: response,
+    //     location: event.mapPoint
+    console.log("showPopup(response): ", response);
+
+
+    if (response.length > 0) {
+      this.view.popup.open({
+        features : response,
+        featureNavigationEnabled : true,
+        defaultPopupTemplateEnabled: true,
+        dockEnabled : true
+      })
+    } 
+    document.getElementById("map-view-container").style.cursor = "default";
+  }
+
+  executeIdentifyTask = (event) => {
+    loadModules([ 'esri/tasks/IdentifyTask',
+    'esri/tasks/support/IdentifyParameters', 'esri/tasks/GeometryService', 
+    'esri/tasks/support/ProjectParameters', 'esri/geometry/SpatialReference'
+    ])
+    .then( ([  IdentifyTask, IdentifyParameters, GeometryService, ProjectParameters, SpatialReference
+    ]) => { 
+      var identifyTask, idParams;
+      // Create identify task for the specified map service
+      identifyTask = new IdentifyTask(this.props.config.identifyURL[0]);
+
+      // Set the parameters for the Identify
+      idParams = new IdentifyParameters();
+      idParams.tolerance = 3;
+      idParams.layerOption = "top";
+      idParams.layerIds = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,
+        23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,
+        49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,
+        75,76,77,78,79,80,81,82,83];
+      idParams.width = this.view.width;
+      idParams.height = this.view.height;
+      //idParams.returnGeometry = true;
+      // Set the geometry to the location of the view click
+      console.log("event: ", event, " url: ", this.props.config.identifyURL[0])
+      console.log("mapPoint: ", event.mapPoint);
+      // const cs1 = new SpatialReference({
+      //   wkid: 3857 //web mercator
+      // });
+      
+      // const cs2 = new SpatialReference({
+      //   wkid: 2883 // state plane
+      // });
+
+      //params.geometry = event.mapPoint;
+      
+      document.getElementById("map-view-container").style.cursor = "wait";
+      idParams.geometry = event.mapPoint;
+      idParams.mapExtent = this.view.extent;
+      identifyTask
+            .execute(idParams)
+            .then(function(response) {
+              var results = response.results;
+
+              return results.map(function(result) {
+                var feature = result.feature;
+                var layerName = result.layerName;
+                console.log("result.layername: ", result.layerName)
+                console.log("feature: ", feature)
+                console.log("feature.attributes: ", feature.attributes)
+                feature.attributes.layerName = layerName;
+                feature.popupTemplate = {
+                  // autocasts as new PopupTemplate()
+                  title: layerName,
+                  content: '<p>' + JSON.stringify(feature.attributes) + "</p>"
+                }
+                
+                return feature;
+              });
+            }).then(this.showPopup);
+
+            
+  })}
+
   setupEventHandlers = (view, map) => {
-    console.log("setupEventHandlers()\tprops\t", this.props);
-    //console.log("setupEventHandlers()\view\t", view);
-    //this popup.on function is messing up the "this" context
     
+    console.log("setupEventHandlers()\tprops\t", this.props);
+    view.on("click", this.executeIdentifyTask);
 
     view.popup.on("trigger-action",  (event) => {
-      // If the zoom-out action is clicked, fire the zoomOut() function
       console.log(event);
       console.log(event.action);
-      if (event.action.id === "edit-geometry") {
-        this.editGeom();
-      }
       if (event.action.id === "edit-popup") {
-        console.log("this.view: ", view);
-        view.ui.editor.viewModel.startUpdateWorkflowAtFeatureSelection()
-        //editPopup(view.popup);
+        if (!this.editor.viewModel.activeWorkFlow) {
+          this.view.popup.visible = false;
+          // Call the Editor update feature edit workflow
+          this.expandEditor.expand();
+          this.editor.startUpdateWorkflowAtFeatureEdit(
+            this.view.popup.selectedFeature
+          );
+          this.view.popup.spinnerEnabled = false;
+        }
       }
 
       if (event.action.id === "edit-details") {
-        //console.log("edit-details()");
-        console.log("edit-details() type: ");
         this.props.toggleAttributes();
-        //this.editDetails();
         var selected = {};
         selected['feature'] = view.popup.selectedFeature['attributes'];
         this.props.selectFeature(selected['feature']);
         this.props.setPanel("project_details");
-
-        // var prom = new Promise (() => {
-        //   var selected = {};
-        //   console.log("view.popup.selectedFeature: ", JSON.stringify(view.popup.selectedFeature));
-        //   selected['feature'] = view.popup.selectedFeature['attributes'];
-        //   console.log("selected['feature']: ", JSON.stringify(selected['feature']));
-        //   this.props.selectFeature(selected['feature']);
-        // });
-        // prom.then(res => {
-        //   console.log("prom.then")
-        //   this.props.setPanel("project_details")
-        // }).catch(console.error('prom error'));
-        // prom.then(() => {
-        //   this.props.setPanel("project_details");
-        // })
-        // need to TOGGLE_ATTRIBUTES action, SELECT_FEATURE acction with feature payloadthen SET_PANEL action with "project_details"
-        //editPopup(view.popup);
       }
     });
 

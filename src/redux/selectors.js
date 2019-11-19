@@ -63,6 +63,7 @@ const parseProjects = (state) => {
 
 const parseContractors = (state) => {
     var _data = [];
+    if (state.map.contractors['features'] === undefined) return _data;
     state.map.contractors['features'].forEach((con) => {
         _data.push(con['attributes']);
     })
@@ -71,6 +72,8 @@ const parseContractors = (state) => {
 
 const parseEmployees = (state, _type ) => {
     var _data = [];
+    if (state.map.employees['features'] === undefined) return _data;
+
     if (_type === undefined) _type = "all";
     if (_type.indexOf('manager') > -1){
         //state.map.employees['features'].forEach((emp) => {
@@ -118,6 +121,7 @@ const parseDomains = (state) => {
     //console.log("_fieldsWithDomains\n\t",JSON.stringify(_fieldsWithDomains));
     var _domains =[];
     _fieldsWithDomains.forEach((d) =>{
+        // remove _Domain suffix
         var key = d.name.slice(0,-7);
         const val = d.codedValues.map(function(cv) {
             var _obj ={};

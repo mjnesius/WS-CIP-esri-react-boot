@@ -91,3 +91,21 @@ export function getTables(tableUrl) {
     }).then(resp => resolve(resp), error => reject(error));
   })
 }
+
+export function updateDomains(serviceUrl, fieldsObj) {
+  console.log("\n\tupdateDomains()\t serviceUrl", serviceUrl);
+  let persistObj = JSON.parse(localStorage.getItem('esri_auth_id'));
+  let credObj = persistObj['credentials'][0];
+  let tokenObj = credObj['token'];
+  // AGOL url needs '/admin/' 
+  return new Promise ((resolve, reject) => {
+    request( `${serviceUrl}/updateDefinition`,{
+      params: {
+        httpMethod: "POST",
+        f: "json",
+        token: `${tokenObj}`,
+        updateDefinition: `${fieldsObj}`
+      }
+    }).then(resp => resolve(resp), error => reject(error));
+  })
+}

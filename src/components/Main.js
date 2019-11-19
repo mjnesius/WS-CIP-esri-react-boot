@@ -1,13 +1,4 @@
-// Copyright 2019 Esri
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//     http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.​
+// Based on ESRI's esri-react-boot template​
 
 // React
 import React, { Component } from 'react';
@@ -26,9 +17,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import TopNavBrand from 'calcite-react/TopNav/TopNavBrand';
 import TopNavTitle from 'calcite-react/TopNav/TopNavTitle';
-//import TopNavList from 'calcite-react/TopNav/TopNavList';
-//import TopNavLink from 'calcite-react/TopNav/TopNavLink';
-//import SceneViewExample from './esri/map/SceneViewExample';
+
 import Map from './esri/map/Map';
 import LoadScreen from './LoadScreen';
 import UserAccount from './UserAccount';
@@ -38,7 +27,7 @@ import AttributesPanel from './AttributesPanel';
 
 // Styled Components
 import styled from 'styled-components';
-//import {Container as ContainerBS} from 'react-bootstrap/Container'
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -66,13 +55,6 @@ const Logo = styled(TopNavBrand)`
   },
   background-color: $light-blue;
 `;
-//background-color: ${props => props.theme.palette.offWhite};
-// const Nav = styled(TopNav)`
-  
-// background-color: $light-blue;
-
-//   z-index: 5
-// `;
 
 
 
@@ -92,17 +74,17 @@ class Main extends Component {
         <LoadScreen isLoading={this.props.mapLoaded} />
         <Row className="bg-light m-0 mb-n1 p-0">
           <Col lg={3} className="bg-light m-0 mt-1 p-0 mx-auto">
-          <Navbar expand="lg" bg="light" variant="dark" className="bg-light m-0 mt-2 p-0">
-          <Logo  className="bg-light m-0 p-0 mx-auto" href="#" src={logo} />
-          <TopNavTitle  className="bg-light m-0 p-0 mx-auto" href="#">Water Sewer CIP</TopNavTitle>
-          </Navbar>
+            <Navbar expand="lg" bg="light" variant="dark" className="bg-light m-0 mt-2 p-0">
+              <Logo  className="bg-light m-0 p-0 mx-auto" href="#" src={logo} />
+              <TopNavTitle  className="bg-light m-0 p-0 mx-auto" href="#">Water Sewer CIP</TopNavTitle>
+            </Navbar>
           </Col>
 
           <Col lg={true} className="bg-light m-0 mt-2 p-0 mx-auto" >
-          <FilterComponent/>
+            <FilterComponent/>
           </Col>
+
           <Col lg={2} className="bg-light m-0 p-0 mx-auto">
-            
             <Navbar expand="lg" className="bg-light m-0 mt-0 p-0">
               <Navbar.Collapse id="basic-navbar-nav">
                 <UserAccount  
@@ -114,13 +96,9 @@ class Main extends Component {
                 </UserAccount>
               </Navbar.Collapse>
             </Navbar>
-          
-          
-        
           </Col>
-          
         </Row>
-        <AttributesPanel/>
+        {this.props.attributesComponent && <AttributesPanel/>}
         <MapWrapper>
           <Map onMapLoaded={this.props.mapLoaded} onSetFeatures={this.props.setFeatures} onSetFilters={this.props.setFilter}
             mapConfig={this.props.config.mapConfig}
@@ -136,6 +114,7 @@ const mapStateToProps = state => ({
   map: state.map,
   auth: state.auth,
   config: state.config,
+  attributesComponent: state.map.attributesComponent
 })
 
 const mapDispatchToProps = function (dispatch) {

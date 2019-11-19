@@ -39,7 +39,8 @@ export const initialState = {
   domains: [{}],
   selectedFeature:{},
   contractors: [],
-  employees: [{}]
+  employees: [{}],
+  attributesComponent: false
 };
 
 export default (state = initialState, action) => {
@@ -99,12 +100,12 @@ export default (state = initialState, action) => {
         ...state,
         fields: action.payload.fields
       };
-    case types.APPLY_FILTER:
-      //console.log("apply filter: " + JSON.stringify(action.payload));
-      return {
-        ...state,
-        //filter: "OBJECTID > 0 & " + action.payload
-      };
+    // case types.APPLY_FILTER:
+    //   //console.log("apply filter: " + JSON.stringify(action.payload));
+    //   return {
+    //     ...state,
+    //     //filter: "OBJECTID > 0 & " + action.payload
+    //   };
     case types.TOGGLE_ATTRIBUTES:
       //console.log("TOGGLE_ATTRIBUTES: " + JSON.stringify(action));
       return {
@@ -156,18 +157,18 @@ export const actions = {
       fields
     }
   }),
-  setFilter: filter => ({
-    type: types.SET_FILTER,
-    payload: {
-      filter
-    }
-  }),
-  applyFilter: filter => ({
-    type: types.APPLY_FILTER,
-    payload: {
-      filter
-    }
-  }),
+  // setFilter: filter => ({
+  //   type: types.SET_FILTER,
+  //   payload: {
+  //     filter
+  //   }
+  // }),
+  // applyFilter: filter => ({
+  //   type: types.APPLY_FILTER,
+  //   payload: {
+  //     filter
+  //   }
+  // }),
   toggleAttributes: () => ({
     type: types.TOGGLE_ATTRIBUTES,
     payload: {}
@@ -178,7 +179,7 @@ export const actions = {
       url: tableUrl
     }
   }),
-  getEmployees: (tableUrl) => ({
+  getEmployees: (tableUrl) => ({ //triggers a saga, then SET_EMPLOYEES action
     type: types.GET_EMPLOYEES,
     payload: {
       url: tableUrl
