@@ -95,7 +95,7 @@ class Map extends Component {
     console.log(" this.props.defExp:   ", this.props.defExp);
     
     // refactor to set the filter using a Saga that calls a Map action creator
-    if (this.props.fields > 0) {
+    if (this.props.fields.length > 1) {
       var lyrIndex = this.map.layers.findIndex(function(lyr){
         console.log("lyr.id: ", lyr.id);
         return lyr.id === "projects";
